@@ -26,7 +26,7 @@ public class HospitalManagementLogin extends Application {
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
         titleLabel.setTextFill(Color.DARKBLUE);
 
-        // Hospital logo (replace "logo.png" with actual path to logo file)
+        // Hospital logo 
         ImageView logoView = new ImageView(new Image("file:logo.png"));
         logoView.setFitWidth(100);
         logoView.setFitHeight(100);
