@@ -23,28 +23,41 @@ public class OrenixLogin extends Application {
         logo.setFitHeight(150);
         logo.setFitWidth(150);
 
-        // Username and Password fields
+        // Username and Password fields with fixed width
         TextField usernameField = new TextField();
         usernameField.setPromptText("Enter your username");
+        usernameField.setMaxWidth(250);  // Set fixed width
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter your password");
+        passwordField.setMaxWidth(250);  // Set fixed width
 
         // Login button
         Button loginButton = new Button("Login");
         loginButton.setFont(Font.font(16));
         loginButton.setStyle("-fx-background-color: #FF6F61; -fx-text-fill: white; -fx-background-radius: 10;");
+        loginButton.setMaxWidth(150); // Optional: Fix button width too
 
         // Error message label
         Label errorMessage = new Label();
         errorMessage.setTextFill(Color.RED);
 
         loginButton.setOnAction(e -> {
-            // Mock login check
-            if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+
+            if (username.isEmpty() || password.isEmpty()) {
                 errorMessage.setText("Please enter both username and password.");
             } else {
-                errorMessage.setText("");
-                // Insert login logic here
+                // Check credentials using DatabaseConnection
+                boolean isAuthenticated = DatabaseConnection.authenticateUser(username, password);
+                
+                if (isAuthenticated) {
+                    errorMessage.setTextFill(Color.GREEN);
+                    errorMessage.setText("Login successful!");
+                } else {
+                    errorMessage.setTextFill(Color.RED);
+                    errorMessage.setText("Invalid username or password.");
+                }
             }
         });
 
@@ -71,6 +84,7 @@ public class OrenixLogin extends Application {
         // Scene setup
         Scene scene = new Scene(mainLayout, 400, 400);
         primaryStage.setScene(scene);
+        primaryStage.setFullScreen(true); // Optional: Set to fullscreen if desired
         primaryStage.show();
     }
 
