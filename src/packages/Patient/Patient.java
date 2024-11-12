@@ -18,6 +18,7 @@ public class Patient {
         this.phoneNumber=phoneNumber;
     }
     void patientDetails(){
+        System.out.println("Patient Details:\n");
         System.out.println("ID: "+ID+"\t name: "+name+"\t email: "+email+"\tPhone Number: "+phoneNumber+"\n");
     }
 }
