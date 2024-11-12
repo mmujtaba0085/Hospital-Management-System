@@ -11,19 +11,19 @@
    <children>
       <Pane layoutX="-5.0" layoutY="-2.0" prefHeight="58.0" prefWidth="606.0" style="-fx-background-color: #e86e41;">
          <children>
-            <Label layoutX="51.0" layoutY="1.0" prefHeight="57.0" prefWidth="300.0" text="Book Appointment" textAlignment="CENTER">
+            <Label layoutX="51.0" layoutY="1.0" prefHeight="57.0" prefWidth="300.0" text="Doctor Profiles" textAlignment="CENTER">
                <font>
                   <Font size="30.0" />
                </font>
             </Label>
             <ImageView accessibleRole="BUTTON" fitHeight="32.0" fitWidth="39.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/icons8-back-button-50.png" />
+                  <Image url="@icons8-back-button-50.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="560.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/orenix1.png" />
+                  <Image url="@orenix1.png" />
                </image>
             </ImageView>
          </children>
