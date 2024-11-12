@@ -29,11 +29,55 @@
             </ImageView>
          </children>
       </Pane>
-      <Label layoutX="49.0" layoutY="95.0" text="Account Number">
+      <Label layoutX="48.0" layoutY="83.0" text="Account Number">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <TextArea layoutX="42.0" layoutY="115.0" prefHeight="20.0" prefWidth="166.0" promptText="Enter account number" />
+      <TextArea layoutX="41.0" layoutY="103.0" prefHeight="20.0" prefWidth="166.0" promptText="Enter account number" />
+      <Label layoutX="48.0" layoutY="162.0" text="Email">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="41.0" layoutY="183.0" prefHeight="39.0" prefWidth="166.0" promptText="Enter your email" />
+      <Label layoutX="51.0" layoutY="245.0" text="Phone Number">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="41.0" layoutY="265.0" prefHeight="39.0" prefWidth="166.0" promptText="Enter your phone number" />
+      <Label layoutX="343.0" layoutY="83.0" text="Country">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="103.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter your country" />
+      <Pane layoutX="180.0" layoutY="315.0" prefHeight="70.0" prefWidth="240.0" style="-fx-background-color: #000000; -fx-border-color: #6a6666;">
+         <children>
+            <Label layoutX="7.0" layoutY="22.0" text="Total Amount:" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="181.0" layoutY="18.0" text="2200" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Label layoutX="343.0" layoutY="162.0" text="Expiry Date">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="182.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter expiry date of card" />
+      <Label layoutX="343.0" layoutY="245.0" text="CVV">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="265.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter CVV" />
    </children>
 </AnchorPane>
