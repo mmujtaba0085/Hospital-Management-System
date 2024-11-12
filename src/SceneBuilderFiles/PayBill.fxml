@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -28,5 +29,11 @@
             </ImageView>
          </children>
       </Pane>
+      <Label layoutX="49.0" layoutY="95.0" text="Account Number">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="42.0" layoutY="115.0" prefHeight="20.0" prefWidth="166.0" promptText="Enter account number" />
    </children>
 </AnchorPane>

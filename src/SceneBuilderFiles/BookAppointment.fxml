@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -28,5 +29,11 @@
             </ImageView>
          </children>
       </Pane>
+      <Label layoutX="43.0" layoutY="94.0" prefHeight="26.0" prefWidth="102.0" text="Select Doctor">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <ChoiceBox layoutX="43.0" layoutY="120.0" prefWidth="150.0" />
    </children>
 </AnchorPane>
