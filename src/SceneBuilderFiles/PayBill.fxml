@@ -19,7 +19,7 @@
             </Label>
             <ImageView accessibleRole="BUTTON" fitHeight="32.0" fitWidth="39.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/icons8-back-button-50.png" />
+                  <Image url="@../images/back_button.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="560.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
