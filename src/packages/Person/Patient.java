@@ -1,29 +1,13 @@
 package packages.Patient;
+import packages.*;
 
 import packages.Others.Bill;
 
-public class Patient {
-    int ID;
-    String name;
-    String email;
-    long phoneNumber;
-    String address;
+public class Patient extends Person{
     String record;
     Bill bill;
     Patient(){
-        ID=0;
-        name="";
-        email="";
-        phoneNumber=0;
-        address="";
         record="";
-    }
-    Patient(int ID, String name, String email, long phoneNumber, String address){
-        this.ID=ID;
-        this.name=name;
-        this.email=email;
-        this.phoneNumber=phoneNumber;
-        this.address=address;
     }
     void patientDetails(){
         System.out.println("Patient Details:\n");
