@@ -1,4 +1,4 @@
-package packages;
+package packages.Person;
 
 public abstract class Person {
     int ID;

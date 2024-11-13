@@ -1,6 +1,4 @@
-package packages.Patient;
-import packages.*;
-
+package packages.Person;
 import packages.Others.Bill;
 
 public class Patient extends Person{
