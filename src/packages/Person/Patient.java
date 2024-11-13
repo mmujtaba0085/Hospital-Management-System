@@ -17,10 +17,15 @@ public class Patient extends Person{
     void viewDoctorProfiles(){
 
     }
-    void payBill(){
-        bill.payBill();
+    void payBill(int amt){
+        bill.payBill(amt);
     }
     void bookAppointment(){
 
+    }
+    public void setPatientDetails(String name, String email, long phoneNumber){
+        this.name=name;
+        this.email=email;
+        this.phoneNumber=phoneNumber;
     }
 }

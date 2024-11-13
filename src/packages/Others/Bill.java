@@ -11,7 +11,15 @@ public class Bill {
         this.amount=amount;
     }
     public void payBill(int amt){
-        amount-=amt;
+        if(amt>amount){
+            amount-=amt;
+        }
+        else if(amt<amount){
+            amount-=amt;
+        }
+        else{
+            amount-=amt;
+        }
     }
     void generateBill(){
 

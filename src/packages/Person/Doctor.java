@@ -16,4 +16,10 @@ public class Doctor extends Person {
         System.out.println("Doctor Details:\n");
         System.out.println("ID: "+ID+"\t name: "+name+"\t email: "+email+"\tPhone Number: "+phoneNumber+"Specialization: "+specialization+"\n");
     }
+    void viewAppointments(){
+
+    }
+    void addTimeSlots(){
+        
+    }
 }
