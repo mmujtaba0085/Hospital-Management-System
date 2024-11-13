@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane layoutX="-5.0" layoutY="-2.0" prefHeight="58.0" prefWidth="606.0" style="-fx-background-color: #e86e41;">
+         <children>
+            <Label layoutX="51.0" layoutY="1.0" prefHeight="57.0" prefWidth="300.0" text="Billing" textAlignment="CENTER">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <ImageView accessibleRole="BUTTON" fitHeight="32.0" fitWidth="39.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/icons8-back-button-50.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="560.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/orenix1.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Label layoutX="48.0" layoutY="83.0" text="Account Number">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="41.0" layoutY="103.0" prefHeight="20.0" prefWidth="166.0" promptText="Enter account number" />
+      <Label layoutX="48.0" layoutY="162.0" text="Email">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="41.0" layoutY="183.0" prefHeight="39.0" prefWidth="166.0" promptText="Enter your email" />
+      <Label layoutX="51.0" layoutY="245.0" text="Phone Number">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="41.0" layoutY="265.0" prefHeight="39.0" prefWidth="166.0" promptText="Enter your phone number" />
+      <Label layoutX="343.0" layoutY="83.0" text="Country">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="103.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter your country" />
+      <Pane layoutX="180.0" layoutY="315.0" prefHeight="70.0" prefWidth="240.0" style="-fx-background-color: #000000; -fx-border-color: #6a6666;">
+         <children>
+            <Label layoutX="7.0" layoutY="22.0" text="Total Amount:" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="181.0" layoutY="18.0" text="2200" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Label layoutX="343.0" layoutY="162.0" text="Expiry Date">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="182.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter expiry date of card" />
+      <Label layoutX="343.0" layoutY="245.0" text="CVV">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="337.0" layoutY="265.0" prefHeight="32.0" prefWidth="166.0" promptText="Enter CVV" />
+   </children>
+</AnchorPane>

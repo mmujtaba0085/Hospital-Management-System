@@ -20,20 +20,34 @@ public class Admin extends Person {
     void viewDoctors(LinkedList<Patient> Doctors){
         
     }
-    public void addPatient(LinkedList<Patient> Patients, String name, String email, long phoneNumber){
-        Patient p;
-        if(Patients.isEmpty()){
-            Scanner in = new Scanner(System.in);
-            String stringInput;
-            long longInput;
-            System.out.println("Enter your ame: ");
-            stringInput=in.next();
-            System.out.println("Enter your Email: ");
-            stringInput=in.next();
-            System.out.println("Enter your Phone Number: ");
-            longInput=in.nextLong();
-            p.setPatientDetails(name, email, phoneNumber);
-            Patients.addFirst(p);
-        }
+    public void addPatient(LinkedList<Patient> Patients){
+        Patient p=new Patient();
+        Scanner scanner = new Scanner(System.in);
+        String n, em; long pn;
+        System.out.println("Enter Name: ");
+        n=scanner.nextLine();
+        System.out.println("Enter Email: ");
+        em=scanner.nextLine();
+        System.out.println("Enter Phone Number: ");
+        pn=scanner.nextLong();
+        p.setPatientDetails(n, em, pn);
+        Patients.add(p);
+        scanner.close();
+    }
+    public void addDoctor(LinkedList<Doctor> Doctors){
+        Doctor d=new Doctor();
+        Scanner scanner = new Scanner(System.in);
+        String n, em, sp; long pn;
+        System.out.println("Enter Name: ");
+        n=scanner.nextLine();
+        System.out.println("Enter Email: ");
+        em=scanner.nextLine();
+        System.out.println("Enter Phone Number: ");
+        pn=scanner.nextLong();
+        System.out.println("Enter Specialization: ");
+        sp=scanner.nextLine();
+        d.setDoctorDetails(n, em, pn, sp);
+        Doctors.add(d);
+        scanner.close();
     }
 }

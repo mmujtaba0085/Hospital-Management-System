@@ -16,6 +16,15 @@ public class System {
         admin=new Admin();
     }
     void addPatient(){
+        // Admin will add the new Patient
         admin.addPatient(Patients);
+    }
+    
+    void addDoctor(){
+        // Admin will add the new Patient
+        admin.addDoctor(Doctors);
+    }
+    void viewDoctorProfilesList(){
+        
     }
 }
