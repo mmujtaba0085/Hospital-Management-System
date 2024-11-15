@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 public class OrenixApp extends Application {
 
     //@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Login.fxml"));
