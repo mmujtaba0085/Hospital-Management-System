@@ -6,10 +6,12 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 import packages.Others.Appointments;
+import packages.Others.TimeSlots;
 
 public class Doctor extends Person {
     String specialization;
     LinkedList<Appointments> appointments;
+    LinkedList<TimeSlots> timeSlots;
     Doctor(){
         specialization="";
         appointments=new LinkedList<>();

@@ -8,6 +8,6 @@ public class Appointments {
         timeSlot=new TimeSlots();
     }
     public void setTimeSlot(LocalTime starTime, LocalTime endTime){
-        
+        timeSlot.setTimeSlot(starTime, endTime);
     }
 }

@@ -9,4 +9,8 @@ public class TimeSlots {
 
     // Storing a specific time (e.g., 2:30 PM)
     // --> LocalTime specificTime = LocalTime.of(14, 30);  // 14:30 or 2:30 PM
+    void setTimeSlot(LocalTime starTime, LocalTime endTime){
+        start=starTime;
+        end=endTime;
+    }
 }

@@ -8,7 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class OrenixLoginApp extends Application {
+public class OrenixApp extends Application {
 
     @SuppressWarnings("unused")
     @Override
