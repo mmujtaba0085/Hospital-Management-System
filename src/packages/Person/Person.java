@@ -2,18 +2,18 @@ package packages.Person;
 
 public abstract class Person {
     int ID;
-    String name;
+    protected String name;
     String email;
-    long phoneNumber;
+    String phoneNumber;
     String address;
     Person(){
         ID=0;
         name="";
         email="";
-        phoneNumber=0;
+        phoneNumber="";
         address="";
     }
-    Person(int ID, String name, String email, long phoneNumber, String address){
+    Person(int ID, String name, String email, String phoneNumber, String address){
         this.ID=ID;
         this.name=name;
         this.email=email;

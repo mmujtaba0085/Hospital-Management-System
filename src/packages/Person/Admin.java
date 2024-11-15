@@ -39,13 +39,13 @@ public class Admin extends Person {
     public void addPatient(LinkedList<Patient> Patients){
         Patient p=new Patient();
         Scanner scanner = new Scanner(System.in);
-        String n, em; long pn;
+        String n, em, pn;
         System.out.println("Enter Name: ");
         n=scanner.nextLine();
         System.out.println("Enter Email: ");
         em=scanner.nextLine();
         System.out.println("Enter Phone Number: ");
-        pn=scanner.nextLong();
+        pn=scanner.nextLine();
         p.setPatientDetails(n, em, pn);
         Patients.add(p);
         scanner.close();
@@ -53,13 +53,13 @@ public class Admin extends Person {
     public void addDoctor(LinkedList<Doctor> Doctors){
         Doctor d=new Doctor();
         Scanner scanner = new Scanner(System.in);
-        String n, em, sp; long pn;
+        String n, em, sp, pn;
         System.out.println("Enter Name: ");
         n=scanner.nextLine();
         System.out.println("Enter Email: ");
         em=scanner.nextLine();
         System.out.println("Enter Phone Number: ");
-        pn=scanner.nextLong();
+        pn=scanner.nextLine();
         System.out.println("Enter Specialization: ");
         sp=scanner.nextLine();
         d.setDoctorDetails(n, em, pn, sp);

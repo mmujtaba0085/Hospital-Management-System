@@ -7,11 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import packages.Person.*;
+import SceneBuilderFiles.Controller.*;
 
 public class OrenixApp extends Application {
 
-    //@SuppressWarnings("unused")
-    @SuppressWarnings("unused")
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Login.fxml"));
@@ -39,9 +39,13 @@ public class OrenixApp extends Application {
                         showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Admin!");
                         // Open Admin Dashboard or perform admin-specific actions
                         break;
-                    case 2:
+                    case 2: // Doctor Role
                         showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Doctor!");
-                        // Open Doctor Dashboard or perform doctor-specific actions
+                        
+                        // Create a Doctor object with appropriate data
+                        Doctor doctor = new Doctor("Dr. " + username,"General Medicine");
+
+                        openDoctorDashboard(primaryStage, doctor); // Open Doctor Dashboard
                         break;
                     case 3:
                         showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Receptionist!");
@@ -69,6 +73,34 @@ public class OrenixApp extends Application {
         alert.setTitle(title);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Method to open Doctor Dashboard with Doctor object
+    private void openDoctorDashboard(Stage loginStage, Doctor doctor) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/DoctorDashboard.fxml"));
+            Parent root = loader.load();
+
+            // Get the DoctorDashboard controller and pass the Doctor object
+            DoctorDashboardController controller = loader.getController();
+            controller.setDoctor(doctor);
+
+            Scene doctorScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
+
+            Stage doctorStage = new Stage();
+            doctorStage.setTitle("Orenix Hospital Management System - Doctor Dashboard");
+            doctorStage.setScene(doctorScene);
+
+            // Close the login stage
+            loginStage.close();
+
+            // Show the Doctor Dashboard
+            doctorStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Doctor Dashboard.");
+        }
     }
 
     public static void main(String[] args) {
