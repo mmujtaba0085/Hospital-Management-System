@@ -10,14 +10,14 @@ import javafx.stage.Stage;
 
 public class OrenixApp extends Application {
 
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Login.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 800, 600); // Adjusted width and height for two-column layout
-        scene.getStylesheets().add(getClass().getResource("CSS/Login.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/Login.css").toExternalForm());
 
         // Get references to UI elements
         TextField emailField = (TextField) scene.lookup(".text-field");  // Get Email TextField
