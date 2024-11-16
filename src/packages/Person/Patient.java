@@ -26,7 +26,7 @@ public class Patient extends Person{
     void bookAppointment(){
         
     }
-    public void setPatientDetails(String name, String email, long phoneNumber){
+    public void setPatientDetails(String name, String email, String phoneNumber){
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
