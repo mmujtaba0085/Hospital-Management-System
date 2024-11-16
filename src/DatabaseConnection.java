@@ -3,6 +3,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+
+import packages.Person.*;
 
 public class DatabaseConnection {
 
@@ -43,6 +46,41 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
-        }
+        }   
     }
+
+    public static Doctor DoctorDetail(String email,String password){
+        Doctor doctor=null;
+        if(authenticateUser(email, password)!=2){
+            return null;
+        }
+        
+        String query="select doctorId,specialization,name,phoneNumber,hireDate from doctor where email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1, email);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                int doctorId = resultSet.getInt("doctorId");
+                String specialization = resultSet.getString("specialization");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the Doctor object
+                doctor=new Doctor(doctorId, name, specialization, email, phoneNumber, hireDate);
+            }
+            return doctor;
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }   
+
+
+    }
+
+
 }

@@ -43,7 +43,7 @@ public class OrenixApp extends Application {
                         showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Doctor!");
                         
                         // Create a Doctor object with appropriate data
-                        Doctor doctor = new Doctor("Dr. " + username,"General Medicine");
+                        Doctor doctor = DatabaseConnection.DoctorDetail(username, password);
 
                         openDoctorDashboard(primaryStage, doctor); // Open Doctor Dashboard
                         break;
