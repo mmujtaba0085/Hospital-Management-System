@@ -40,7 +40,7 @@ public class OrenixApp extends Application {
                         // Open Admin Dashboard or perform admin-specific actions
                         break;
                     case 2: // Doctor Role
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Doctor!");
+                        
                         
                         // Create a Doctor object with appropriate data
                         Doctor doctor = DatabaseConnection.DoctorDetail(username, password);

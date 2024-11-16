@@ -7,7 +7,7 @@ public class Admin extends Person {
     public Admin(){
 
     }
-    Admin(int ID, String name, String email, long phoneNumber){
+    Admin(int ID, String name, String email, String phoneNumber){
 
     }
     void patientDetails(){
@@ -39,7 +39,8 @@ public class Admin extends Person {
     public void addPatient(LinkedList<Patient> Patients){
         Patient p=new Patient();
         Scanner scanner = new Scanner(System.in);
-        String n, em, pn;
+        String n, em;
+                String pn;
         System.out.println("Enter Name: ");
         n=scanner.nextLine();
         System.out.println("Enter Email: ");

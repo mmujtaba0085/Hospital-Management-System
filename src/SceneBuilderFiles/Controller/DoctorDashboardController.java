@@ -31,7 +31,7 @@ public class DoctorDashboardController {
         this.doctor = doctor;
 
         // Update UI elements with Doctor details
-        mainContentTitle.setText("Welcome, " + doctor.getName());
+        mainContentTitle.setText("Welcome, " + this.doctor.getName());
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
     @FXML
