@@ -1,11 +1,17 @@
+package packages.Database;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import packages.Person.*;
+import packages.Others.*;;
 
 public class DatabaseConnection {
 
@@ -80,6 +86,43 @@ public class DatabaseConnection {
         }   
 
 
+    }
+
+    public static List<Appointment> ViewAppointments(String email) {
+        String query = """
+            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.time_of_appointment 
+            FROM Appointments a 
+            LEFT JOIN Patient p ON a.patient_id = p.patientID 
+            LEFT JOIN Doctor d ON a.doctor_id = d.doctorID 
+            WHERE p.email = ? OR d.email = ?
+            """;
+
+        List<Appointment> appointments = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Set email for both parameters
+            statement.setString(1, email);
+            statement.setString(2, email);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // Loop through the result set and add appointments to the list
+            while (resultSet.next()) {
+                int appointmentID = resultSet.getInt("appointmentID");
+                String patientName = resultSet.getString("patient_name");
+                String doctorName = resultSet.getString("doctor_name");
+                Timestamp timeOfAppointment = resultSet.getTimestamp("time_of_appointment");
+
+                // Create an Appointment object and add it to the list
+                appointments.add(new Appointment(appointmentID, patientName, doctorName, timeOfAppointment));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return appointments;
     }
 
 

@@ -1,14 +1,14 @@
 package packages.Person;
-import packages.Others.Appointments;
+import packages.Others.Appointment;
 import packages.Others.Bill;
 
 public class Patient extends Person{
     String record;
     Bill bill;
-    Appointments appointment;
+    Appointment appointment;
     Patient(){
         record="";
-        appointment=new Appointments();
+        appointment=new Appointment();
     }
     void patientDetails(){
         System.out.println("Patient Details:\n");

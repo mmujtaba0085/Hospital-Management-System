@@ -20,4 +20,7 @@ public abstract class Person {
         this.phoneNumber=phoneNumber;
         this.address=address;
     }
+    public String getEmail(){
+        return email;
+    }
 }

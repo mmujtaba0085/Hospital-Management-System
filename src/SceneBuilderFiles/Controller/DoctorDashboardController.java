@@ -1,17 +1,30 @@
 package SceneBuilderFiles.Controller;
 
-import packages.Person.*;
+import packages.Others.Appointment;
+import packages.Person.Doctor;
+import packages.Database.DatabaseConnection;
+
+import java.sql.Timestamp;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 
 public class DoctorDashboardController {
     private Doctor doctor;
 
-    public DoctorDashboardController(){
-        doctor=null;
+    // Constructor
+    public DoctorDashboardController() {
+        doctor = null; // Initialize with null until set later
     }
+
     // FXML components
     @FXML
     private VBox sidebar;
@@ -25,125 +38,151 @@ public class DoctorDashboardController {
     @FXML
     private Label mainContentTitle;
 
+    // Initialize method called automatically
+    @FXML
+    public void initialize() {
+        System.out.println("Doctor's Dashboard Initialized!");
+        mainContentTitle.setText("Welcome to the Doctor's Dashboard");
+        subOptionPane.setVisible(false); // Hide sub-options by default
+    }
 
-    // Method to receive Doctor object
+    // Method to set Doctor object
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
-
-        // Update UI elements with Doctor details
         mainContentTitle.setText("Welcome, " + this.doctor.getName());
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
-    @FXML
-    public void initialize() {
-        // Initialize the dashboard
-        System.out.println("Doctor's Dashboard Initialized!");
-        mainContentTitle.setText("Welcome to the Doctor's Dashboard");
-        subOptionPane.setVisible(false); // Hide sub-option pane initially
-    }
 
-    // Sidebar button handlers
+    // Sidebar Handlers
     @FXML
     public void showOverview() {
-        System.out.println("Showing Overview...");
         mainContentTitle.setText("Overview");
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewSchedule() {
-        System.out.println("Viewing Schedule...");
-        mainContentTitle.setText("Appointments Schedule");
+    if (doctor == null) {
+        mainContentTitle.setText("Error: Doctor not found!");
+        System.out.println("Doctor is not set.");
+        return;
     }
 
+    mainContentTitle.setText("Appointments Schedule");
+    System.out.println("Fetching appointments...");
+
+    // Retrieve appointments using the doctor's email
+    List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+
+    // Create a TableView for displaying appointments
+    TableView<Appointment> appointmentTable = new TableView<>();
+
+    // Define TableColumns for the Appointment properties
+    TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+    idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+
+    TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
+    patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+    TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
+    doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+
+    TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
+    timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+
+    // Add columns to the table
+    appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
+
+    // Populate the TableView with the appointments
+    if (!appointments.isEmpty()) {
+        appointmentTable.getItems().addAll(appointments);
+    } else {
+        mainContentTitle.setText("No appointments scheduled.");
+    }
+
+    // Add the TableView to the main content area
+    Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
+    mainContentPane.getChildren().clear(); // Clear existing content
+    mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
+
+    // Position the table within the pane
+    AnchorPane.setTopAnchor(appointmentTable, 50.0);
+    AnchorPane.setLeftAnchor(appointmentTable, 20.0);
+    AnchorPane.setRightAnchor(appointmentTable, 20.0);
+    AnchorPane.setBottomAnchor(appointmentTable, 20.0);
+    }
+
+    // Additional Sidebar Handlers
     @FXML
     public void rescheduleAppointments() {
-        System.out.println("Rescheduling Appointments...");
+        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
+        mainContentPane.getChildren().clear(); // Clear existing content
         mainContentTitle.setText("Reschedule Appointments");
+        mainContentPane.getChildren().addAll(mainContentTitle); // Add title and appointments list
     }
 
     @FXML
     public void cancelAppointments() {
-        System.out.println("Cancelling Appointments...");
         mainContentTitle.setText("Cancel Appointments");
     }
 
     @FXML
     public void viewPatientDetails() {
-        System.out.println("Viewing Patient Details...");
         mainContentTitle.setText("Patient Details");
     }
 
     @FXML
     public void updateHealthRecords() {
-        System.out.println("Updating Patient Health Records...");
         mainContentTitle.setText("Update Health Records");
     }
 
     @FXML
     public void viewMedicalHistory() {
-        System.out.println("Viewing Medical History...");
         mainContentTitle.setText("Medical History");
     }
 
     @FXML
     public void createConsultationNotes() {
-        System.out.println("Creating Consultation Notes...");
         mainContentTitle.setText("Create Consultation Notes");
     }
 
     @FXML
     public void viewPreviousNotes() {
-        System.out.println("Viewing Previous Consultation Notes...");
         mainContentTitle.setText("Previous Consultation Notes");
     }
 
     @FXML
     public void openPrescriptions() {
-        System.out.println("Opening Prescriptions...");
         mainContentTitle.setText("Prescriptions");
     }
 
     @FXML
     public void openCommunication() {
-        System.out.println("Opening Communication...");
         mainContentTitle.setText("Communication");
     }
 
     @FXML
     public void openBilling() {
-        System.out.println("Opening Billing and Payments...");
         mainContentTitle.setText("Billing and Payments");
     }
 
     @FXML
     public void generateReports() {
-        System.out.println("Generating Reports...");
         mainContentTitle.setText("Generate Reports");
     }
 
     @FXML
     public void downloadReports() {
-        System.out.println("Downloading Reports...");
         mainContentTitle.setText("Download Reports");
     }
 
     @FXML
     public void openSettings() {
-        System.out.println("Opening Settings...");
         mainContentTitle.setText("Settings");
     }
 
     @FXML
     public void openHelp() {
-        System.out.println("Opening Help and Support...");
         mainContentTitle.setText("Help and Support");
-    }
-
-    
-
-    // Additional helper methods if needed
-    public void showSubOptions(String title) {
-        subOptionTitle.setText(title);
-        subOptionPane.setVisible(true);
     }
 }
