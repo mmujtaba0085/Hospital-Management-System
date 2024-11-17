@@ -40,7 +40,7 @@ public class Admin extends Person {
         Patient p=new Patient();
         Scanner scanner = new Scanner(System.in);
         String n, em;
-                String pn;
+        String pn;
         System.out.println("Enter Name: ");
         n=scanner.nextLine();
         System.out.println("Enter Email: ");
