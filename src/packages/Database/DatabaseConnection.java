@@ -125,5 +125,48 @@ public class DatabaseConnection {
         return appointments;
     }
 
+    public static boolean cancelAppointmentByDoctorAndPatient(int doctorId, int patientId) {
+    String query = "DELETE FROM Appointments WHERE doctor_id = ? AND patient_id = ?";
+
+    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement statement = connection.prepareStatement(query)) {
+         
+        // Set the doctorId and patientId parameters
+        statement.setInt(1, doctorId);
+        statement.setInt(2, patientId);
+
+        // Execute the query and return true if one or more rows were affected
+        int rowsAffected = statement.executeUpdate();
+        return rowsAffected > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+public static boolean cancelAppointment(int doctorId, String patientName) {
+    String query = """
+        DELETE FROM Appointments 
+        WHERE doctor_id = ? AND patient_id = 
+        (SELECT patientID FROM Patient WHERE name = ?)
+    """;
+
+    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+        // Set the doctorId and patientName parameters
+        statement.setInt(1, doctorId);
+        statement.setString(2, patientName);
+
+        // Execute the query and return true if one or more rows were affected
+        int rowsAffected = statement.executeUpdate();
+        return rowsAffected > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
 
 }

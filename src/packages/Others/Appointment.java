@@ -2,11 +2,19 @@ package packages.Others;
 
 import java.sql.Timestamp;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
+
 public class Appointment {
     private int appointmentID;
     private String patientName;
     private String doctorName;
     private Timestamp timeOfAppointment;
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    
+
 
     public Appointment(int appointmentID, String patientName, String doctorName, Timestamp timeOfAppointment) {
         this.appointmentID = appointmentID;
@@ -20,6 +28,17 @@ public class Appointment {
         this.doctorName = "";
     }
 
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+    
+    public boolean isSelected() {
+        return selected.get();
+    }
+    
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
+    }
     public int getAppointmentID() {
         return appointmentID;
     }

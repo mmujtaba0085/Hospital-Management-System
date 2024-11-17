@@ -29,11 +29,11 @@ public class OrenixApp extends Application {
 
         // Set up login button action
         loginButton.setOnAction(event -> {
-            // String username = emailField.getText();
-            // String password = passwordField.getText();
+            String username = emailField.getText();
+            String password = passwordField.getText();
 
-            String username = "alice.smith@hospital.com";
-            String password = "default_password";
+            // String username = "alice.smith@hospital.com";
+            // String password = "default_password";
 
             // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
@@ -92,7 +92,7 @@ public class OrenixApp extends Application {
             
 
             Scene doctorScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
-            doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
+            //doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
 
             Stage doctorStage = new Stage();
             doctorStage.setTitle("Orenix Hospital Management System - Doctor Dashboard");
