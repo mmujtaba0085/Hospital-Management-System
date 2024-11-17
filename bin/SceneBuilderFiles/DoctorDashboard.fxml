@@ -10,15 +10,15 @@
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.DoctorDashboardController">
     <children>
         <!-- Sidebar with collapsible sections for sub-options -->
-        <VBox layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="231.0" style="-fx-background-color: #f0f0f0;">
+        <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #f0f0f0;">
             <children>
                 <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px;" text="Doctor's Dashboard" />
 
                 <!-- Home / Overview -->
-                <Button onAction="#showOverview" styleClass="sidebar-button" text="Home / Overview" />
+                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
 
                 <!-- Appointments Management with Sub-options -->
-                <TitledPane styleClass="sidebar-button" text="Appointments Management">
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
                     <content>
                         <VBox>
                             <Button onAction="#viewSchedule" text="View Schedule" />
@@ -29,7 +29,7 @@
                 </TitledPane>
 
                 <!-- Patient Records with Sub-options -->
-                <TitledPane prefWidth="279.0" styleClass="sidebar-button" text="Patient Records">
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Patient Records">
                     <content>
                         <VBox>
                             <Button onAction="#viewPatientDetails" text="View Patient Details" />
@@ -40,7 +40,7 @@
                 </TitledPane>
 
                 <!-- Consultation Notes with Sub-options -->
-                <TitledPane styleClass="sidebar-button" text="Consultation Notes">
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Consultation Notes">
                     <content>
                         <VBox>
                             <Button onAction="#createConsultationNotes" text="Create New Notes" />
@@ -50,16 +50,16 @@
                 </TitledPane>
 
                 <!-- Prescriptions -->
-                <Button onAction="#openPrescriptions" styleClass="sidebar-button" text="Prescriptions" />
+                <Button alignment="TOP_CENTER" onAction="#openPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
 
                 <!-- Communication -->
-                <Button onAction="#openCommunication" styleClass="sidebar-button" text="Communication" />
+                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="26.0" prefWidth="250.0" text="Communication" />
 
                 <!-- Billing and Payments -->
-                <Button onAction="#openBilling" styleClass="sidebar-button" text="Billing and Payments" />
+                <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="26.0" prefWidth="234.0" text="Billing and Payments" />
 
                 <!-- Analytics & Reports with Sub-options -->
-                <TitledPane styleClass="sidebar-button" text="Analytics and Reports">
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Analytics and Reports">
                     <content>
                         <VBox>
                             <Button onAction="#generateReports" text="Generate Reports" />
@@ -69,26 +69,27 @@
                 </TitledPane>
 
                 <!-- Settings -->
-                <Button onAction="#openSettings" styleClass="sidebar-button" text="Settings" />
+                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
 
                 <!-- Help & Support -->
-                <Button onAction="#openHelp" styleClass="sidebar-button" text="Help and Support" />
+                <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="26.0" prefWidth="237.0" text="Help and Support" />
             </children>
         </VBox>
 
         <!-- Main Content Area -->
-        <Pane layoutX="279.0" layoutY="2.0" prefHeight="923.0" prefWidth="582.0" style="-fx-background-color: #ffffff;">
+        <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
                 <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Doctor's Dashboard" />
-                <!-- Placeholder for dynamic content based on the sidebar selection -->
+                    <!-- Dynamic content like TableView will be added here programmatically -->
             </children>
-        </Pane>
+        </AnchorPane>
 
-        <!-- Right Side Pane for Sub-options (optional, shows dynamically based on selected button) -->
-        <Pane fx:id="subOptionPane" layoutX="600.0" layoutY="0.0" prefHeight="600.0" prefWidth="200.0" style="-fx-background-color: #f9f9f9;" visible="false">
+
+
+        <!-- Right Side Pane for Sub-options -->
+        <Pane fx:id="subOptionPane" layoutX="636.0" layoutY="0.0" prefHeight="600.0" prefWidth="464.0" style="-fx-background-color: #f9f9f9;" visible="false">
             <children>
-                <Label fx:id="subOptionTitle" layoutX="10.0" layoutY="10.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Sub-options" />
-                <!-- Dynamic sub-option buttons go here, as needed -->
+                <Label fx:id="subOptionTitle" layoutX="12.0" layoutY="10.0" prefHeight="27.0" prefWidth="102.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Sub-options" />
             </children>
         </Pane>
     </children>

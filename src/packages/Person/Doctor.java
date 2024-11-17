@@ -24,7 +24,9 @@ public class Doctor extends Person {
     public String getName(){
         return name;
     }
-
+    public int getID(){
+        return DoctorID;
+    }
     public String getSpecialization(){
         return specialization;
     }

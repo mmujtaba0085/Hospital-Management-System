@@ -7,8 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 import packages.Person.*;
 import SceneBuilderFiles.Controller.*;
+import packages.Database.*;;
 
 public class OrenixApp extends Application {
 
@@ -29,6 +31,9 @@ public class OrenixApp extends Application {
         loginButton.setOnAction(event -> {
             String username = emailField.getText();
             String password = passwordField.getText();
+
+            // String username = "alice.smith@hospital.com";
+            // String password = "default_password";
 
             // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
@@ -84,9 +89,10 @@ public class OrenixApp extends Application {
             // Get the DoctorDashboard controller and pass the Doctor object
             DoctorDashboardController controller = loader.getController();
             controller.setDoctor(doctor);
+            
 
             Scene doctorScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
-            doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
+            //doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
 
             Stage doctorStage = new Stage();
             doctorStage.setTitle("Orenix Hospital Management System - Doctor Dashboard");
