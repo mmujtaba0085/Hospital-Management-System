@@ -1,10 +1,16 @@
 package SceneBuilderFiles.Controller;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class PayBillController {
 
@@ -42,7 +48,7 @@ public class PayBillController {
     private ImageView backButton;
 
     /**
-     * Initializes the controller class. 
+     * Initializes the controller class.
      * This method is called after the FXML file is loaded.
      */
     @FXML
@@ -64,8 +70,8 @@ public class PayBillController {
         String cvv = cvvField.getText();
 
         // Perform validation
-        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || 
-            accountNumber.isEmpty() || pin.isEmpty() || cvv.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() ||
+                accountNumber.isEmpty() || pin.isEmpty() || cvv.isEmpty()) {
             System.out.println("Please fill in all fields.");
             return;
         }
@@ -97,12 +103,21 @@ public class PayBillController {
         System.out.println("Payment form cleared.");
     }
 
-    /**
-     * Handles the back button click event.
-     */
     @FXML
-    private void handleBackAction() {
-        System.out.println("Navigating back to the previous screen.");
-        // Implement navigation logic here
+    private void goBackToPatientPortal() throws IOException {
+        loadNewScene("PatientPortal.fxml", "Patient Portal");
     }
+
+    private void loadNewScene(String fxmlFile, String pageTitle) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+        AnchorPane root = loader.load();
+
+        // Get the current stage (window)
+        Stage stage = (Stage) backButton.getScene().getWindow(); // Reference correct back button
+        Scene newScene = new Scene(root);
+        stage.setScene(newScene);
+        stage.setTitle(pageTitle);
+        stage.show();
+    }
+
 }
