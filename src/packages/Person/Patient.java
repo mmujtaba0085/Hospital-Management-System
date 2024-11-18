@@ -15,16 +15,16 @@ public class Patient extends Person {
 
     Patient() {
         record = "";
-        appointment = new Appointment();
-        this.bill = new Bill();
+        //appointment = new Appointment();
+        //this.bill = new Bill();
     }
 
-    public Patient(int ID, String name, String email, String phoneNumber, Date checkupDate2) {
+    public Patient(int ID, String name, String email, String phoneNumber, java.util.Date checkupDate) {
         this.ID=ID;
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
-        this.checkupDate=checkupDate;
+        this.checkupDate=(Date) checkupDate;
     }
 
     public String getName() {

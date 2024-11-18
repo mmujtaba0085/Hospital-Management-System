@@ -265,29 +265,13 @@ public class AdminDashboardController {
 
     @FXML
     public void updateHealthRecords() {
-        mainContentTitle.setText("Update Appointments");
+        mainContentTitle.setText("Add Appointments");
     }
 
     @FXML
     public void viewMedicalHistory() {
-        mainContentTitle.setText("Medical History");
+        mainContentTitle.setText("View Appointments");
     }
-
-    @FXML
-    public void createConsultationNotes() {
-        mainContentTitle.setText("Create Consultation Notes");
-    }
-
-    @FXML
-    public void viewPreviousNotes() {
-        mainContentTitle.setText("Previous Consultation Notes");
-    }
-
-    @FXML
-    public void openPrescriptions() {
-        mainContentTitle.setText("Prescriptions");
-    }
-
     @FXML
     public void openCommunication() {
         mainContentTitle.setText("Communication");
@@ -297,17 +281,7 @@ public class AdminDashboardController {
     public void openBilling() {
         mainContentTitle.setText("Billing and Payments");
     }
-
-    @FXML
-    public void generateReports() {
-        mainContentTitle.setText("Generate Reports");
-    }
-
-    @FXML
-    public void downloadReports() {
-        mainContentTitle.setText("Download Reports");
-    }
-
+    
     @FXML
     public void openSettings() {
         mainContentTitle.setText("Settings");

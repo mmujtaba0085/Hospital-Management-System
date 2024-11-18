@@ -92,11 +92,11 @@ public class DatabaseConnection {
     // checking if the user is a patient and is registered in the system
     public static Patient PatientDetail(String email,String password){
         Patient patient=null;
-        if(authenticateUser(email, password)!=2){
+        if(authenticateUser(email, password)!=4){
             return null;
         }
         
-        String query="select patientId,specialization,name,phoneNumber,hireDate from patient where email = ?";
+        String query="select patientId,name,phoneNumber,checkupDate from patient where email = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
         PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, email);
@@ -125,11 +125,11 @@ public class DatabaseConnection {
     // checking if admin is the user and registered in the system
     public static Admin AdminDetail(String email,String password){
         Admin admin=null;
-        if(authenticateUser(email, password)!=2){
+        if(authenticateUser(email, password)!=1){
             return null;
         }
         
-        String query="select adminId,specialization,name,phoneNumber,hireDate from admin where email = ?";
+        String query="select adminId,name,phoneNumber,hireDate from admin where email = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
         PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, email);
@@ -137,7 +137,6 @@ public class DatabaseConnection {
             ResultSet resultSet= statement.executeQuery();
             if (resultSet.next()) {
                 int adminId = resultSet.getInt("adminId");
-                String specialization = resultSet.getString("specialization");
                 String name = resultSet.getString("name");
                 String phoneNumber = resultSet.getString("phoneNumber");
                 Date hireDate = resultSet.getDate("hireDate");

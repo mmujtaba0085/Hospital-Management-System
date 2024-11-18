@@ -260,8 +260,8 @@ public class PatientDashboardController {
     
 
     @FXML
-    public void viewPatientDetails() {
-        mainContentTitle.setText("Patient Details");
+    public void viewPersonalDetails() {
+        mainContentTitle.setText("Personal Details");
     }
 
     @FXML
@@ -272,11 +272,6 @@ public class PatientDashboardController {
     @FXML
     public void viewMedicalHistory() {
         mainContentTitle.setText("Medical History");
-    }
-
-    @FXML
-    public void createConsultationNotes() {
-        mainContentTitle.setText("View Doctor Profiles");
     }
 
     @FXML

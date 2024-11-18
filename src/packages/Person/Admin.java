@@ -5,16 +5,17 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Admin extends Person {
+    @SuppressWarnings("unused")
     private Date hireDate;
     public Admin(){
     
     }
-    public Admin(int ID, String name, String email, String phoneNumber, Date hireDate){
+    public Admin(int ID, String name, String email, String phoneNumber, java.util.Date hireDate){
         this.ID=ID;
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
-        this.hireDate=hireDate;
+        this.hireDate=(Date) hireDate;
     }
     void patientDetails(){
         System.out.println("Admin Details:\n");

@@ -14,6 +14,7 @@ import packages.Database.*;;
 
 public class OrenixApp extends Application {
 
+    @SuppressWarnings("unused")
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Login.fxml"));
@@ -32,17 +33,16 @@ public class OrenixApp extends Application {
             String username = emailField.getText();
             String password = passwordField.getText();
 
-            // String username = "alice.smith@hospital.com";
-            // String password = "default_password";
-
             // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
                 // Login successful based on role
                 switch (role) {
                     case 1:
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Admin!");
-                        // Open Admin Dashboard or perform admin-specific actions
+                        // Create a Admin object with appropriate data
+                        Admin admin = DatabaseConnection.AdminDetail(username, password);
+
+                        openAdminDashboard(primaryStage, admin); // Open Admin Dashboard
                         break;
                     case 2: // Doctor Role
                         
@@ -57,8 +57,10 @@ public class OrenixApp extends Application {
                         // Open Receptionist Dashboard or perform receptionist-specific actions
                         break;
                     case 4:
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Patient!");
-                        // Open Patient Dashboard or perform patient-specific actions
+                        // Create a Doctor object with appropriate data
+                        Patient patient = DatabaseConnection.PatientDetail(username, password);
+
+                        openPatientDashboard(primaryStage, patient); // Open Doctor Dashboard
                         break;
                 }
             } else {
