@@ -129,7 +129,7 @@ public class PatientDashboardController {
     }
 
     
-    @SuppressWarnings("unused")
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
     public void cancelAppointments() {
         if (patient == null) {

@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -132,6 +131,7 @@ public class DoctorDashboardController {
     }
 
     
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
     public void cancelAppointments() {
         if (doctor == null) {

@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import packages.Person.*;
-import packages.Others.*;;
+import packages.Others.*;
 
 public class DatabaseConnection {
 
@@ -55,6 +55,7 @@ public class DatabaseConnection {
         }   
     }
 
+    // Checking if the user is a doctor and is registered in the system
     public static Doctor DoctorDetail(String email,String password){
         Doctor doctor=null;
         if(authenticateUser(email, password)!=2){
@@ -78,6 +79,74 @@ public class DatabaseConnection {
                 doctor=new Doctor(doctorId, name, specialization, email, phoneNumber, hireDate);
             }
             return doctor;
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }   
+
+
+    }
+
+    // checking if the user is a patient and is registered in the system
+    public static Patient PatientDetail(String email,String password){
+        Patient patient=null;
+        if(authenticateUser(email, password)!=2){
+            return null;
+        }
+        
+        String query="select patientId,specialization,name,phoneNumber,hireDate from patient where email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1, email);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                int patientId = resultSet.getInt("patientId");
+                String specialization = resultSet.getString("specialization");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                String record = resultSet.getString("record");
+    
+                // Create and populate the Patient object
+                patient=new Patient(patientId, name, email, phoneNumber, record);
+            }
+            return patient;
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }   
+
+
+    }
+
+    // checking if admin is the user and registered in the system
+    public static Admin AdminDetail(String email,String password){
+        Admin admin=null;
+        if(authenticateUser(email, password)!=2){
+            return null;
+        }
+        
+        String query="select adminId,specialization,name,phoneNumber,hireDate from admin where email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1, email);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                int adminId = resultSet.getInt("adminId");
+                String specialization = resultSet.getString("specialization");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the Admin object
+                admin=new Admin(adminId, name, email, phoneNumber, hireDate);
+            }
+            return admin;
 
         }
         catch (SQLException e) {

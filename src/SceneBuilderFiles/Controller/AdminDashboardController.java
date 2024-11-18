@@ -23,7 +23,6 @@ import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Person.Admin;
-import packages.Person.Doctor;
 
 public class AdminDashboardController {
     private Admin admin;
@@ -129,6 +128,7 @@ public class AdminDashboardController {
     }
 
     
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
     public void cancelAppointments() {
         if (admin == null) {
@@ -260,12 +260,12 @@ public class AdminDashboardController {
 
     @FXML
     public void viewPatientDetails() {
-        mainContentTitle.setText("Patient Details");
+        mainContentTitle.setText("Personal Details");
     }
 
     @FXML
     public void updateHealthRecords() {
-        mainContentTitle.setText("Update Health Records");
+        mainContentTitle.setText("Update Appointments");
     }
 
     @FXML

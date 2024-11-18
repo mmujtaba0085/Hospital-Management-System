@@ -16,6 +16,14 @@ public class Patient extends Person {
         this.bill = new Bill();
     }
 
+    public Patient(int ID, String name, String email, String phoneNumber, String record) {
+        this.ID=ID;
+        this.name=name;
+        this.email=email;
+        this.phoneNumber=phoneNumber;
+        this.record=record;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -52,8 +60,7 @@ public class Patient extends Person {
         return record;
     }
     public int getID() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getID'");
+        return ID;
     }
 
 

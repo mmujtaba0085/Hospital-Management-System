@@ -1,14 +1,20 @@
 package packages.Person;
 
+import java.sql.Date;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Admin extends Person {
+    private Date hireDate;
     public Admin(){
-
+    
     }
-    Admin(int ID, String name, String email, String phoneNumber){
-
+    public Admin(int ID, String name, String email, String phoneNumber, Date hireDate){
+        this.ID=ID;
+        this.name=name;
+        this.email=email;
+        this.phoneNumber=phoneNumber;
+        this.hireDate=hireDate;
     }
     void patientDetails(){
         System.out.println("Admin Details:\n");
@@ -68,11 +74,9 @@ public class Admin extends Person {
         scanner.close();
     }
     public int getID() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getID'");
     }
     public String getName() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getName'");
     }
 }
