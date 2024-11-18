@@ -10,7 +10,6 @@
         "c:\\java\\javafx-sdk-23.0.1\\lib\\javafx.media.jar",
         "c:\\java\\javafx-sdk-23.0.1\\lib\\javafx.swing.jar",
         "c:\\java\\javafx-sdk-23.0.1\\lib\\javafx.web.jar",
-        "c:\\java\\javafx-sdk-23.0.1\\lib\\javafx-swt.jar",
-        "c:\\Users\\zirwa\\Downloads\\mysql-connector-j-9.1.0\\mysql-connector-j-9.1.0\\mysql-connector-j-9.1.0.jar"
+        "c:\\java\\javafx-sdk-23.0.1\\lib\\javafx-swt.jar"
     ]
 }

@@ -14,6 +14,7 @@ import packages.Database.*;;
 
 public class OrenixApp extends Application {
 
+    @SuppressWarnings("unused")
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Login.fxml"));
@@ -32,17 +33,16 @@ public class OrenixApp extends Application {
             String username = emailField.getText();
             String password = passwordField.getText();
 
-            // String username = "alice.smith@hospital.com";
-            // String password = "default_password";
-
             // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
                 // Login successful based on role
                 switch (role) {
                     case 1:
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Admin!");
-                        // Open Admin Dashboard or perform admin-specific actions
+                        // Create a Admin object with appropriate data
+                        Admin admin = DatabaseConnection.AdminDetail(username, password);
+
+                        openAdminDashboard(primaryStage, admin); // Open Admin Dashboard
                         break;
                     case 2: // Doctor Role
                         
@@ -57,8 +57,10 @@ public class OrenixApp extends Application {
                         // Open Receptionist Dashboard or perform receptionist-specific actions
                         break;
                     case 4:
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Patient!");
-                        // Open Patient Dashboard or perform patient-specific actions
+                        // Create a Doctor object with appropriate data
+                        Patient patient = DatabaseConnection.PatientDetail(username, password);
+
+                        openPatientDashboard(primaryStage, patient); // Open Doctor Dashboard
                         break;
                 }
             } else {
@@ -106,6 +108,64 @@ public class OrenixApp extends Application {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Doctor Dashboard.");
+        }
+    }
+
+    // Method to open Patient Dashboard with Patient object
+    private void openPatientDashboard(Stage loginStage, Patient patient) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/PatientDashboard.fxml"));
+            Parent root = loader.load();
+
+            // Get the PatientDashboard controller and pass the Patient object
+            PatientDashboardController controller = loader.getController();
+            controller.setPatient(patient);
+            
+
+            Scene patientScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            //patientScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/PatientDashboard.css").toExternalForm());
+
+            Stage patientStage = new Stage();
+            patientStage.setTitle("Orenix Hospital Management System - Patient Dashboard");
+            patientStage.setScene(patientScene);
+
+            // Close the login stage
+            loginStage.close();
+
+            // Show the Patient Dashboard
+            patientStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Patient Dashboard.");
+        }
+    }
+
+    // Method to open Admin Dashboard with Admin object
+    private void openAdminDashboard(Stage loginStage, Admin admin) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/AdminDashboard.fxml"));
+            Parent root = loader.load();
+
+            // Get the AdminDashboard controller and pass the Admin object
+            AdminDashboardController controller = loader.getController();
+            controller.setAdmin(admin);
+            
+
+            Scene adminScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/AdminDashboard.css").toExternalForm());
+
+            Stage adminStage = new Stage();
+            adminStage.setTitle("Orenix Hospital Management System - Admin Dashboard");
+            adminStage.setScene(adminScene);
+
+            // Close the login stage
+            loginStage.close();
+
+            // Show the Admin Dashboard
+            adminStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Admin Dashboard.");
         }
     }
 

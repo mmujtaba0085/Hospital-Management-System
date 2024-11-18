@@ -10,9 +10,9 @@
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.DoctorDashboardController">
     <children>
         <!-- Sidebar with collapsible sections for sub-options -->
-        <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #f0f0f0;">
+        <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
             <children>
-                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px;" text="Doctor's Dashboard" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Doctor's Dashboard" />
 
                 <!-- Home / Overview -->
                 <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />

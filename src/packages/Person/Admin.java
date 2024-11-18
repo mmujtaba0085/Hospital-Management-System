@@ -1,14 +1,21 @@
 package packages.Person;
 
+import java.sql.Date;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Admin extends Person {
+    @SuppressWarnings("unused")
+    private Date hireDate;
     public Admin(){
-
+    
     }
-    Admin(int ID, String name, String email, String phoneNumber){
-
+    public Admin(int ID, String name, String email, String phoneNumber, java.util.Date hireDate){
+        this.ID=ID;
+        this.name=name;
+        this.email=email;
+        this.phoneNumber=phoneNumber;
+        this.hireDate=(Date) hireDate;
     }
     void patientDetails(){
         System.out.println("Admin Details:\n");
@@ -40,7 +47,7 @@ public class Admin extends Person {
         Patient p=new Patient();
         Scanner scanner = new Scanner(System.in);
         String n, em;
-                String pn;
+        String pn;
         System.out.println("Enter Name: ");
         n=scanner.nextLine();
         System.out.println("Enter Email: ");
@@ -66,5 +73,11 @@ public class Admin extends Person {
         d.setDoctorDetails(n, em, pn, sp);
         Doctors.add(d);
         scanner.close();
+    }
+    public int getID() {
+        throw new UnsupportedOperationException("Unimplemented method 'getID'");
+    }
+    public String getName() {
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
     }
 }

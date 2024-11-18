@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.DoctorDashboardController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.PatientDashboardController">
     <children>
         <!-- Sidebar with collapsible sections for sub-options -->
         <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
             <children>
-                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Doctor's Dashboard" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Patient's Dashboard" />
 
                 <!-- Home / Overview -->
-                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
+                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home" />
 
                 <!-- Appointments Management with Sub-options -->
                 <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
@@ -32,8 +32,8 @@
                 <TitledPane alignment="TOP_CENTER" expanded="false" text="Patient Records">
                     <content>
                         <VBox>
-                            <Button onAction="#viewPatientDetails" text="View Patient Details" />
-                            <Button onAction="#updateHealthRecords" text="Update Patient Health Records" />
+                            <Button onAction="#viewPersonalDetails" text="View Personal Details" />
+                            <Button onAction="#updateHealthRecords" text="Update Health Records" />
                             <Button onAction="#viewMedicalHistory" text="View Medical History" />
                         </VBox>
                     </content>
@@ -43,7 +43,6 @@
                 <TitledPane alignment="TOP_CENTER" expanded="false" text="Consultation Notes">
                     <content>
                         <VBox>
-                            <Button onAction="#createConsultationNotes" text="Create New Notes" />
                             <Button onAction="#viewPreviousNotes" text="View Previous Notes" />
                         </VBox>
                     </content>
@@ -79,7 +78,7 @@
         <!-- Main Content Area -->
         <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
-                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Doctor's Dashboard" />
+                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Patient's Dashboard" />
                     <!-- Dynamic content like TableView will be added here programmatically -->
             </children>
         </AnchorPane>
