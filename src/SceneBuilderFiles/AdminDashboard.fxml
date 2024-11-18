@@ -28,26 +28,14 @@
                     </content>
                 </TitledPane>
 
-                <!-- Patient Records with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Patient Records">
-                    <content>
-                        <VBox>
-                            <Button onAction="#viewPatientDetails" text="View Patient Details" />
-                            <Button onAction="#updateHealthRecords" text="Update Patient Health Records" />
-                            <Button onAction="#viewMedicalHistory" text="View Medical History" />
-                        </VBox>
-                    </content>
-                </TitledPane>
+                <!-- Personal List -->
+                <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="26.0" prefWidth="252.0" text="View Personal Details" />
+                
+                <!-- Patient List -->
+                <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="26.0" prefWidth="252.0" text="View Patient List" />
 
-                <!-- Consultation Notes with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Consultation Notes">
-                    <content>
-                        <VBox>
-                            <Button onAction="#createConsultationNotes" text="Create New Notes" />
-                            <Button onAction="#viewPreviousNotes" text="View Previous Notes" />
-                        </VBox>
-                    </content>
-                </TitledPane>
+                <!-- Doctor List -->
+                <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="26.0" prefWidth="252.0" text="View Doctor List" />
 
                 <!-- Prescriptions -->
                 <Button alignment="TOP_CENTER" onAction="#openPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />

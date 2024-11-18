@@ -193,47 +193,72 @@ public class DatabaseConnection {
     }
 
     public static boolean cancelAppointmentByDoctorAndPatient(int doctorId, int patientId) {
-    String query = "DELETE FROM Appointments WHERE doctor_id = ? AND patient_id = ?";
+        String query = "DELETE FROM Appointments WHERE doctor_id = ? AND patient_id = ?";
 
-    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-         PreparedStatement statement = connection.prepareStatement(query)) {
-         
-        // Set the doctorId and patientId parameters
-        statement.setInt(1, doctorId);
-        statement.setInt(2, patientId);
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
+            
+            // Set the doctorId and patientId parameters
+            statement.setInt(1, doctorId);
+            statement.setInt(2, patientId);
 
-        // Execute the query and return true if one or more rows were affected
-        int rowsAffected = statement.executeUpdate();
-        return rowsAffected > 0;
+            // Execute the query and return true if one or more rows were affected
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
-public static boolean cancelAppointment(int doctorId, String patientName) {
-    String query = """
-        DELETE FROM Appointments 
-        WHERE doctor_id = ? AND patient_id = 
-        (SELECT patientID FROM Patient WHERE name = ?)
-    """;
+    public static boolean cancelAppointment(int doctorId, String patientName) {
+        String query = """
+            DELETE FROM Appointments 
+            WHERE doctor_id = ? AND patient_id = 
+            (SELECT patientID FROM Patient WHERE name = ?)
+        """;
 
-    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-         PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
 
-        // Set the doctorId and patientName parameters
-        statement.setInt(1, doctorId);
-        statement.setString(2, patientName);
+            // Set the doctorId and patientName parameters
+            statement.setInt(1, doctorId);
+            statement.setString(2, patientName);
 
-        // Execute the query and return true if one or more rows were affected
-        int rowsAffected = statement.executeUpdate();
-        return rowsAffected > 0;
+            // Execute the query and return true if one or more rows were affected
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
 
+    public static Admin getAdminPersonalDeatils(int adminId) {
+        Admin admin = null;
+        String query = "SELECT * FROM Admin WHERE adminID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
 
+            // Set the doctorId and patientName parameters
+            statement.setInt(1, adminId);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                String email = resultSet.getString("email");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the Admin object
+                admin=new Admin(adminId, name, email, phoneNumber, hireDate);
+            }
+            return admin;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return admin;
+        }
+    }
 }
