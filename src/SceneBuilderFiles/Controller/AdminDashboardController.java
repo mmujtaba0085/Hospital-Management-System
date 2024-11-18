@@ -274,10 +274,10 @@ public class AdminDashboardController {
         mainContentTitle.setText("Doctor List");
     }
 
-    /*@FXML
+    @FXML
     public void viewAppointment() {
         mainContentTitle.setText("View Appointments");
-    }*/
+    }
 
     @FXML
     public void openCommunication() {

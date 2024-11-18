@@ -38,23 +38,13 @@
                 <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="26.0" prefWidth="252.0" text="View Doctor List" />
 
                 <!-- Prescriptions -->
-                <Button alignment="TOP_CENTER" onAction="#openPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
+                <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="26.0" prefWidth="252.0" text="View Appointments" />
 
                 <!-- Communication -->
                 <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="26.0" prefWidth="250.0" text="Communication" />
 
                 <!-- Billing and Payments -->
                 <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="26.0" prefWidth="234.0" text="Billing and Payments" />
-
-                <!-- Analytics & Reports with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Analytics and Reports">
-                    <content>
-                        <VBox>
-                            <Button onAction="#generateReports" text="Generate Reports" />
-                            <Button onAction="#downloadReports" text="Download Reports" />
-                        </VBox>
-                    </content>
-                </TitledPane>
 
                 <!-- Settings -->
                 <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
