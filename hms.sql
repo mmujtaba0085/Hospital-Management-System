@@ -37,6 +37,8 @@ CREATE TABLE Patient (
     checkupDate DATE NOT NULL
 );
 
+SELECT patientID FROM Patient WHERE name IN ("John Doe","Jane Roe","Sam Green");
+
 -- Create the Admin table
 CREATE TABLE Admin (
     adminID INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,10 +48,43 @@ CREATE TABLE Admin (
     hireDate DATE NOT NULL
 );
 
+
 -- Create the Appointments table
 CREATE TABLE Appointments (
-    appointmentID INT AUTO_INCREMENT PRIMARY KEY
+    appointmentID INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    time_of_appointment DATETIME NOT NULL,
+    FOREIGN KEY (patient_id) REFERENCES Patient(patientID),
+    FOREIGN KEY (doctor_id) REFERENCES Doctor(doctorID)
 );
+
+CREATE TABLE MedicalHistory (
+    patientId INT PRIMARY KEY, -- Patient ID, serves as the primary key
+    patientName varchar(50),
+    allergies TEXT,            -- List of allergies
+    medications TEXT,          -- Current medications
+    pastIllnesses TEXT,        -- Record of past illnesses
+    surgeries TEXT,            -- Record of past surgeries
+    familyHistory TEXT,        -- Family medical history
+    notes TEXT,                -- Additional notes
+    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-update timestamp
+);
+
+
+
+
+-- Insert Medical History for Patient ID 1
+INSERT INTO MedicalHistory (patientId,patientName, allergies, medications, pastIllnesses, surgeries, familyHistory, notes)
+VALUES 
+(1, 'John Doe','Peanuts, Pollen', 'Aspirin', 'Chickenpox, Asthma', 'Appendectomy', 'Diabetes', 'Patient is prone to seasonal allergies.'),
+(2,'Jane Roe' ,'Penicillin', 'Ibuprofen', 'Measles', 'Tonsillectomy', 'Heart Disease', 'Regular checkups advised for cardiac health.'),
+(3,'Sam Green' ,'None', 'Metformin', 'Hypertension', 'None', 'Hypertension, Stroke', 'Patient follows a restricted diet. Monitoring required.'),
+(4,'Lisa White' ,'Shellfish', 'Paracetamol', 'None', 'Gallbladder Removal', 'Cancer', 'Patient has a history of malignancies in family.'),
+(5,'Paul Black' ,'Latex', 'Insulin', 'Diabetes, Flu', 'None', 'Obesity', 'Patient is insulin-dependent and requires glucose monitoring.');
+
+
+
 
 -- Trigger to add doctors to the login table automatically
 DELIMITER $$
@@ -104,6 +139,34 @@ $$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE TRIGGER restrict_doctor_appointment_overlap
+BEFORE INSERT ON Appointments
+FOR EACH ROW
+BEGIN
+    DECLARE overlapping_appointments INT;
+
+    -- Check if the doctor already has an appointment at the same time or within 30 minutes
+    SELECT COUNT(*) INTO overlapping_appointments
+    FROM Appointments
+    WHERE doctor_id = NEW.doctor_id
+      AND (
+           (NEW.time_of_appointment BETWEEN time_of_appointment AND DATE_ADD(time_of_appointment, INTERVAL 29 MINUTE))
+           OR
+           (time_of_appointment BETWEEN NEW.time_of_appointment AND DATE_ADD(NEW.time_of_appointment, INTERVAL 29 MINUTE))
+          );
+
+    -- If there's an overlap, throw an error
+    IF overlapping_appointments > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Doctor already has an appointment during this time or within the next 30 minutes.';
+    END IF;
+END;
+$$
+
+DELIMITER ;
+
 
 
 
@@ -139,6 +202,18 @@ INSERT INTO Receptionist (name, email, phoneNumber, hireDate) VALUES
 ('Joey Tribbiani', 'joey.tribbiani@hospital.com', '345-567-8904', '2023-11-05');
 
 
+select * from appointments; 
+-- Insert valid appointments
+INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
+(1, 1, '2024-11-17 10:00:00'),
+(2, 1, '2024-11-17 10:30:00'),
+(3, 2, '2024-11-17 11:00:00'),
+(4, 2, '2024-11-17 11:30:00'),
+(5, 3, '2024-11-17 12:00:00');
+
+-- Attempt to insert overlapping appointment (this will fail)
+INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
+(2, 1, '2024-11-17 10:15:00'); -- Overlaps with the 10:00:00 appointment
 
 
-
+select * from MedicalHistory;

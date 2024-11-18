@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import packages.Person.*;
 import packages.Others.*;
@@ -192,31 +194,13 @@ public class DatabaseConnection {
         return appointments;
     }
 
-    public static boolean cancelAppointmentByDoctorAndPatient(int doctorId, int patientId) {
-        String query = "DELETE FROM Appointments WHERE doctor_id = ? AND patient_id = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            PreparedStatement statement = connection.prepareStatement(query)) {
-            
-            // Set the doctorId and patientId parameters
-            statement.setInt(1, doctorId);
-            statement.setInt(2, patientId);
-
-            // Execute the query and return true if one or more rows were affected
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public static boolean cancelAppointment(int doctorId, String patientName) {
-        String query = """
-            DELETE FROM Appointments 
-            WHERE doctor_id = ? AND patient_id = 
-            (SELECT patientID FROM Patient WHERE name = ?)
-        """;
+public static boolean cancelAppointment(int doctorId, String patientName) {
+    String query = """
+        DELETE FROM Appointments 
+        WHERE doctor_id = ? AND patient_id = 
+        (SELECT patientID FROM Patient WHERE name = ?)
+    """;
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement statement = connection.prepareStatement(query)) {
@@ -233,6 +217,71 @@ public class DatabaseConnection {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static List<MedicalHistory> getMedicalReports(List<Integer> patientIds) {
+        List<MedicalHistory> medicalReports = new ArrayList<>();
+        if (patientIds.isEmpty()) return medicalReports;
+    
+        // Construct placeholders for IN clause
+        String placeholders = String.join(",", Collections.nCopies(patientIds.size(), "?"));
+        String query = "SELECT * FROM MedicalHistory WHERE patientId IN (" + placeholders + ")";
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+    
+            // Set parameters for the query
+            for (int i = 0; i < patientIds.size(); i++) {
+                stmt.setInt(i + 1, patientIds.get(i));
+            }
+    
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                MedicalHistory history = new MedicalHistory();
+                history.setPatientId(rs.getInt("patientId"));
+                history.setAllergies(rs.getString("allergies"));
+                history.setMedications(rs.getString("medications"));
+                history.setPastIllnesses(rs.getString("pastIllnesses"));
+                history.setSurgeries(rs.getString("surgeries"));
+                history.setFamilyHistory(rs.getString("familyHistory"));
+                history.setNotes(rs.getString("notes"));
+                history.setLastUpdated(rs.getTimestamp("lastUpdated"));
+    
+                medicalReports.add(history);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching medical reports: " + e.getMessage());
+        }
+    
+        return medicalReports;
+    }
+    
+
+    public static List<Integer> getPatientIdsByName(List<String> patientNames) {
+        List<Integer> patientIds = new ArrayList<>();
+        if (patientNames.isEmpty()) return patientIds;
+
+        String placeholders = String.join(",", Collections.nCopies(patientNames.size(), "?"));
+        String query = "SELECT patientID FROM Patient WHERE name IN (" + placeholders + ")";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            // Set parameters for the query
+            for (int i = 0; i < patientNames.size(); i++) {
+                stmt.setString(i + 1, patientNames.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                patientIds.add(rs.getInt("patientID"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching patient IDs: " + e.getMessage());
+        }
+        
+
+        return patientIds;
     }
 
     public static Admin getAdminPersonalDeatils(int adminId) {
@@ -261,4 +310,5 @@ public class DatabaseConnection {
             return admin;
         }
     }
+
 }
