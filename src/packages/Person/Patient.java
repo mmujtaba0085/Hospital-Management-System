@@ -3,25 +3,28 @@ package packages.Person;
 import packages.Others.Appointment;
 import packages.Others.Bill;
 import packages.Others.Service;
+
+import java.sql.Date;
 import java.util.List;
 
 public class Patient extends Person {
     String record;
+    Date checkupDate;
     Bill bill;
     Appointment appointment;
 
-    public Patient() {
+    Patient() {
         record = "";
         appointment = new Appointment();
         this.bill = new Bill();
     }
 
-    public Patient(int ID, String name, String email, String phoneNumber, String record) {
+    public Patient(int ID, String name, String email, String phoneNumber, Date checkupDate2) {
         this.ID=ID;
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
-        this.record=record;
+        this.checkupDate=checkupDate;
     }
 
     public String getName() {

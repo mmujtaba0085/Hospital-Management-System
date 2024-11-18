@@ -104,13 +104,12 @@ public class DatabaseConnection {
             ResultSet resultSet= statement.executeQuery();
             if (resultSet.next()) {
                 int patientId = resultSet.getInt("patientId");
-                String specialization = resultSet.getString("specialization");
                 String name = resultSet.getString("name");
                 String phoneNumber = resultSet.getString("phoneNumber");
-                String record = resultSet.getString("record");
+                Date checkupDate = resultSet.getDate("checkupDate");
     
                 // Create and populate the Patient object
-                patient=new Patient(patientId, name, email, phoneNumber, record);
+                patient=new Patient(patientId, name, email, phoneNumber, checkupDate);
             }
             return patient;
 
