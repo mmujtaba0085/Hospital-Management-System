@@ -13,7 +13,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.BookAppointmentController">
     <children>
         <!-- Orange Bar for Centered Heading with Back Button and Logo -->
         <HBox layoutX="0.0" layoutY="0.0" prefHeight="58.0" prefWidth="800.0" style="-fx-background-color: #DC582A;" alignment="CENTER">

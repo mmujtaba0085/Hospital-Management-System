@@ -31,4 +31,17 @@ public class Patient extends Person{
         this.email=email;
         this.phoneNumber=phoneNumber;
     }
+    public String getName() {
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getRecord(){
+        return record;
+    }
+    public int getID() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getID'");
+    }
 }

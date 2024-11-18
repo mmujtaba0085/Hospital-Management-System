@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.DoctorDashboardController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.AdminDashboardController">
     <children>
         <!-- Sidebar with collapsible sections for sub-options -->
         <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">

@@ -67,4 +67,12 @@ public class Admin extends Person {
         Doctors.add(d);
         scanner.close();
     }
+    public int getID() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getID'");
+    }
+    public String getName() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+    }
 }
