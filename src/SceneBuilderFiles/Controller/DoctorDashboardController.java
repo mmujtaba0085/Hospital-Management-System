@@ -1,6 +1,7 @@
 package SceneBuilderFiles.Controller;
 
 import packages.Others.Appointment;
+import packages.Others.MedicalHistory;
 import packages.Person.Doctor;
 import packages.Database.DatabaseConnection;
 
@@ -8,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -132,6 +132,7 @@ public class DoctorDashboardController {
     }
 
     
+    @SuppressWarnings("unchecked")
     @FXML
     public void cancelAppointments() {
         if (doctor == null) {
@@ -271,10 +272,168 @@ public class DoctorDashboardController {
         mainContentTitle.setText("Update Health Records");
     }
 
+    //@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewMedicalHistory() {
-        mainContentTitle.setText("Medical History");
+        if (doctor == null) {
+            mainContentTitle.setText("Error: Doctor not found!");
+            System.out.println("Doctor is not set.");
+            return;
+        }
+
+        mainContentTitle.setText("Medical Reports of Patients");
+        System.out.println("Fetching medical reports...");
+
+        // Retrieve appointments for the doctor
+        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+
+        if (appointments.isEmpty()) {
+            mainContentTitle.setText("No appointments found for this doctor.");
+            System.out.println("No appointments found.");
+            return;
+        }
+
+        // Extract patient names from appointments
+        List<String> patientNames = appointments.stream()
+                .map(Appointment::getPatientName)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Query the Patient table to get corresponding patient IDs
+        List<Integer> patientIds = DatabaseConnection.getPatientIdsByName(patientNames);
+
+        if (patientIds.isEmpty()) {
+            mainContentTitle.setText("No patients found for the appointments.");
+            System.out.println("No patients found.");
+            return;
+        }
+
+        // Fetch medical reports for these patient IDs
+        List<MedicalHistory> medicalReports = DatabaseConnection.getMedicalReports(patientIds);
+
+        if (medicalReports.isEmpty()) {
+            mainContentTitle.setText("No medical reports found for the patients.");
+            System.out.println("No medical reports found.");
+            return;
+        }
+
+        // Create a TableView for displaying patient details
+        TableView<MedicalHistory> reportTable = new TableView<>();
+
+        // Define TableColumns for the MedicalHistory properties
+
+        TableColumn<MedicalHistory, Integer> patientIdColumn = new TableColumn<>("Patient ID");
+        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
+
+        TableColumn<MedicalHistory, String> patientNameColumn = new TableColumn<>("Patient Name");
+        patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+        TableColumn<MedicalHistory, String> allergiesColumn = new TableColumn<>("Allergies");
+        allergiesColumn.setCellValueFactory(new PropertyValueFactory<>("allergies"));
+
+        TableColumn<MedicalHistory, String> medicationsColumn = new TableColumn<>("Medications");
+        medicationsColumn.setCellValueFactory(new PropertyValueFactory<>("medications"));
+
+        // Add columns to the table
+        reportTable.getColumns().addAll(
+                patientIdColumn,
+                patientNameColumn,
+                allergiesColumn,
+                medicationsColumn
+        );
+
+        // Populate the TableView with the medical reports
+        reportTable.getItems().addAll(medicalReports);
+
+        // Add the TableView to the main content area
+        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
+        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().addAll(mainContentTitle, reportTable);
+
+        // Position the table within the pane
+        AnchorPane.setTopAnchor(reportTable, 50.0);
+        AnchorPane.setLeftAnchor(reportTable, 20.0);
+        AnchorPane.setRightAnchor(reportTable, 20.0);
+        AnchorPane.setBottomAnchor(reportTable, 20.0);
+
+        // Set an event listener for when a patient is selected in the TableView
+        reportTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                displayPatientDetails(newValue);
+            }
+        });
     }
+
+    private void displayPatientDetails(MedicalHistory selectedPatient) {
+        // Create a new pane for displaying the selected patient's full history
+        VBox detailsPane = new VBox();
+        detailsPane.setSpacing(10);
+    
+        // Display patient name in bold
+        Label patientNameLabel = new Label(selectedPatient.getPatientName());
+        patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    
+        // Display allergies in bold and simple text
+        Label allergiesLabel = new Label("Allergies:");
+        allergiesLabel.setStyle("-fx-font-weight: bold;");
+        Label allergiesDetails = new Label(selectedPatient.getAllergies());
+    
+        // Display medications in bold and simple text
+        Label medicationsLabel = new Label("Medications:");
+        medicationsLabel.setStyle("-fx-font-weight: bold;");
+        Label medicationsDetails = new Label(selectedPatient.getMedications());
+    
+        // Similarly for past illnesses, surgeries, family history, and notes
+        Label pastIllnessesLabel = new Label("Past Illnesses:");
+        pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
+        Label pastIllnessesDetails = new Label(selectedPatient.getPastIllnesses());
+    
+        Label surgeriesLabel = new Label("Surgeries:");
+        surgeriesLabel.setStyle("-fx-font-weight: bold;");
+        Label surgeriesDetails = new Label(selectedPatient.getSurgeries());
+    
+        Label familyHistoryLabel = new Label("Family History:");
+        familyHistoryLabel.setStyle("-fx-font-weight: bold;");
+        Label familyHistoryDetails = new Label(selectedPatient.getFamilyHistory());
+    
+        Label notesLabel = new Label("Notes:");
+        notesLabel.setStyle("-fx-font-weight: bold;");
+        Label notesDetails = new Label(selectedPatient.getNotes());
+    
+        // Add a back button
+        Button backButton = new Button("Back");
+        backButton.setStyle("-fx-font-size: 14px;");
+        backButton.setOnAction(event -> {
+            viewMedicalHistory(); // Reload the previous TableView
+        });
+    
+        // Add all labels and the back button to the details pane
+        detailsPane.getChildren().addAll(
+                patientNameLabel,
+                allergiesLabel, allergiesDetails,
+                medicationsLabel, medicationsDetails,
+                pastIllnessesLabel, pastIllnessesDetails,
+                surgeriesLabel, surgeriesDetails,
+                familyHistoryLabel, familyHistoryDetails,
+                notesLabel, notesDetails,
+                backButton // Add back button at the end
+        );
+    
+        // Add details pane to the main content
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().add(detailsPane);
+    
+        // Position the details pane within the pane
+        AnchorPane.setTopAnchor(detailsPane, 50.0); // Adjust based on desired positioning
+        AnchorPane.setLeftAnchor(detailsPane, 20.0);
+        AnchorPane.setRightAnchor(detailsPane, 20.0);
+    }
+    
+    
+    
+
 
     @FXML
     public void createConsultationNotes() {
