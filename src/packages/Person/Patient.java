@@ -45,10 +45,6 @@ public class Patient extends Person {
     public Bill getBill() {
         return this.bill;
     }
-<<<<<<< HEAD
-    public String getName() {
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
-    }
     public String getEmail() {
         return email;
     }
@@ -59,8 +55,7 @@ public class Patient extends Person {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getID'");
     }
-}
-=======
+
 
     public void generateBill(List<Service> services) {
         this.bill.generateBill(services);
@@ -72,4 +67,3 @@ public class Patient extends Person {
         this.phoneNumber = phoneNumber;
     }
 }
->>>>>>> b2d6828f954aa6cd15bc36387527fae3de5bea19
