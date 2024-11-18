@@ -194,14 +194,13 @@ public class DatabaseConnection {
         return appointments;
     }
 
-    
 
-    public static boolean cancelAppointment(int doctorId, String patientName) {
-        String query = """
-            DELETE FROM Appointments 
-            WHERE doctor_id = ? AND patient_id = 
-            (SELECT patientID FROM Patient WHERE name = ?)
-        """;
+public static boolean cancelAppointment(int doctorId, String patientName) {
+    String query = """
+        DELETE FROM Appointments 
+        WHERE doctor_id = ? AND patient_id = 
+        (SELECT patientID FROM Patient WHERE name = ?)
+    """;
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement statement = connection.prepareStatement(query)) {
@@ -219,7 +218,6 @@ public class DatabaseConnection {
             return false;
         }
     }
-
 
     public static List<MedicalHistory> getMedicalReports(List<Integer> patientIds) {
         List<MedicalHistory> medicalReports = new ArrayList<>();
@@ -286,6 +284,31 @@ public class DatabaseConnection {
         return patientIds;
     }
 
+    public static Admin getAdminPersonalDeatils(int adminId) {
+        Admin admin = null;
+        String query = "SELECT * FROM Admin WHERE adminID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
 
+            // Set the doctorId and patientName parameters
+            statement.setInt(1, adminId);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                String email = resultSet.getString("email");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the Admin object
+                admin=new Admin(adminId, name, email, phoneNumber, hireDate);
+            }
+            return admin;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return admin;
+        }
+    }
 
 }

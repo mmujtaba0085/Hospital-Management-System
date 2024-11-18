@@ -68,54 +68,54 @@ public class AdminDashboardController {
     @SuppressWarnings("unchecked")
     @FXML
     public void viewSchedule() {
-    if (admin == null) {
-        mainContentTitle.setText("Error: Admin not found!");
-        System.out.println("Admin is not set.");
-        return;
-    }
+        if (admin == null) {
+            mainContentTitle.setText("Error: Admin not found!");
+            System.out.println("Admin is not set.");
+            return;
+        }
 
-    mainContentTitle.setText("Appointments Schedule");
-    System.out.println("Fetching appointments...");
+        mainContentTitle.setText("Appointments Schedule");
+        System.out.println("Fetching appointments...");
 
-    // Retrieve appointments using the admin's email
-    List<Appointment> appointments = DatabaseConnection.ViewAppointments(admin.getEmail());
+        // Retrieve appointments using the admin's email
+        List<Appointment> appointments = DatabaseConnection.ViewAppointments(admin.getEmail());
 
-    // Create a TableView for displaying appointments
-    TableView<Appointment> appointmentTable = new TableView<>();
+        // Create a TableView for displaying appointments
+        TableView<Appointment> appointmentTable = new TableView<>();
 
-    // Define TableColumns for the Appointment properties
-    TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
-    idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        // Define TableColumns for the Appointment properties
+        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
 
-    TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
-    patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
+        patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
-    TableColumn<Appointment, String> adminColumn = new TableColumn<>("Admin Name");
-    adminColumn.setCellValueFactory(new PropertyValueFactory<>("adminName"));
+        TableColumn<Appointment, String> adminColumn = new TableColumn<>("Admin Name");
+        adminColumn.setCellValueFactory(new PropertyValueFactory<>("adminName"));
 
-    TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-    timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
 
-    // Add columns to the table
-    appointmentTable.getColumns().addAll(idColumn, patientColumn, adminColumn, timeColumn);
+        // Add columns to the table
+        appointmentTable.getColumns().addAll(idColumn, patientColumn, adminColumn, timeColumn);
 
-    // Populate the TableView with the appointments
-    if (!appointments.isEmpty()) {
-        appointmentTable.getItems().addAll(appointments);
-    } else {
-        mainContentTitle.setText("No appointments scheduled.");
-    }
+        // Populate the TableView with the appointments
+        if (!appointments.isEmpty()) {
+            appointmentTable.getItems().addAll(appointments);
+        } else {
+            mainContentTitle.setText("No appointments scheduled.");
+        }
 
-    // Add the TableView to the main content area
-    Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-    mainContentPane.getChildren().clear(); // Clear existing content
-    mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
+        // Add the TableView to the main content area
+        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
+        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
 
-    // Position the table within the pane
-    AnchorPane.setTopAnchor(appointmentTable, 50.0);
-    AnchorPane.setLeftAnchor(appointmentTable, 20.0);
-    AnchorPane.setRightAnchor(appointmentTable, 20.0);
-    AnchorPane.setBottomAnchor(appointmentTable, 20.0);
+        // Position the table within the pane
+        AnchorPane.setTopAnchor(appointmentTable, 50.0);
+        AnchorPane.setLeftAnchor(appointmentTable, 20.0);
+        AnchorPane.setRightAnchor(appointmentTable, 20.0);
+        AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
     // Additional Sidebar Handlers
@@ -257,21 +257,28 @@ public class AdminDashboardController {
         return result == ButtonType.OK;
     }
     
-
     @FXML
-    public void viewPatientDetails() {
+    public void viewPersonalDetails() {
         mainContentTitle.setText("Personal Details");
+        // Retrieve Admin's Personal details using the admin's email
+        admin = DatabaseConnection.getAdminPersonalDeatils(admin.getID());
     }
 
     @FXML
-    public void updateHealthRecords() {
-        mainContentTitle.setText("Add Appointments");
+    public void viewPatientList() {
+        mainContentTitle.setText("Patient List");
     }
 
     @FXML
-    public void viewMedicalHistory() {
+    public void viewDoctorList() {
+        mainContentTitle.setText("Doctor List");
+    }
+
+    /*@FXML
+    public void viewAppointment() {
         mainContentTitle.setText("View Appointments");
-    }
+    }*/
+
     @FXML
     public void openCommunication() {
         mainContentTitle.setText("Communication");
@@ -281,7 +288,7 @@ public class AdminDashboardController {
     public void openBilling() {
         mainContentTitle.setText("Billing and Payments");
     }
-    
+
     @FXML
     public void openSettings() {
         mainContentTitle.setText("Settings");
