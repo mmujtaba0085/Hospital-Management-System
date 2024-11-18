@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import packages.Person.*;
 import packages.Others.*;
@@ -239,6 +239,7 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
             while (rs.next()) {
                 MedicalHistory history = new MedicalHistory();
                 history.setPatientId(rs.getInt("patientId"));
+                history.setPatientName(rs.getString("patientName"));
                 history.setAllergies(rs.getString("allergies"));
                 history.setMedications(rs.getString("medications"));
                 history.setPastIllnesses(rs.getString("pastIllnesses"));

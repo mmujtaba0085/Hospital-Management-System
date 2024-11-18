@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -48,12 +49,16 @@ public class DoctorDashboardController {
     @FXML
     private Label mainContentTitle;
 
+    
+
+
     // Initialize method called automatically
     @FXML
     public void initialize() {
         System.out.println("Doctor's Dashboard Initialized!");
         mainContentTitle.setText("Welcome to the Doctor's Dashboard");
         subOptionPane.setVisible(false); // Hide sub-options by default
+
     }
 
     // Method to set Doctor object
@@ -272,7 +277,6 @@ public class DoctorDashboardController {
         mainContentTitle.setText("Update Health Records");
     }
 
-    //@SuppressWarnings("unchecked")
     @SuppressWarnings("unchecked")
     @FXML
     public void viewMedicalHistory() {
@@ -422,7 +426,7 @@ public class DoctorDashboardController {
     
         // Add details pane to the main content
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
-        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
         mainContentPane.getChildren().add(detailsPane);
     
         // Position the details pane within the pane
