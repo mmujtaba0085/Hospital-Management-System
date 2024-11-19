@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -284,9 +286,47 @@ public class AdminDashboardController {
 
     @FXML
     public void viewPatientList() {
+        AnchorPane mainContentArea=null;
         mainContentTitle.setText("Patient List");
+        
         // Retrieve all patients from the database
         LinkedList<Patient> patientList = DatabaseConnection.getAllPatients();
+
+        // Convert the LinkedList to an ObservableList for the TableView
+        ObservableList<Patient> patientObservableList = FXCollections.observableArrayList(patientList);
+
+        // Create a TableView for displaying patients
+        TableView<Patient> patientTable = new TableView<>();
+        patientTable.setItems(patientObservableList);
+
+        // Define TableColumn for Patient ID
+        TableColumn<Patient, Integer> idColumn = new TableColumn<>("Patient ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        // Define TableColumn for Name
+        TableColumn<Patient, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        // Define TableColumn for Age
+        TableColumn<Patient, Integer> ageColumn = new TableColumn<>("Age");
+        ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+
+        // Define TableColumn for Gender
+        TableColumn<Patient, String> genderColumn = new TableColumn<>("Gender");
+        genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
+
+        // Define TableColumn for Contact Information
+        TableColumn<Patient, String> contactColumn = new TableColumn<>("Contact");
+        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contact"));
+
+        // Add all columns to the TableView
+        patientTable.getColumns().addAll(idColumn, nameColumn, ageColumn, genderColumn, contactColumn);
+
+        // Adjust TableView layout and add it to the mainContentArea
+        patientTable.setPrefWidth(mainContentArea.getPrefWidth());
+        patientTable.setPrefHeight(mainContentArea.getPrefHeight());
+        mainContentArea.getChildren().clear(); // Clear any existing content
+        mainContentArea.getChildren().add(patientTable);
     }
 
     @FXML

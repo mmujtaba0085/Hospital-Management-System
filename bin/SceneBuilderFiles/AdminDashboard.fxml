@@ -21,7 +21,7 @@
                 <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
                     <content>
                         <VBox>
-                            <Button onAction="#viewSchedule" text="View Schedule" />
+                            <Button onAction="#+" text="View Schedule" />
                             <Button onAction="#rescheduleAppointments" text="Reschedule" />
                             <Button onAction="#cancelAppointments" text="Cancel Appointments" />
                         </VBox>
