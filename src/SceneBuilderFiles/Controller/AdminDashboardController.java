@@ -77,6 +77,7 @@ public class AdminDashboardController {
         mainContentTitle.setText("Appointments Schedule");
         System.out.println("Fetching appointments...");
 
+        /*
         // Retrieve appointments using the admin's email
         List<Appointment> appointments = DatabaseConnection.ViewAppointments(admin.getEmail());
 
@@ -116,6 +117,7 @@ public class AdminDashboardController {
         AnchorPane.setLeftAnchor(appointmentTable, 20.0);
         AnchorPane.setRightAnchor(appointmentTable, 20.0);
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
+         */
     }
 
     // Additional Sidebar Handlers
@@ -136,7 +138,8 @@ public class AdminDashboardController {
             System.out.println("Admin is not set.");
             return;
         }
-    
+
+        /*
         mainContentTitle.setText("Cancel Appointments");
         System.out.println("Fetching appointments...");
     
@@ -175,7 +178,9 @@ public class AdminDashboardController {
             });
             
             return cell;
+            
         });
+        
     
         TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
@@ -255,6 +260,7 @@ public class AdminDashboardController {
     
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
         return result == ButtonType.OK;
+         */
     }
     
     @FXML
