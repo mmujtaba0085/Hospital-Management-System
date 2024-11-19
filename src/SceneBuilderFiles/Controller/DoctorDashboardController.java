@@ -3,6 +3,7 @@ package SceneBuilderFiles.Controller;
 import packages.Others.Appointment;
 import packages.Others.MedicalHistory;
 import packages.Person.Doctor;
+import packages.Person.Patient;
 import packages.Database.DatabaseConnection;
 
 import java.sql.Timestamp;
@@ -10,7 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -19,9 +25,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -48,12 +56,16 @@ public class DoctorDashboardController {
     @FXML
     private Label mainContentTitle;
 
+    
+
+
     // Initialize method called automatically
     @FXML
     public void initialize() {
         System.out.println("Doctor's Dashboard Initialized!");
         mainContentTitle.setText("Welcome to the Doctor's Dashboard");
         subOptionPane.setVisible(false); // Hide sub-options by default
+
     }
 
     // Method to set Doctor object
@@ -262,17 +274,101 @@ public class DoctorDashboardController {
     }
     
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewPatientDetails() {
         mainContentTitle.setText("Patient Details");
+    
+        // Create a VBox to hold the search box and table
+        VBox vbox = new VBox(10);
+        vbox.setPadding(new Insets(10));
+    
+        // Create a TextField for searching patients
+        TextField searchBox = new TextField();
+        searchBox.setPromptText("Enter Patient ID or Name...");
+        searchBox.setMaxWidth(300);
+    
+        // Create a TableView for displaying patient details
+        TableView<MedicalHistory> patientTable = new TableView<>();
+    
+        // Define TableColumns for the MedicalHistory properties
+        TableColumn<MedicalHistory, Integer> patientIdColumn = new TableColumn<>("Patient ID");
+        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
+    
+        TableColumn<MedicalHistory, String> patientNameColumn = new TableColumn<>("Patient Name");
+        patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+    
+        TableColumn<MedicalHistory, String> allergiesColumn = new TableColumn<>("Allergies");
+        allergiesColumn.setCellValueFactory(new PropertyValueFactory<>("allergies"));
+    
+        TableColumn<MedicalHistory, String> medicationsColumn = new TableColumn<>("Medications");
+        medicationsColumn.setCellValueFactory(new PropertyValueFactory<>("medications"));
+    
+        TableColumn<MedicalHistory, Timestamp> lastUpdatedColumn = new TableColumn<>("Last Updated");
+        lastUpdatedColumn.setCellValueFactory(new PropertyValueFactory<>("lastUpdated"));
+    
+        // Add columns to the table
+        patientTable.getColumns().addAll(
+                patientIdColumn,
+                patientNameColumn,
+                allergiesColumn,
+                medicationsColumn,
+                lastUpdatedColumn
+        );
+    
+        // Add the search box and table to the VBox
+        vbox.getChildren().addAll(searchBox, patientTable);
+    
+        // Add the VBox to the main content area
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().clear();
+        mainContentPane.getChildren().addAll(mainContentTitle, vbox);
+    
+        // Position the VBox within the pane
+        AnchorPane.setTopAnchor(vbox, 50.0);
+        AnchorPane.setLeftAnchor(vbox, 20.0);
+        AnchorPane.setRightAnchor(vbox, 20.0);
+        AnchorPane.setBottomAnchor(vbox, 20.0);
+    
+        // Add an event handler to perform the search when the user presses Enter
+        searchBox.setOnAction(event -> {
+            String query = searchBox.getText().trim();
+            if (!query.isEmpty()) {
+                // Query the database
+                List<MedicalHistory> results = DatabaseConnection.searchMedicalHistory(query);
+    
+                if (results.isEmpty()) {
+                    System.out.println("No matching records found.");
+                    patientTable.getItems().clear(); // Clear previous results
+                    mainContentTitle.setText("No matching records found.");
+                } else {
+                    // Update the table with the results
+                    patientTable.getItems().clear();
+                    patientTable.getItems().addAll(results);
+                    mainContentTitle.setText("Search Results");
+                }
+            } else {
+                // If search box is empty, clear results
+                patientTable.getItems().clear();
+                mainContentTitle.setText("Enter a valid search query.");
+            }
+        });
+    
+        // Set an event listener for when a patient is selected in the TableView
+        patientTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                displayPatientDetails(newValue,2);
+            }
+        });
     }
+    
+
 
     @FXML
     public void updateHealthRecords() {
         mainContentTitle.setText("Update Health Records");
     }
 
-    //@SuppressWarnings("unchecked")
     @SuppressWarnings("unchecked")
     @FXML
     public void viewMedicalHistory() {
@@ -360,12 +456,12 @@ public class DoctorDashboardController {
         // Set an event listener for when a patient is selected in the TableView
         reportTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                displayPatientDetails(newValue);
+                displayPatientDetails(newValue,1);
             }
         });
     }
 
-    private void displayPatientDetails(MedicalHistory selectedPatient) {
+    private void displayPatientDetails(MedicalHistory selectedPatient, int prevTab) {
         // Create a new pane for displaying the selected patient's full history
         VBox detailsPane = new VBox();
         detailsPane.setSpacing(10);
@@ -405,7 +501,14 @@ public class DoctorDashboardController {
         Button backButton = new Button("Back");
         backButton.setStyle("-fx-font-size: 14px;");
         backButton.setOnAction(event -> {
-            viewMedicalHistory(); // Reload the previous TableView
+            if(prevTab==1)
+            {
+                viewMedicalHistory(); // Reload the previous TableView
+            }
+            else if(prevTab==2)
+            {
+                viewPatientDetails();
+            }
         });
     
         // Add all labels and the back button to the details pane
@@ -422,7 +525,7 @@ public class DoctorDashboardController {
     
         // Add details pane to the main content
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
-        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
         mainContentPane.getChildren().add(detailsPane);
     
         // Position the details pane within the pane

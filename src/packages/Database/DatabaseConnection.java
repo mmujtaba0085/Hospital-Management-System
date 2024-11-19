@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import packages.Person.*;
 import packages.Others.*;
@@ -239,6 +239,7 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
             while (rs.next()) {
                 MedicalHistory history = new MedicalHistory();
                 history.setPatientId(rs.getInt("patientId"));
+                history.setPatientName(rs.getString("patientName"));
                 history.setAllergies(rs.getString("allergies"));
                 history.setMedications(rs.getString("medications"));
                 history.setPastIllnesses(rs.getString("pastIllnesses"));
@@ -311,4 +312,44 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
         }
     }
 
+
+    public static List<MedicalHistory> searchMedicalHistory(String query) {
+        List<MedicalHistory> results = new ArrayList<>();
+        String sql = """
+            SELECT * 
+            FROM MedicalHistory 
+            WHERE patientId LIKE ? 
+               OR patientName REGEXP ?
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    
+            // Query for patientId
+            stmt.setString(1, "%" + query + "%");
+    
+            // Query for patientName (REGEXP allows space-separated word matching)
+            String regexPattern = ".*\\b" + query + ".*";
+            stmt.setString(2, regexPattern);
+    
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                MedicalHistory record = new MedicalHistory();
+                record.setPatientId(rs.getInt("patientId"));
+                record.setPatientName(rs.getString("patientName"));
+                record.setAllergies(rs.getString("allergies"));
+                record.setMedications(rs.getString("medications"));
+                record.setPastIllnesses(rs.getString("pastIllnesses"));
+                record.setSurgeries(rs.getString("surgeries"));
+                record.setFamilyHistory(rs.getString("familyHistory"));
+                record.setNotes(rs.getString("notes"));
+                record.setLastUpdated(rs.getTimestamp("lastUpdated"));
+                results.add(record);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+    
+    
 }

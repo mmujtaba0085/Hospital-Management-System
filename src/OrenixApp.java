@@ -33,6 +33,9 @@ public class OrenixApp extends Application {
             String username = emailField.getText();
             String password = passwordField.getText();
 
+            // String username = "alice.smith@hospital.com";
+            // String password = "default_password";
+
             // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
