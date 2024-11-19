@@ -22,7 +22,7 @@
                     <content>
                         <VBox>
                             <Button onAction="#viewSchedule" text="View Schedule" />
-                            <Button onAction="#rescheduleAppointments" text="Reschedule" />
+                            <Button onAction="#weekschedule" text="Week Schedule" />
                             <Button onAction="#cancelAppointments" text="Cancel Appointments" />
                         </VBox>
                     </content>
