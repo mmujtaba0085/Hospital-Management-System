@@ -12,7 +12,7 @@
         <!-- Sidebar with collapsible sections for sub-options -->
         <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
             <children>
-                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Doctor's Dashboard" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Admin's Dashboard" />
 
                 <!-- Home / Overview -->
                 <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
@@ -57,7 +57,7 @@
         <!-- Main Content Area -->
         <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
-                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Doctor's Dashboard" />
+                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Admin's Dashboard" />
                     <!-- Dynamic content like TableView will be added here programmatically -->
             </children>
         </AnchorPane>
