@@ -84,54 +84,54 @@ public class DoctorDashboardController {
     @SuppressWarnings("unchecked")
     @FXML
     public void viewSchedule() {
-    if (doctor == null) {
-        mainContentTitle.setText("Error: Doctor not found!");
-        System.out.println("Doctor is not set.");
-        return;
-    }
+        if (doctor == null) {
+            mainContentTitle.setText("Error: Doctor not found!");
+            System.out.println("Doctor is not set.");
+            return;
+        }
 
-    mainContentTitle.setText("Appointments Schedule");
-    System.out.println("Fetching appointments...");
+        mainContentTitle.setText("Appointments Schedule");
+        System.out.println("Fetching appointments...");
 
-    // Retrieve appointments using the doctor's email
-    List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        // Retrieve appointments using the doctor's email
+        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
 
-    // Create a TableView for displaying appointments
-    TableView<Appointment> appointmentTable = new TableView<>();
+        // Create a TableView for displaying appointments
+        TableView<Appointment> appointmentTable = new TableView<>();
 
-    // Define TableColumns for the Appointment properties
-    TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
-    idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        // Define TableColumns for the Appointment properties
+        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
 
-    TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
-    patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
+        patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
-    TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
-    doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+        TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
+        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-    TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-    timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
 
-    // Add columns to the table
-    appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
+        // Add columns to the table
+        appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
 
-    // Populate the TableView with the appointments
-    if (!appointments.isEmpty()) {
-        appointmentTable.getItems().addAll(appointments);
-    } else {
-        mainContentTitle.setText("No appointments scheduled.");
-    }
+        // Populate the TableView with the appointments
+        if (!appointments.isEmpty()) {
+            appointmentTable.getItems().addAll(appointments);
+        } else {
+            mainContentTitle.setText("No appointments scheduled.");
+        }
 
-    // Add the TableView to the main content area
-    Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-    mainContentPane.getChildren().clear(); // Clear existing content
-    mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
+        // Add the TableView to the main content area
+        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
+        mainContentPane.getChildren().clear(); // Clear existing content
+        mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
 
-    // Position the table within the pane
-    AnchorPane.setTopAnchor(appointmentTable, 50.0);
-    AnchorPane.setLeftAnchor(appointmentTable, 20.0);
-    AnchorPane.setRightAnchor(appointmentTable, 20.0);
-    AnchorPane.setBottomAnchor(appointmentTable, 20.0);
+        // Position the table within the pane
+        AnchorPane.setTopAnchor(appointmentTable, 50.0);
+        AnchorPane.setLeftAnchor(appointmentTable, 20.0);
+        AnchorPane.setRightAnchor(appointmentTable, 20.0);
+        AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
     // Additional Sidebar Handlers
