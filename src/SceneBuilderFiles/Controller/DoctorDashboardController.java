@@ -3,29 +3,29 @@ package SceneBuilderFiles.Controller;
 import packages.Others.Appointment;
 import packages.Others.MedicalHistory;
 import packages.Person.Doctor;
-import packages.Person.Patient;
+import packages.Others.Schedule;
 import packages.Database.DatabaseConnection;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -133,16 +133,145 @@ public class DoctorDashboardController {
         AnchorPane.setRightAnchor(appointmentTable, 20.0);
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
-
-    // Additional Sidebar Handlers
+    @SuppressWarnings("unchecked")
     @FXML
-    public void rescheduleAppointments() {
-        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-        mainContentPane.getChildren().clear(); // Clear existing content
-        mainContentTitle.setText("Reschedule Appointments");
-        mainContentPane.getChildren().addAll(mainContentTitle); // Add title and appointments list
+    public void weekschedule() {
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().clear();
+        mainContentTitle.setText("Set Weekly Schedule");
+    
+        VBox scheduleBox = new VBox(10);
+        scheduleBox.setPadding(new Insets(20));
+    
+        // Create TableView
+        TableView<Schedule> scheduleTable = new TableView<>();
+        scheduleTable.setEditable(false);
+    
+        // Columns
+        TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
+        dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
+    
+        TableColumn<Schedule, String> startTimeColumn = new TableColumn<>("Start Time");
+        startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+    
+        TableColumn<Schedule, String> endTimeColumn = new TableColumn<>("End Time");
+        endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+    
+        scheduleTable.getColumns().addAll(dayColumn, startTimeColumn, endTimeColumn);
+    
+        // Observable list to hold schedule data
+        ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
+    
+        // Populate table with default days
+        for (String day : List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")) {
+            scheduleList.add(new Schedule(day, "", ""));
+        }
+    
+        // Load existing schedules from the database
+        ObservableList<Schedule> loadedSchedules = DatabaseConnection.viewDoctorSchedule(doctor);
+        for (Schedule loadedSchedule : loadedSchedules) {
+            for (Schedule schedule : scheduleList) {
+                if (schedule.getDay().equals(loadedSchedule.getDay())) {
+                    schedule.setStartTime(loadedSchedule.getStartTime());
+                    schedule.setEndTime(loadedSchedule.getEndTime());
+                }
+            }
+        }
+    
+        // Add data to TableView
+        scheduleTable.setItems(scheduleList);
+    
+        // ComboBoxes for selecting time range
+        Label timeLabel = new Label("Select Appointment Time Range (24-hour format):");
+        ComboBox<Integer> startTimeComboBox = new ComboBox<>();
+        ComboBox<Integer> endTimeComboBox = new ComboBox<>();
+        ComboBox<String> weekDays = new ComboBox<>();
+        for (int i = 0; i < 24 * 2; i++) { // 30-minute increments
+            startTimeComboBox.getItems().add(i);
+            endTimeComboBox.getItems().add(i);
+        }
+        weekDays.getItems().addAll("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+    
+        startTimeComboBox.setPromptText("Start Time");
+        endTimeComboBox.setPromptText("End Time");
+        weekDays.setPromptText("Select Day");
+    
+        // Save Schedule Button
+        Button confirmButton = new Button("Save Schedule");
+        confirmButton.setOnAction(event -> {
+            Integer startIndex = startTimeComboBox.getValue();
+            Integer endIndex = endTimeComboBox.getValue();
+            String selectedDay = weekDays.getValue();
+    
+            if (selectedDay == null || selectedDay.isEmpty()) {
+                showErrorDialog("Please select at least one day.");
+                return;
+            }
+            if (startIndex == null || endIndex == null) {
+                showErrorDialog("Please select both start and end times.");
+                return;
+            }
+            if (startIndex >= endIndex) {
+                showErrorDialog("End time must be later than start time.");
+                return;
+            }
+            if ((endIndex - startIndex) < 4) { // 4 increments of 30 mins = 2 hours
+                showErrorDialog("Selected time range must be at least 2 hours.");
+                return;
+            }
+    
+            String startTime = formatTime(startIndex);
+            String endTime = formatTime(endIndex);
+    
+            // Save to database and update table
+            DatabaseConnection.saveDoctorSchedule(doctor.getID(), selectedDay, startTime, endTime);
+    
+            // Update schedule in the table
+            for (Schedule schedule : scheduleList) {
+                if (schedule.getDay().equals(selectedDay)) {
+                    schedule.setStartTime(startTime);
+                    schedule.setEndTime(endTime);
+                }
+            }
+    
+            // Refresh TableView
+            scheduleTable.refresh();
+            showInformationDialog("Schedule saved successfully!");
+        });
+    
+        // Add components to the layout
+        scheduleBox.getChildren().addAll(timeLabel, weekDays, startTimeComboBox, endTimeComboBox, confirmButton, scheduleTable);
+    
+        // Add layout to main content area
+        mainContentPane.getChildren().addAll(mainContentTitle, scheduleBox);
+        AnchorPane.setTopAnchor(scheduleBox, 50.0);
+        AnchorPane.setLeftAnchor(scheduleBox, 20.0);
+        AnchorPane.setRightAnchor(scheduleBox, 20.0);
+        AnchorPane.setBottomAnchor(scheduleBox, 20.0);
     }
-
+    
+    // Helper methods for formatting time and dialogs
+    private String formatTime(int halfHours) {
+        int hours = halfHours / 2;
+        int minutes = (halfHours % 2) * 30;
+        return String.format("%02d:%02d", hours, minutes);
+    }
+    
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    private void showInformationDialog(String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     
     @SuppressWarnings("unchecked")
     @FXML

@@ -12,7 +12,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import packages.Person.*;
 import packages.Others.*;
 
@@ -397,5 +398,59 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
         return patientList;
     }
     
+    public static void saveDoctorSchedule(int doctorID, String dayOfWeek, String startTime, String endTime) {
+        String deleteQuery = "DELETE FROM DoctorSchedule WHERE doctorID = ? AND dayOfWeek = ?";
+        String insertQuery = "INSERT INTO DoctorSchedule (doctorID, dayOfWeek, startTime, endTime) VALUES (?, ?, ?, ?)";
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+    
+            // Delete existing schedule for the same day
+            deleteStatement.setInt(1, doctorID);
+            deleteStatement.setString(2, dayOfWeek);
+            deleteStatement.executeUpdate();
+    
+            // Insert the new schedule
+            insertStatement.setInt(1, doctorID);
+            insertStatement.setString(2, dayOfWeek);
+            insertStatement.setString(3, startTime);
+            insertStatement.setString(4, endTime);
+            insertStatement.executeUpdate();
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+// Load schedule from database
+public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
+    String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
+    ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
+
+    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement statement = connection.prepareStatement(query)) {
+        
+        // Set the doctor ID
+        statement.setInt(1, doctor.getID());
+        
+        ResultSet resultSet = statement.executeQuery();
+        
+        // Process the result set and update the schedule list
+        while (resultSet.next()) {
+            String dayOfWeek = resultSet.getString("dayOfWeek");
+            String startTime = resultSet.getString("startTime");
+            String endTime = resultSet.getString("endTime");
+
+            scheduleList.add(new Schedule(dayOfWeek, startTime, endTime));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return scheduleList;
+}
+
     
 }
