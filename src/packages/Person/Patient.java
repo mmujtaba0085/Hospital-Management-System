@@ -13,7 +13,7 @@ public class Patient extends Person {
     Bill bill;
     Appointment appointment;
 
-    Patient() {
+    public Patient() {
         record = "";
         //appointment = new Appointment();
         //this.bill = new Bill();
@@ -70,10 +70,19 @@ public class Patient extends Person {
     public void generateBill(List<Service> services) {
         this.bill.generateBill(services);
     }
-
-    public void setPatientDetails(String name, String email, String phoneNumber) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
+    public void setID(int ID){
+        this.ID=ID;
+    }
+    public void setName(String name){
+        this.name=name;
+    }
+    public void setEmail(String email){
+        this.email=email;
+    }
+    public void setPhoneNumber(String phoneNumber){
+        this.phoneNumber=phoneNumber;
+    }
+    public void setCheckupDate(Date date){
+        this.checkupDate=date;
     }
 }

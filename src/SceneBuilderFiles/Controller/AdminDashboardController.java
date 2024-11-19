@@ -1,6 +1,7 @@
 package SceneBuilderFiles.Controller;
 
 import java.sql.Timestamp;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,8 @@ import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Person.Admin;
+import packages.Person.Doctor;
+import packages.Person.Patient;
 
 public class AdminDashboardController {
     private Admin admin;
@@ -268,16 +271,28 @@ public class AdminDashboardController {
         mainContentTitle.setText("Personal Details");
         // Retrieve Admin's Personal details using the admin's email
         admin = DatabaseConnection.getAdminPersonalDeatils(admin.getID());
+
+        if (admin != null) {
+            System.out.println("Admin Details Retrieved Successfully:");
+            System.out.println("Name: " + admin.getName());
+            System.out.println("Email: " + admin.getEmail());
+            System.out.println("Phone: " + admin.getPhoneNumber());
+        } else {
+            System.out.println("Error: Admin details not found.");
+        }
     }
 
     @FXML
     public void viewPatientList() {
         mainContentTitle.setText("Patient List");
+        // Retrieve all patients from the database
+        LinkedList<Patient> patientList = DatabaseConnection.getAllPatients();
     }
 
     @FXML
     public void viewDoctorList() {
         mainContentTitle.setText("Doctor List");
+        LinkedList<Doctor> doctorList = DatabaseConnection.getAllDoctors();
     }
 
     @FXML

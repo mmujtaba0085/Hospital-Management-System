@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -349,6 +350,51 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
             e.printStackTrace();
         }
         return results;
+    }
+
+    public static LinkedList<Doctor> getAllDoctors(){
+        LinkedList<Doctor> doctorList = new LinkedList<>();
+        String sql = """
+            SELECT * 
+            FROM Doctor
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Doctor d = new Doctor();
+                d.setDoctorDetails(rs.getInt("doctorID"), rs.getString("doctorName"), rs.getString("email"), rs.getString("phoneNumber"), rs.getString("specialization"));
+                d.setHireDate(rs.getDate("hireDate"));
+                doctorList.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return doctorList;
+    }
+
+    public static LinkedList<Patient> getAllPatients(){
+        LinkedList<Patient> patientList = new LinkedList<>();
+        String sql = """
+            SELECT * 
+            FROM Patient 
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Patient p = new Patient();
+                p.setID(rs.getInt("patientID"));
+                p.setName(rs.getString("patientName"));
+                p.setEmail("email");
+                patientList.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return patientList;
     }
     
     

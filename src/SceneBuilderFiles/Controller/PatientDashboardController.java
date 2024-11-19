@@ -262,6 +262,7 @@ public class PatientDashboardController {
     @FXML
     public void viewPersonalDetails() {
         mainContentTitle.setText("Personal Details");
+        
     }
 
     @FXML

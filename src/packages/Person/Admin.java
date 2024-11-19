@@ -70,14 +70,20 @@ public class Admin extends Person {
         pn=scanner.nextLine();
         System.out.println("Enter Specialization: ");
         sp=scanner.nextLine();
-        d.setDoctorDetails(n, em, pn, sp);
+        //d.setDoctorDetails(n, em, pn, sp);
         Doctors.add(d);
         scanner.close();
     }
     public int getID() {
-        throw new UnsupportedOperationException("Unimplemented method 'getID'");
+        return ID;
     }
     public String getName() {
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return name;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 }

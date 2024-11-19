@@ -30,11 +30,14 @@ public class Doctor extends Person {
     public String getSpecialization(){
         return specialization;
     }
-    public void setDoctorDetails(String name, String email,String phoneNumber,String Specialization)
+    public void setDoctorDetails(int ID, String name, String email,String phoneNumber,String Specialization)
     {
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
         this.specialization=Specialization;
+    }
+    public void setHireDate(Date date) {
+        hirDate=date;
     }
 }
