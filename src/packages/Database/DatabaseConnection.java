@@ -397,6 +397,27 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
         }
         return patientList;
     }
+
+    public static LinkedList<Appointment> getAllAppointments(){
+        LinkedList<Appointment> appointmentList = new LinkedList<>();
+        String sql = """
+            SELECT * 
+            FROM appointments 
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Appointment a = new Appointment();
+                a.setID(rs.getInt("appointmentID"));
+                appointmentList.add(a);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return appointmentList;
+    }
     
     public static void saveDoctorSchedule(int doctorID, String dayOfWeek, String startTime, String endTime) {
         String deleteQuery = "DELETE FROM DoctorSchedule WHERE doctorID = ? AND dayOfWeek = ?";

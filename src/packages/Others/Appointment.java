@@ -35,7 +35,15 @@ public class Appointment {
     public boolean isSelected() {
         return selected.get();
     }
-    
+    public void setID(int ID){
+        this.appointmentID = ID;
+    }
+    public void setPatientName(String name){
+        patientName=name;
+    }
+    public void setDoctorName(String name){
+        doctorName=name;
+    }
     public void setSelected(boolean selected) {
         this.selected.set(selected);
     }

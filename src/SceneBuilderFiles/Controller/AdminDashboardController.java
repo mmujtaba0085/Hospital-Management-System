@@ -1,25 +1,14 @@
 package SceneBuilderFiles.Controller;
 
-import java.sql.Timestamp;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -70,7 +59,6 @@ public class AdminDashboardController {
         mainContentTitle.setText("Overview");
     }
 
-    @SuppressWarnings("unchecked")
     @FXML
     public void viewSchedule() {
         if (admin == null) {
@@ -135,7 +123,7 @@ public class AdminDashboardController {
     }
 
     
-    @SuppressWarnings({ "unused", "unchecked" })
+    @SuppressWarnings({ "unused" })
     @FXML
     public void cancelAppointments() {
         if (admin == null) {
@@ -284,6 +272,7 @@ public class AdminDashboardController {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "null" })
     @FXML
     public void viewPatientList() {
         AnchorPane mainContentArea=null;
@@ -338,6 +327,7 @@ public class AdminDashboardController {
     @FXML
     public void viewAppointment() {
         mainContentTitle.setText("View Appointments");
+        LinkedList<Appointment> appointmentList = DatabaseConnection.getAllAppointments();
     }
 
     @FXML
