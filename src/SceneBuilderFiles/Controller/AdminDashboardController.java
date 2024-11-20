@@ -39,6 +39,9 @@ public class AdminDashboardController {
     @FXML
     private Label mainContentTitle;
 
+    @FXML
+    private AnchorPane mainContentArea;
+
     // Initialize method called automatically
     @FXML
     public void initialize() {
@@ -322,6 +325,38 @@ public class AdminDashboardController {
     public void viewDoctorList() {
         mainContentTitle.setText("Doctor List");
         LinkedList<Doctor> doctorList = DatabaseConnection.getAllDoctors();
+
+        // Convert the LinkedList to an ObservableList for the TableView
+        ObservableList<Doctor> doctorObservableList = FXCollections.observableArrayList(doctorList);
+
+        // Create a TableView for displaying doctors
+        TableView<Doctor> doctorTable = new TableView<>();
+        doctorTable.setItems(doctorObservableList);
+
+        // Define TableColumn for Doctor ID
+        TableColumn<Doctor, Integer> idColumn = new TableColumn<>("Doctor ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
+        // Define TableColumn for Name
+        TableColumn<Doctor, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        // Define TableColumn for Specialty
+        TableColumn<Doctor, String> specialtyColumn = new TableColumn<>("Specialty");
+        specialtyColumn.setCellValueFactory(new PropertyValueFactory<>("specialization"));
+
+        // Define TableColumn for Contact Information
+        TableColumn<Doctor, String> contactColumn = new TableColumn<>("Email Address");
+        contactColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        // Add all columns to the TableView
+        doctorTable.getColumns().addAll(idColumn, nameColumn, specialtyColumn, contactColumn);
+
+        // Adjust TableView layout and add it to the mainContentArea
+        doctorTable.setPrefWidth(mainContentArea.getPrefWidth());
+        doctorTable.setPrefHeight(mainContentArea.getPrefHeight());
+        mainContentArea.getChildren().clear(); // Clear any existing content
+        mainContentArea.getChildren().add(doctorTable);
     }
 
     @FXML

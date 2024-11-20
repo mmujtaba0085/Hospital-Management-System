@@ -356,8 +356,8 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
     public static LinkedList<Doctor> getAllDoctors(){
         LinkedList<Doctor> doctorList = new LinkedList<>();
         String sql = """
-            SELECT * 
-            FROM Doctor
+            SELECT doctorID, name, email, phoneNumber, specialization, hireDate
+            FROM Doctor;
         """;
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -365,7 +365,11 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Doctor d = new Doctor();
-                d.setDoctorDetails(rs.getInt("doctorID"), rs.getString("doctorName"), rs.getString("email"), rs.getString("phoneNumber"), rs.getString("specialization"));
+                d.setID(rs.getInt("doctorID"));
+                d.setName(rs.getString("name"));
+                d.setEmail(rs.getString("email"));
+                d.setPhoneNumber(rs.getString("phoneNumber"));
+                d.setSpecialization(rs.getString("specialization"));
                 d.setHireDate(rs.getDate("hireDate"));
                 doctorList.add(d);
             }
