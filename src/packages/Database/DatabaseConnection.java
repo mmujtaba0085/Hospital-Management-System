@@ -382,8 +382,8 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
     public static LinkedList<Patient> getAllPatients(){
         LinkedList<Patient> patientList = new LinkedList<>();
         String sql = """
-            SELECT * 
-            FROM Patient 
+            SELECT patientID, name, email, phoneNumber, checkupDate
+            FROM Patient;
         """;
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -392,8 +392,10 @@ public static boolean cancelAppointment(int doctorId, String patientName) {
             while (rs.next()) {
                 Patient p = new Patient();
                 p.setID(rs.getInt("patientID"));
-                p.setName(rs.getString("patientName"));
-                p.setEmail("email");
+                p.setName(rs.getString("name"));
+                p.setEmail(rs.getString("email"));
+                p.setPhoneNumber(rs.getString("phoneNumber"));
+                p.setCheckupDate(rs.getDate("checkupDate"));
                 patientList.add(p);
             }
         } catch (Exception e) {

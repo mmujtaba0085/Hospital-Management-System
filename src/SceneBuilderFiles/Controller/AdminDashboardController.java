@@ -1,5 +1,6 @@
 package SceneBuilderFiles.Controller;
 
+import java.sql.Date;
 import java.util.LinkedList;
 
 import javafx.collections.FXCollections;
@@ -278,12 +279,11 @@ public class AdminDashboardController {
     @SuppressWarnings({ "unchecked", "null" })
     @FXML
     public void viewPatientList() {
-        AnchorPane mainContentArea=null;
         mainContentTitle.setText("Patient List");
         
         // Retrieve all patients from the database
         LinkedList<Patient> patientList = DatabaseConnection.getAllPatients();
-
+        
         // Convert the LinkedList to an ObservableList for the TableView
         ObservableList<Patient> patientObservableList = FXCollections.observableArrayList(patientList);
 
@@ -293,26 +293,26 @@ public class AdminDashboardController {
 
         // Define TableColumn for Patient ID
         TableColumn<Patient, Integer> idColumn = new TableColumn<>("Patient ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
 
         // Define TableColumn for Name
         TableColumn<Patient, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         // Define TableColumn for Age
-        TableColumn<Patient, Integer> ageColumn = new TableColumn<>("Age");
-        ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+        TableColumn<Patient, String> emailColumn = new TableColumn<>("Email");
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
         // Define TableColumn for Gender
-        TableColumn<Patient, String> genderColumn = new TableColumn<>("Gender");
-        genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        TableColumn<Patient, String> numberColumn = new TableColumn<>("Phone Number");
+        numberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
 
-        // Define TableColumn for Contact Information
-        TableColumn<Patient, String> contactColumn = new TableColumn<>("Contact");
-        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        // Define TableColumn for Gender
+        TableColumn<Patient, Date> checkupColumn = new TableColumn<>("Check-up Date");
+        checkupColumn.setCellValueFactory(new PropertyValueFactory<>("checkupDate"));
 
         // Add all columns to the TableView
-        patientTable.getColumns().addAll(idColumn, nameColumn, ageColumn, genderColumn, contactColumn);
+        patientTable.getColumns().addAll(idColumn, nameColumn, emailColumn, numberColumn);
 
         // Adjust TableView layout and add it to the mainContentArea
         patientTable.setPrefWidth(mainContentArea.getPrefWidth());
