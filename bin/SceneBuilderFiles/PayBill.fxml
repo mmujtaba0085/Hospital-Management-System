@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="SceneBuilderFiles.Controller.PayBillController"
+stylesheets="@CSS/PayBill.css">
+   <children>
+      <Pane layoutX="-5.0" layoutY="-2.0" prefHeight="58.0" prefWidth="606.0" styleClass="pane-header">
+         <children>
+            <Label layoutX="51.0" layoutY="1.0" prefHeight="57.0" prefWidth="300.0" text="Billing" textAlignment="CENTER" styleClass="label"/>
+            <ImageView accessibleRole="BUTTON" fitHeight="32.0" fitWidth="39.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true" styleClass="image-back">
+               <image>
+                  <Image url="@../images/back_button.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="560.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="image-orenix">
+               <image>
+                  <Image url="@../images/orenix1.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Label layoutX="30.0" layoutY="70.0" text="Name" styleClass="label"/>
+      <TextArea layoutX="30.0" layoutY="88.0" prefHeight="9.0" prefWidth="202.0" promptText="Enter your name" styleClass="text-area"/>
+      <Label layoutX="30.0" layoutY="142.0" text="Email" styleClass="label"/>
+      <TextArea layoutX="30.0" layoutY="160.0" prefHeight="9.0" prefWidth="202.0" promptText="Enter your email" styleClass="text-area"/>
+      <Label layoutX="30.0" layoutY="218.0" text="Phone Number" styleClass="label"/>
+      <TextArea layoutX="30.0" layoutY="236.0" prefHeight="9.0" prefWidth="202.0" promptText="Enter your phone number" styleClass="text-area"/>
+      <Label layoutX="332.0" layoutY="70.0" text="Account Number" styleClass="label"/>
+      <TextArea layoutX="332.0" layoutY="88.0" prefHeight="9.0" prefWidth="202.0" promptText="Enter your account number" styleClass="text-area"/>
+      <Label layoutX="332.0" layoutY="142.0" text="PIN" styleClass="label"/>
+      <TextArea accessibleRole="TEXT" layoutX="332.0" layoutY="160.0" prefHeight="32.0" prefWidth="202.0" promptText="Enter card PIN" styleClass="text-area"/>
+      <Label layoutX="332.0" layoutY="218.0" text="CVV" styleClass="label"/>
+      <TextArea layoutX="332.0" layoutY="236.0" prefHeight="9.0" prefWidth="202.0" promptText="Enter card CVV" styleClass="text-area"/>
+      <Label layoutX="200.0" layoutY="301.0" styleClass="total-amount-label" text="Total Amount:" />
+      <Label layoutX="320.0" layoutY="298.0" styleClass="total-amount-value" text="2200" />
+      <Button layoutX="182.0" layoutY="337.0" styleClass="button button-submit" text="Submit" />
+      <Button layoutX="306.0" layoutY="337.0" styleClass="button button-cancel" text="Cancel" />
+   </children>
+</AnchorPane>

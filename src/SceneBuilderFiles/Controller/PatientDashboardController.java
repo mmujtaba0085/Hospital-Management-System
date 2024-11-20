@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -19,119 +20,129 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
+import packages.Person.Doctor;
 import packages.Person.Patient;
 
 public class PatientDashboardController {
+
     private Patient patient;
 
-    // Constructor
-    public PatientDashboardController() {
-        patient = null; // Initialize with null until set later
+    @FXML
+    private Label mainContentTitle; // Label for displaying main content area title
+
+    @FXML
+    private Pane subOptionPane; // Pane for showing sub-option content dynamically
+
+    @FXML
+    private Label subOptionTitle; // Label for sub-options title
+
+
+    public PatientDashboardController(){
+        patient=null;
     }
 
-    // FXML components
-    @FXML
-    private VBox sidebar;
 
+    /**
+     * Displays the home/overview section.
+     */
     @FXML
-    private Pane subOptionPane;
-
-    @FXML
-    private Label subOptionTitle;
-
-    @FXML
-    private Label mainContentTitle;
-
-    // Initialize method called automatically
-    @FXML
-    public void initialize() {
-        System.out.println("Patient's Dashboard Initialized!");
-        mainContentTitle.setText("Welcome to the Patient's Dashboard");
-        subOptionPane.setVisible(false); // Hide sub-options by default
+    private void showOverview(ActionEvent event) {
+        mainContentTitle.setText("Home / Overview");
+        // Add logic to populate main content area with overview details
+        System.out.println("Displaying Home / Overview.");
     }
 
-    // Method to set Patient object
+
+    // Method to set Doctor object
     public void setPatient(Patient patient) {
         this.patient = patient;
         mainContentTitle.setText("Welcome, " + this.patient.getName());
-        System.out.println("Patient's Medical Record: " + patient.getRecord());
     }
 
-    // Sidebar Handlers
-    @FXML
-    public void showOverview() {
-        mainContentTitle.setText("Overview");
-    }
-
+    /**
+     * Handles viewing upcoming appointments.
+     */
     @SuppressWarnings("unchecked")
     @FXML
-    public void viewSchedule() {
-    if (patient == null) {
-        mainContentTitle.setText("Error: Patient not found!");
-        System.out.println("Patient is not set.");
-        return;
-    }
+    private void viewAppointments() {
+        if (patient == null) {
+            mainContentTitle.setText("Error: Patient not found!");
+            System.out.println("Patient is not set.");
+            return;
+        }
 
-    mainContentTitle.setText("Appointments Schedule");
-    System.out.println("Fetching appointments...");
+        mainContentTitle.setText("Appointments Schedule");
+        System.out.println("Fetching appointments...");
 
-    // Retrieve appointments using the patient's email
-    List<Appointment> appointments = DatabaseConnection.ViewAppointments(patient.getEmail());
+        // Retrieve appointments using the doctor's email
+        List<Appointment> appointments = DatabaseConnection.ViewAppointments(patient.getEmail());
 
-    // Create a TableView for displaying appointments
-    TableView<Appointment> appointmentTable = new TableView<>();
+        // Create a TableView for displaying appointments
+        TableView<Appointment> appointmentTable = new TableView<>();
 
-    // Define TableColumns for the Appointment properties
-    TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
-    idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        // Define TableColumns for the Appointment properties
+        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
 
-    TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
-    doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+        TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
+        patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
-    TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
-    patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
+        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-    TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-    timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
 
-    // Add columns to the table
-    appointmentTable.getColumns().addAll(idColumn, patientColumn, patientColumn, timeColumn);
+        // Add columns to the table
+        appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
 
-    // Populate the TableView with the appointments
-    if (!appointments.isEmpty()) {
-        appointmentTable.getItems().addAll(appointments);
-    } else {
-        mainContentTitle.setText("No appointments scheduled.");
-    }
+        // Populate the TableView with the appointments
+        if (!appointments.isEmpty()) {
+            appointmentTable.getItems().addAll(appointments);
+        } else {
+            mainContentTitle.setText("No appointments scheduled.");
+        }
 
-    // Add the TableView to the main content area
-    Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-    mainContentPane.getChildren().clear(); // Clear existing content
-    mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
-
-    // Position the table within the pane
-    AnchorPane.setTopAnchor(appointmentTable, 50.0);
-    AnchorPane.setLeftAnchor(appointmentTable, 20.0);
-    AnchorPane.setRightAnchor(appointmentTable, 20.0);
-    AnchorPane.setBottomAnchor(appointmentTable, 20.0);
-    }
-
-    // Additional Sidebar Handlers
-    @FXML
-    public void rescheduleAppointments() {
+        // Add the TableView to the main content area
         Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
         mainContentPane.getChildren().clear(); // Clear existing content
-        mainContentTitle.setText("Reschedule Appointments");
-        mainContentPane.getChildren().addAll(mainContentTitle); // Add title and appointments list
+        mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable);
+
+        // Position the table within the pane
+        AnchorPane.setTopAnchor(appointmentTable, 50.0);
+        AnchorPane.setLeftAnchor(appointmentTable, 20.0);
+        AnchorPane.setRightAnchor(appointmentTable, 20.0);
+        AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
-    
-    @SuppressWarnings({ "unused", "unchecked" })
+    /**
+     * Handles booking a new appointment.
+     */
     @FXML
-    public void cancelAppointments() {
+    private void bookAppointment(ActionEvent event) {
+        mainContentTitle.setText("Book New Appointment");
+        // Add logic to open booking form or process booking
+        System.out.println("Booking a new appointment.");
+    }
+
+    /**
+     * Handles rescheduling an appointment.
+     */
+    @FXML
+    private void rescheduleAppointment(ActionEvent event) {
+        mainContentTitle.setText("Reschedule Appointment");
+        // Add logic for rescheduling
+        System.out.println("Rescheduling an appointment.");
+    }
+
+    /**
+     * Handles canceling an appointment.
+     */
+    @SuppressWarnings("unchecked")
+    @FXML
+    private void cancelAppointment(ActionEvent event) {
         if (patient == null) {
             mainContentTitle.setText("Error: Patient not found!");
             System.out.println("Patient is not set.");
@@ -141,7 +152,7 @@ public class PatientDashboardController {
         mainContentTitle.setText("Cancel Appointments");
         System.out.println("Fetching appointments...");
     
-        // Retrieve appointments using the patient's email
+        // Retrieve appointments using the doctor's email
         List<Appointment> appointments = DatabaseConnection.ViewAppointments(patient.getEmail());
     
         // Create a TableView for displaying appointments with checkboxes
@@ -156,8 +167,8 @@ public class PatientDashboardController {
             CheckBoxTableCell<Appointment, Boolean> cell = new CheckBoxTableCell<>();
             
             // Add key and mouse event listeners
-            cell.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ENTER) {
+            cell.setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.ENTER) {
                     // Toggle the checkbox value on Enter key press
                     BooleanProperty cellSelected = cell.getTableRow().getItem().selectedProperty();
                     if (cellSelected != null) {
@@ -166,8 +177,8 @@ public class PatientDashboardController {
                 }
             });
             
-            cell.setOnMousePressed(event -> {
-                if (event.isSecondaryButtonDown()) { // Right-click toggles the checkbox
+            cell.setOnMousePressed(e -> {
+                if (e.isSecondaryButtonDown()) { // Right-click toggles the checkbox
                     BooleanProperty cellSelected = cell.getTableRow().getItem().selectedProperty();
                     if (cellSelected != null) {
                         cellSelected.set(!cellSelected.get());
@@ -181,24 +192,24 @@ public class PatientDashboardController {
         TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
     
-        TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
-        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
-    
         TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
         patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+    
+        TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
+        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
     
         TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
         timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
     
         // Add columns to the table
-        appointmentTable.getColumns().addAll(selectColumn, idColumn, patientColumn, patientColumn, timeColumn);
+        appointmentTable.getColumns().addAll(selectColumn, idColumn, patientColumn, doctorColumn, timeColumn);
     
         // Populate the TableView with the appointments
         appointmentTable.getItems().addAll(appointments);
     
         // Add "Cancel" button and event handler
         Button cancelButton = new Button("Cancel Selected");
-        cancelButton.setOnAction(event -> {
+        cancelButton.setOnAction(e -> {
             // Get selected appointments (only those with selected checkbox)
             List<Appointment> selectedAppointments = appointments.stream()
                     .filter(Appointment::isSelected)  // Get appointments with selected checkboxes
@@ -218,8 +229,8 @@ public class PatientDashboardController {
     
             // Cancel appointments in the database
             for (Appointment appointment : selectedAppointments) {
-                String patientName = appointment.getPatientName();
-                boolean success = DatabaseConnection.cancelAppointment(patient.getID(), patientName);
+                String doctorName = appointment.getDoctorName();
+                boolean success = DatabaseConnection.cancelAppointment(patient.getID(), doctorName);
                 if (!success) {
                     System.out.println("Failed to cancel appointment ID: " + appointment.getAppointmentID());
                 }
@@ -231,7 +242,8 @@ public class PatientDashboardController {
             appointmentTable.getItems().addAll(appointments);  // Re-populate the table with remaining appointments
     
             // Optionally, refresh the schedule view
-            viewSchedule();
+            viewAppointments();
+            
         });
     
         // Add the TableView and button to the main content area
@@ -259,59 +271,103 @@ public class PatientDashboardController {
     }
     
 
+    /**
+     * Handles viewing health records.
+     */
     @FXML
-    public void viewPersonalDetails() {
-        mainContentTitle.setText("Personal Details");
-        
+    private void viewHealthRecords(ActionEvent event) {
+        mainContentTitle.setText("View Health Records");
+        // Add logic to fetch and display health records
+        System.out.println("Viewing health records.");
     }
 
+    /**
+     * Handles viewing test results.
+     */
     @FXML
-    public void updateHealthRecords() {
-        mainContentTitle.setText("Update Health Records");
+    private void viewTestResults(ActionEvent event) {
+        mainContentTitle.setText("View Test Results");
+        // Add logic to fetch and display test results
+        System.out.println("Viewing test results.");
     }
 
+    /**
+     * Handles downloading medical history.
+     */
     @FXML
-    public void viewMedicalHistory() {
-        mainContentTitle.setText("Medical History");
+    private void downloadMedicalHistory(ActionEvent event) {
+        mainContentTitle.setText("Download Medical History");
+        // Add logic to generate and download medical history
+        System.out.println("Downloading medical history.");
     }
 
+    /**
+     * Handles viewing prescriptions.
+     */
     @FXML
-    public void viewPreviousNotes() {
-        mainContentTitle.setText("Previous Consultation Notes");
-    }
-
-    @FXML
-    public void openPrescriptions() {
+    private void viewPrescriptions(ActionEvent event) {
         mainContentTitle.setText("Prescriptions");
+        // Add logic to fetch and display prescriptions
+        System.out.println("Viewing prescriptions.");
     }
 
+    /**
+     * Handles viewing billing details.
+     */
     @FXML
-    public void openCommunication() {
-        mainContentTitle.setText("Communication");
+    private void viewBillingDetails(ActionEvent event) {
+        mainContentTitle.setText("Billing Details");
+        // Add logic to fetch and display billing information
+        System.out.println("Viewing billing details.");
     }
 
+    /**
+     * Handles making a payment.
+     */
     @FXML
-    public void openBilling() {
-        mainContentTitle.setText("Billing and Payments");
+    private void makePayment(ActionEvent event) {
+        mainContentTitle.setText("Make a Payment");
+        // Add logic for processing payments
+        System.out.println("Making a payment.");
     }
 
+    /**
+     * Handles downloading invoices.
+     */
     @FXML
-    public void generateReports() {
-        mainContentTitle.setText("Generate Reports");
+    private void downloadInvoice(ActionEvent event) {
+        mainContentTitle.setText("Download Invoice");
+        // Add logic to generate and download invoice
+        System.out.println("Downloading invoice.");
     }
 
+    /**
+     * Handles viewing notifications.
+     */
     @FXML
-    public void downloadReports() {
-        mainContentTitle.setText("Download Reports");
+    private void viewNotifications(ActionEvent event) {
+        mainContentTitle.setText("Notifications");
+        // Add logic to fetch and display notifications
+        System.out.println("Viewing notifications.");
     }
 
+    /**
+     * Handles editing profile settings.
+     */
     @FXML
-    public void openSettings() {
-        mainContentTitle.setText("Settings");
+    private void editProfile(ActionEvent event) {
+        mainContentTitle.setText("Profile Settings");
+        // Add logic to fetch and display profile settings form
+        System.out.println("Editing profile settings.");
     }
 
+    /**
+     * Handles opening the help and support section.
+     */
     @FXML
-    public void openHelp() {
+    private void openHelp(ActionEvent event) {
         mainContentTitle.setText("Help and Support");
+        // Add logic to fetch and display help and support information
+        System.out.println("Opening help and support.");
     }
 }

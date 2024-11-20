@@ -9,9 +9,16 @@
             "name": "OrenixApp",
             "request": "launch",
             "mainClass": "OrenixApp",
+            "projectName": "Hospital-Management-System_40ac2d4e",
+            "vmArgs": "--module-path \"C:/java/javafx-sdk-23.0.1/lib\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
+            "name": "OrenixApp",
+            "request": "launch",
+            "mainClass": "OrenixApp",
             "projectName": "Hospital-Management-System_3f1ca5d7",
             "vmArgs": "--module-path \"C:/java/javafx-sdk-23.0.1/lib\" --add-modules javafx.controls,javafx.fxml"
-
         },
         {
             "type": "java",

@@ -197,19 +197,23 @@ public class DatabaseConnection {
     }
 
 
-public static boolean cancelAppointment(int doctorId, String patientName) {
+public static boolean cancelAppointment(int Id, String Name) {      //id is of the who is canceling and name is whom it is being cancelled with
     String query = """
-        DELETE FROM Appointments 
-        WHERE doctor_id = ? AND patient_id = 
-        (SELECT patientID FROM Patient WHERE name = ?)
+    DELETE FROM Appointments 
+    WHERE (doctor_id = ? AND patient_id = 
+           (SELECT patientID FROM Patient WHERE name = ?))
+       OR (patient_id = ? AND doctor_id = 
+           (SELECT doctorID FROM Doctor WHERE name = ?))
     """;
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement statement = connection.prepareStatement(query)) {
 
             // Set the doctorId and patientName parameters
-            statement.setInt(1, doctorId);
-            statement.setString(2, patientName);
+            statement.setInt(1, Id);
+            statement.setString(2, Name);
+            statement.setInt(3, Id);
+            statement.setString(4, Name);
 
             // Execute the query and return true if one or more rows were affected
             int rowsAffected = statement.executeUpdate();
