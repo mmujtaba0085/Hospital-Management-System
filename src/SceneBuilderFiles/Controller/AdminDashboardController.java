@@ -127,7 +127,7 @@ public class AdminDashboardController {
     }
 
     
-    @SuppressWarnings({ "unused" })
+    @SuppressWarnings({ })
     @FXML
     public void cancelAppointments() {
         if (admin == null) {
@@ -276,7 +276,7 @@ public class AdminDashboardController {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings({ "unchecked" })
     @FXML
     public void viewPatientList() {
         mainContentTitle.setText("Patient List");
@@ -321,6 +321,7 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(patientTable);
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewDoctorList() {
         mainContentTitle.setText("Doctor List");
@@ -359,10 +360,39 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(doctorTable);
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewAppointment() {
         mainContentTitle.setText("View Appointments");
         LinkedList<Appointment> appointmentList = DatabaseConnection.getAllAppointments();
+    
+        // Convert the LinkedList to an ObservableList for the TableView
+        ObservableList<Appointment> appointmentObservableList = FXCollections.observableArrayList(appointmentList);
+
+        // Create a TableView for displaying doctors
+        TableView<Appointment> appointmentTable = new TableView<>();
+        appointmentTable.setItems(appointmentObservableList);
+
+        // Define TableColumn for Doctor ID
+        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+
+        // Define TableColumn for Name
+        TableColumn<Appointment, String> pColumn = new TableColumn<>("Patient Name");
+        pColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+        // Define TableColumn for Specialty
+        TableColumn<Appointment, String> dColumn = new TableColumn<>("Doctor Name");
+        dColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+
+        // Add all columns to the TableView
+        appointmentTable.getColumns().addAll(idColumn, pColumn, dColumn);
+
+        // Adjust TableView layout and add it to the mainContentArea
+        appointmentTable.setPrefWidth(mainContentArea.getPrefWidth());
+        appointmentTable.setPrefHeight(mainContentArea.getPrefHeight());
+        mainContentArea.getChildren().clear(); // Clear any existing content
+        mainContentArea.getChildren().add(appointmentTable);
     }
 
     @FXML
