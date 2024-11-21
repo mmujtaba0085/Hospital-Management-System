@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -20,8 +22,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
+import packages.Others.Schedule;
 import packages.Person.Doctor;
 import packages.Person.Patient;
 
@@ -29,6 +35,7 @@ public class PatientDashboardController {
 
     private Patient patient;
 
+    
     @FXML
     private Label mainContentTitle; // Label for displaying main content area title
 
@@ -123,6 +130,69 @@ public class PatientDashboardController {
     @FXML
     private void bookAppointment(ActionEvent event) {
         mainContentTitle.setText("Book New Appointment");
+        if(patient==null)
+        {
+            mainContentTitle.setText("Error: Patient not found!");
+            System.out.println("Patient is not set.");
+            return;
+        }
+
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().clear();
+        mainContentTitle.setText("Set Weekly Schedule");
+        
+        VBox scheduleBox = new VBox(10);
+        scheduleBox.setPadding(new Insets(20));
+
+        // Create TableView
+        TableView<Schedule> scheduleTable = new TableView<>();
+        scheduleTable.setEditable(false);
+    
+        // Columns
+        TableColumn<Schedule, String> docnameColume = new TableColumn<>("Doctor Name");
+        docnameColume.setCellValueFactory(new PropertyValueFactory<>("doctorname"));
+
+        
+
+        TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
+        dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
+    
+        TableColumn<Schedule, String> startTimeColumn = new TableColumn<>("Start Time");
+        startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+    
+        TableColumn<Schedule, String> endTimeColumn = new TableColumn<>("End Time");
+        endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+
+        // ComboBoxes for selecting time range
+        Label timeLabel = new Label("Select Appointment Time Range (24-hour format):");
+        ComboBox<Integer> startTimeComboBox = new ComboBox<>();
+        ComboBox<Integer> endTimeComboBox = new ComboBox<>();
+        ComboBox<String> docSpecialization =  new ComboBox<>();
+
+        for (int i = 0; i < 24; i++) { 
+            startTimeComboBox.getItems().add(i);
+            endTimeComboBox.getItems().add(i);
+        }
+
+        List<String> Allspecialization = DatabaseConnection.distinctSpecialization();
+        for(int i=0;i<Allspecialization.size();i++){
+            docSpecialization.getItems().add(Allspecialization.get(i));
+        }
+
+        startTimeComboBox.setPromptText("Start Time");
+        endTimeComboBox.setPromptText("End Time");
+        docSpecialization.setPromptText("Specialization");
+
+        // Add components to the layout
+        scheduleBox.getChildren().addAll(timeLabel, docSpecialization, startTimeComboBox, endTimeComboBox);
+    
+        // Add layout to main content area
+        mainContentPane.getChildren().addAll(mainContentTitle, scheduleBox);
+        AnchorPane.setTopAnchor(scheduleBox, 50.0);
+        AnchorPane.setLeftAnchor(scheduleBox, 20.0);
+        AnchorPane.setRightAnchor(scheduleBox, 20.0);
+        AnchorPane.setBottomAnchor(scheduleBox, 20.0);
+        
         // Add logic to open booking form or process booking
         System.out.println("Booking a new appointment.");
     }

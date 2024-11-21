@@ -18,7 +18,7 @@
                 <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
 
                 <!-- Appointments Management with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments">
+                <TitledPane alignment="TOP_CENTER" text="Appointments">
                     <content>
                         <VBox>
                             <Button onAction="#viewAppointments" text="View Upcoming Appointments" />

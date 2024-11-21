@@ -456,5 +456,23 @@ public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
     return scheduleList;
 }
 
-    
+    public static List<String> distinctSpecialization(){
+        String query = "SELECT DISTINCT specialization FROM Doctor ORDER BY specialization";
+        List<String> specialization=null;
+
+        try(Connection connection = DriverManager.getConnection(URL,USER,PASSWORD);
+        PreparedStatement statement=connection.prepareStatement(query);)
+        {
+            ResultSet result =statement.executeQuery();
+            specialization= new ArrayList<>();
+            while(result.next()){
+                specialization.add(result.getString("specialization"));
+            }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return specialization;
+
+    }
 }
