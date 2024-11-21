@@ -21,7 +21,7 @@
                 <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
                     <content>
                         <VBox>
-                            <Button onAction="#+" text="View Schedule" />
+                            <Button onAction="#viewSchedule" text="View Schedule" />
                             <Button onAction="#rescheduleAppointments" text="Reschedule" />
                             <Button onAction="#cancelAppointments" text="Cancel Appointments" />
                         </VBox>
@@ -58,6 +58,7 @@
         <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
                 <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Admin's Dashboard" />
+                <AnchorPane fx:id="mainContentArea" layoutX="20.0" layoutY="69.0" prefHeight="600.0" prefWidth="700.0" />
                     <!-- Dynamic content like TableView will be added here programmatically -->
             </children>
         </AnchorPane>

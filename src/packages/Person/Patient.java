@@ -65,8 +65,12 @@ public class Patient extends Person {
     public int getID() {
         return ID;
     }
-
-
+    public String getPhoneNumber(){
+        return phoneNumber;
+    }
+    public Date getCheckupDate(){
+        return checkupDate;
+    }
     public void generateBill(List<Service> services) {
         this.bill.generateBill(services);
     }
