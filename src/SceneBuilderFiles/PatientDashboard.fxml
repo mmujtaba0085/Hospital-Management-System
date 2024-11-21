@@ -9,66 +9,56 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.PatientDashboardController">
     <children>
-        <!-- Sidebar with collapsible sections for sub-options -->
-        <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
+        <!-- Sidebar with collapsible sections for patient-specific options -->
+        <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #4caf50;">
             <children>
-                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Patient's Dashboard" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #4caf50; -fx-text-fill: white;" text="Patient Dashboard" />
 
                 <!-- Home / Overview -->
-                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home" />
+                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
 
                 <!-- Appointments Management with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
+                <TitledPane alignment="TOP_CENTER" text="Appointments">
                     <content>
                         <VBox>
-                            <Button onAction="#viewSchedule" text="View Schedule" />
-                            <Button onAction="#rescheduleAppointments" text="Reschedule" />
-                            <Button onAction="#cancelAppointments" text="Cancel Appointments" />
+                            <Button onAction="#viewAppointments" text="View Upcoming Appointments" />
+                            <Button onAction="#bookAppointment" text="Book New Appointment" />
+                            <Button onAction="#rescheduleAppointment" text="Reschedule Appointment" />
+                            <Button onAction="#cancelAppointment" text="Cancel Appointment" />
                         </VBox>
                     </content>
                 </TitledPane>
 
-                <!-- Patient Records with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Patient Records">
+                <!-- Medical History with Sub-options -->
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Medical History">
                     <content>
                         <VBox>
-                            <Button onAction="#viewPersonalDetails" text="View Personal Details" />
-                            <Button onAction="#updateHealthRecords" text="Update Health Records" />
-                            <Button onAction="#viewMedicalHistory" text="View Medical History" />
-                        </VBox>
-                    </content>
-                </TitledPane>
-
-                <!-- Consultation Notes with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Consultation Notes">
-                    <content>
-                        <VBox>
-                            <Button onAction="#viewPreviousNotes" text="View Previous Notes" />
+                            <Button onAction="#viewHealthRecords" text="View Health Records" />
+                            <Button onAction="#viewTestResults" text="View Test Results" />
+                            <Button onAction="#downloadMedicalHistory" text="Download Medical History" />
                         </VBox>
                     </content>
                 </TitledPane>
 
                 <!-- Prescriptions -->
-                <Button alignment="TOP_CENTER" onAction="#openPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
+                <Button alignment="TOP_CENTER" onAction="#viewPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
 
-                <!-- Communication -->
-                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="26.0" prefWidth="250.0" text="Communication" />
-
-                <!-- Billing and Payments -->
-                <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="26.0" prefWidth="234.0" text="Billing and Payments" />
-
-                <!-- Analytics & Reports with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Analytics and Reports">
+                <!-- Billing -->
+                <TitledPane alignment="TOP_CENTER" expanded="false" text="Billing and Payments">
                     <content>
                         <VBox>
-                            <Button onAction="#generateReports" text="Generate Reports" />
-                            <Button onAction="#downloadReports" text="Download Reports" />
+                            <Button onAction="#viewBillingDetails" text="View Billing Details" />
+                            <Button onAction="#makePayment" text="Make a Payment" />
+                            <Button onAction="#downloadInvoice" text="Download Invoice" />
                         </VBox>
                     </content>
                 </TitledPane>
 
-                <!-- Settings -->
-                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
+                <!-- Notifications -->
+                <Button alignment="TOP_CENTER" onAction="#viewNotifications" prefHeight="26.0" prefWidth="250.0" text="Notifications" />
+
+                <!-- Profile Settings -->
+                <Button alignment="TOP_CENTER" onAction="#editProfile" prefHeight="26.0" prefWidth="234.0" text="Profile Settings" />
 
                 <!-- Help & Support -->
                 <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="26.0" prefWidth="237.0" text="Help and Support" />
@@ -76,14 +66,12 @@
         </VBox>
 
         <!-- Main Content Area -->
-        <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
+        <AnchorPane layoutX="222.0" layoutY="0.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
-                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Patient's Dashboard" />
-                    <!-- Dynamic content like TableView will be added here programmatically -->
+                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Patient Dashboard" />
+                <!-- Dynamic content like TableView will be added here programmatically -->
             </children>
         </AnchorPane>
-
-
 
         <!-- Right Side Pane for Sub-options -->
         <Pane fx:id="subOptionPane" layoutX="636.0" layoutY="0.0" prefHeight="600.0" prefWidth="464.0" style="-fx-background-color: #f9f9f9;" visible="false">

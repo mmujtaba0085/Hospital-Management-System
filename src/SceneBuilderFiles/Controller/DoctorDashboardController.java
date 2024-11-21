@@ -186,7 +186,7 @@ public class DoctorDashboardController {
         ComboBox<Integer> startTimeComboBox = new ComboBox<>();
         ComboBox<Integer> endTimeComboBox = new ComboBox<>();
         ComboBox<String> weekDays = new ComboBox<>();
-        for (int i = 0; i < 24 * 2; i++) { // 30-minute increments
+        for (int i = 0; i < 24 ; i++) { // 30-minute increments
             startTimeComboBox.getItems().add(i);
             endTimeComboBox.getItems().add(i);
         }
@@ -215,7 +215,7 @@ public class DoctorDashboardController {
                 showErrorDialog("End time must be later than start time.");
                 return;
             }
-            if ((endIndex - startIndex) < 4) { // 4 increments of 30 mins = 2 hours
+            if ((endIndex - startIndex) < 2) { 
                 showErrorDialog("Selected time range must be at least 2 hours.");
                 return;
             }
