@@ -1,25 +1,15 @@
 package SceneBuilderFiles.Controller;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -50,6 +40,9 @@ public class AdminDashboardController {
     @FXML
     private Label mainContentTitle;
 
+    @FXML
+    private AnchorPane mainContentArea;
+
     // Initialize method called automatically
     @FXML
     public void initialize() {
@@ -70,7 +63,6 @@ public class AdminDashboardController {
         mainContentTitle.setText("Overview");
     }
 
-    @SuppressWarnings("unchecked")
     @FXML
     public void viewSchedule() {
         if (admin == null) {
@@ -135,7 +127,7 @@ public class AdminDashboardController {
     }
 
     
-    @SuppressWarnings({ "unused", "unchecked" })
+    @SuppressWarnings({ })
     @FXML
     public void cancelAppointments() {
         if (admin == null) {
@@ -284,14 +276,14 @@ public class AdminDashboardController {
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
     @FXML
     public void viewPatientList() {
-        AnchorPane mainContentArea=null;
         mainContentTitle.setText("Patient List");
         
         // Retrieve all patients from the database
         LinkedList<Patient> patientList = DatabaseConnection.getAllPatients();
-
+        
         // Convert the LinkedList to an ObservableList for the TableView
         ObservableList<Patient> patientObservableList = FXCollections.observableArrayList(patientList);
 
@@ -301,26 +293,26 @@ public class AdminDashboardController {
 
         // Define TableColumn for Patient ID
         TableColumn<Patient, Integer> idColumn = new TableColumn<>("Patient ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
 
         // Define TableColumn for Name
         TableColumn<Patient, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         // Define TableColumn for Age
-        TableColumn<Patient, Integer> ageColumn = new TableColumn<>("Age");
-        ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+        TableColumn<Patient, String> emailColumn = new TableColumn<>("Email");
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
         // Define TableColumn for Gender
-        TableColumn<Patient, String> genderColumn = new TableColumn<>("Gender");
-        genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        TableColumn<Patient, String> numberColumn = new TableColumn<>("Phone Number");
+        numberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
 
-        // Define TableColumn for Contact Information
-        TableColumn<Patient, String> contactColumn = new TableColumn<>("Contact");
-        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        // Define TableColumn for Gender
+        TableColumn<Patient, Date> checkupColumn = new TableColumn<>("Check-up Date");
+        checkupColumn.setCellValueFactory(new PropertyValueFactory<>("checkupDate"));
 
         // Add all columns to the TableView
-        patientTable.getColumns().addAll(idColumn, nameColumn, ageColumn, genderColumn, contactColumn);
+        patientTable.getColumns().addAll(idColumn, nameColumn, emailColumn, numberColumn);
 
         // Adjust TableView layout and add it to the mainContentArea
         patientTable.setPrefWidth(mainContentArea.getPrefWidth());
@@ -329,15 +321,78 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(patientTable);
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewDoctorList() {
         mainContentTitle.setText("Doctor List");
         LinkedList<Doctor> doctorList = DatabaseConnection.getAllDoctors();
+
+        // Convert the LinkedList to an ObservableList for the TableView
+        ObservableList<Doctor> doctorObservableList = FXCollections.observableArrayList(doctorList);
+
+        // Create a TableView for displaying doctors
+        TableView<Doctor> doctorTable = new TableView<>();
+        doctorTable.setItems(doctorObservableList);
+
+        // Define TableColumn for Doctor ID
+        TableColumn<Doctor, Integer> idColumn = new TableColumn<>("Doctor ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
+        // Define TableColumn for Name
+        TableColumn<Doctor, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        // Define TableColumn for Specialty
+        TableColumn<Doctor, String> specialtyColumn = new TableColumn<>("Specialty");
+        specialtyColumn.setCellValueFactory(new PropertyValueFactory<>("specialization"));
+
+        // Define TableColumn for Contact Information
+        TableColumn<Doctor, String> contactColumn = new TableColumn<>("Email Address");
+        contactColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        // Add all columns to the TableView
+        doctorTable.getColumns().addAll(idColumn, nameColumn, specialtyColumn, contactColumn);
+
+        // Adjust TableView layout and add it to the mainContentArea
+        doctorTable.setPrefWidth(mainContentArea.getPrefWidth());
+        doctorTable.setPrefHeight(mainContentArea.getPrefHeight());
+        mainContentArea.getChildren().clear(); // Clear any existing content
+        mainContentArea.getChildren().add(doctorTable);
     }
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void viewAppointment() {
         mainContentTitle.setText("View Appointments");
+        LinkedList<Appointment> appointmentList = DatabaseConnection.getAllAppointments();
+    
+        // Convert the LinkedList to an ObservableList for the TableView
+        ObservableList<Appointment> appointmentObservableList = FXCollections.observableArrayList(appointmentList);
+
+        // Create a TableView for displaying doctors
+        TableView<Appointment> appointmentTable = new TableView<>();
+        appointmentTable.setItems(appointmentObservableList);
+
+        // Define TableColumn for Doctor ID
+        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+
+        // Define TableColumn for Name
+        TableColumn<Appointment, String> pColumn = new TableColumn<>("Patient Name");
+        pColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+        // Define TableColumn for Specialty
+        TableColumn<Appointment, String> dColumn = new TableColumn<>("Doctor Name");
+        dColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+
+        // Add all columns to the TableView
+        appointmentTable.getColumns().addAll(idColumn, pColumn, dColumn);
+
+        // Adjust TableView layout and add it to the mainContentArea
+        appointmentTable.setPrefWidth(mainContentArea.getPrefWidth());
+        appointmentTable.setPrefHeight(mainContentArea.getPrefHeight());
+        mainContentArea.getChildren().clear(); // Clear any existing content
+        mainContentArea.getChildren().add(appointmentTable);
     }
 
     @FXML

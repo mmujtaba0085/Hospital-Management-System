@@ -54,7 +54,7 @@ public class Admin extends Person {
         em=scanner.nextLine();
         System.out.println("Enter Phone Number: ");
         pn=scanner.nextLine();
-        p.setPatientDetails(n, em, pn);
+        //p.setPatientDetails(n, em, pn);
         Patients.add(p);
         scanner.close();
     }
