@@ -30,12 +30,12 @@ public class OrenixApp extends Application {
 
         // Set up login button action
         loginButton.setOnAction(event -> {
-            String username = emailField.getText();
-            String password = passwordField.getText();
+            //String username = emailField.getText();
+            //String password = passwordField.getText();
 
 
-            //String username="john.doe@gmail.com";
-            //String password="default_password";
+            String username="admin.b@hospital.com";
+            String password="default_password";
             
             
 

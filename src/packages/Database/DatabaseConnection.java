@@ -293,7 +293,7 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
 
     public static Admin getAdminPersonalDeatils(int adminId) {
         Admin admin = null;
-        String query = "SELECT * FROM Admin WHERE adminID = ?";
+        String query = "SELECT email, name, phoneNumber, hireDate FROM Admin WHERE adminID = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -427,6 +427,31 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
             e.printStackTrace();
         }
         return appointmentList;
+    }
+
+    public static LinkedList<Bill> getAllBills(){
+        LinkedList<Bill> billList = new LinkedList<>();
+        String sql = """
+            SELECT b.billID, p.name, b.amount, b.paid
+            FROM Bills b
+            JOIN Patient p ON b.patientID = p.patientID;
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Bill b = new Bill();
+                b.setID(rs.getInt("billID"));
+                b.setAmount(rs.getDouble("amount"));
+                b.setPaid(rs.getBoolean("paid"));
+                b.setPatientName(rs.getString("name"));
+                billList.add(b);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return billList;
     }
     
     public static void saveDoctorSchedule(int doctorID, String dayOfWeek, String startTime, String endTime) {
