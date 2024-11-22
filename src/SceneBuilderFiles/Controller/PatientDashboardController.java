@@ -28,15 +28,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
 import packages.Others.Schedule;
-import packages.Person.Doctor;
 import packages.Person.Patient;
 
 public class PatientDashboardController {
@@ -225,33 +221,32 @@ public class PatientDashboardController {
     /**
      * Handles booking a new appointment.
      */
+    @SuppressWarnings("unused")
     @FXML
     private void bookAppointment(ActionEvent event) {
         mainContentTitle.setText("Book New Appointment");
-        if(patient==null)
-        {
+    
+        if (patient == null) {
             mainContentTitle.setText("Error: Patient not found!");
             System.out.println("Patient is not set.");
             return;
         }
-
+    
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().clear();
         mainContentTitle.setText("Set Weekly Schedule");
-        
+    
         VBox scheduleBox = new VBox(10);
         scheduleBox.setPadding(new Insets(20));
-
+    
         // Create TableView
         TableView<Schedule> scheduleTable = new TableView<>();
         scheduleTable.setEditable(false);
     
         // Columns
-        TableColumn<Schedule, String> docnameColume = new TableColumn<>("Doctor Name");
-        docnameColume.setCellValueFactory(new PropertyValueFactory<>("doctorname"));
-
-        
-
+        TableColumn<Schedule, String> docnameColumn = new TableColumn<>("Doctor Name");
+        docnameColumn.setCellValueFactory(new PropertyValueFactory<>("doctorname"));
+    
         TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
         dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
     
@@ -260,29 +255,56 @@ public class PatientDashboardController {
     
         TableColumn<Schedule, String> endTimeColumn = new TableColumn<>("End Time");
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-
-        // ComboBoxes for selecting time range
+    
+        // ComboBoxes for selecting time range and specialization
         Label timeLabel = new Label("Select Appointment Time Range (24-hour format):");
         ComboBox<Integer> startTimeComboBox = new ComboBox<>();
         ComboBox<Integer> endTimeComboBox = new ComboBox<>();
-        ComboBox<String> docSpecialization =  new ComboBox<>();
-
-        for (int i = 0; i < 24; i++) { 
+        ComboBox<String> docSpecialization = new ComboBox<>();
+    
+        for (int i = 0; i < 24; i++) {
             startTimeComboBox.getItems().add(i);
             endTimeComboBox.getItems().add(i);
         }
-
-        List<String> Allspecialization = DatabaseConnection.distinctSpecialization();
-        for(int i=0;i<Allspecialization.size();i++){
-            docSpecialization.getItems().add(Allspecialization.get(i));
+    
+        List<String> allSpecializations = DatabaseConnection.distinctSpecialization();
+        for (String specialization : allSpecializations) {
+            docSpecialization.getItems().add(specialization);
         }
-
+    
         startTimeComboBox.setPromptText("Start Time");
         endTimeComboBox.setPromptText("End Time");
         docSpecialization.setPromptText("Specialization");
-
+    
+        // Create the "Book Appointment" button
+        Button bookButton = new Button("Book Appointment");
+        bookButton.setStyle("-fx-background-color:  #e1722f; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20;");
+        bookButton.setOnAction(e -> {
+            Integer startTime = startTimeComboBox.getValue();
+            Integer endTime = endTimeComboBox.getValue();
+            String specialization = docSpecialization.getValue();
+    
+            if (startTime == null || endTime == null || specialization == null) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Please fill all fields before booking.");
+                return;
+            }
+    
+            if (startTime >= endTime) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Start time must be earlier than end time.");
+                return;
+            }
+    
+            // Add logic to book the appointment in the database
+            boolean isBooked = DatabaseConnection.bookAppointment(patient.getID(), specialization, startTime, endTime);
+            if (isBooked) {
+                showConfirmationDialog(specialization);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Unable to book the appointment.");
+            }
+        });
+    
         // Add components to the layout
-        scheduleBox.getChildren().addAll(timeLabel, docSpecialization, startTimeComboBox, endTimeComboBox);
+        scheduleBox.getChildren().addAll(timeLabel, docSpecialization, startTimeComboBox, endTimeComboBox, bookButton);
     
         // Add layout to main content area
         mainContentPane.getChildren().addAll(mainContentTitle, scheduleBox);
@@ -290,10 +312,10 @@ public class PatientDashboardController {
         AnchorPane.setLeftAnchor(scheduleBox, 20.0);
         AnchorPane.setRightAnchor(scheduleBox, 20.0);
         AnchorPane.setBottomAnchor(scheduleBox, 20.0);
-        
-        // Add logic to open booking form or process booking
+    
         System.out.println("Booking a new appointment.");
     }
+    
 
     /**
      * Handles rescheduling an appointment.
@@ -308,7 +330,7 @@ public class PatientDashboardController {
     /**
      * Handles canceling an appointment.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void cancelAppointment(ActionEvent event) {
         if (patient == null) {
@@ -438,6 +460,14 @@ public class PatientDashboardController {
         return result == ButtonType.OK;
     }
     
+    // Helper method to show alerts
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 
     /**
      * Handles viewing health records.
@@ -482,6 +512,7 @@ public class PatientDashboardController {
     /**
      * Handles viewing billing details.
      */
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void viewBillingDetails(ActionEvent event) {
         mainContentTitle.setText("Billing Details");

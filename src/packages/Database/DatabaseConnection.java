@@ -161,7 +161,7 @@ public class DatabaseConnection {
 
     public static List<Appointment> ViewAppointments(String email) {
         String query = """
-            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.time_of_appointment 
+            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.start_time
             FROM Appointments a 
             LEFT JOIN Patient p ON a.patient_id = p.patientID 
             LEFT JOIN Doctor d ON a.doctor_id = d.doctorID 
@@ -184,7 +184,7 @@ public class DatabaseConnection {
                 int appointmentID = resultSet.getInt("appointmentID");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
-                Timestamp timeOfAppointment = resultSet.getTimestamp("time_of_appointment");
+                Timestamp timeOfAppointment = resultSet.getTimestamp("start_time");
 
                 // Create an Appointment object and add it to the list
                 appointments.add(new Appointment(appointmentID, patientName, doctorName, timeOfAppointment));
@@ -200,9 +200,9 @@ public class DatabaseConnection {
 public static boolean cancelAppointment(int Id, String Name) {      //id is of the who is canceling and name is whom it is being cancelled with
     String query = """
     DELETE FROM Appointments 
-    WHERE (doctor_id = ? AND patient_id = 
+    WHERE (doctor_id = ? AND patientID = 
            (SELECT patientID FROM Patient WHERE name = ?))
-       OR (patient_id = ? AND doctor_id = 
+       OR (patientID = ? AND doctor_id = 
            (SELECT doctorID FROM Doctor WHERE name = ?))
     """;
 
@@ -544,6 +544,37 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
             e.printStackTrace();
         }
     }
+    
+    public static boolean bookAppointment(int patientID, String specialization, int startTime, int endTime) {
+        
+            // SQL query to insert appointment into the database
+            String query = "INSERT INTO Appointments (patientID, specialization, start_time, end_time) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement preparedStatement = connection.prepareStatement(query)){
+
+                preparedStatement.setInt(1, patientID);
+                preparedStatement.setString(2, specialization);
+                preparedStatement.setInt(3, startTime);
+                preparedStatement.setInt(4, endTime);
+        
+                // Execute the query
+                int rowsAffected = preparedStatement.executeUpdate();
+        
+                // Check if the appointment was successfully inserted
+                if (rowsAffected > 0) {
+                    System.out.println("Appointment booked successfully in the database.");
+                    return true;
+                } else {
+                    System.out.println("Error: No rows affected while booking the appointment.");
+                    return false;
+                }
+        } catch (SQLException e) {
+            System.out.println("Error while booking the appointment: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     
 
     // Load schedule from database

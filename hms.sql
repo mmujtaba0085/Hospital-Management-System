@@ -52,12 +52,13 @@ CREATE TABLE Admin (
 -- Create the Appointments table
 CREATE TABLE Appointments (
     appointmentID INT AUTO_INCREMENT PRIMARY KEY,
-    patient_id INT NOT NULL,
-    doctor_id INT NOT NULL,
-    time_of_appointment DATETIME NOT NULL,
-    FOREIGN KEY (patient_id) REFERENCES Patient(patientID),
-    FOREIGN KEY (doctor_id) REFERENCES Doctor(doctorID)
+    patientID INT NOT NULL,
+    specialization VARCHAR(255) NOT NULL,
+    start_time INT NOT NULL,
+    end_time INT NOT NULL,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID)
 );
+
 
 CREATE TABLE MedicalHistory (
     patientId INT PRIMARY KEY, -- Patient ID, serves as the primary key
