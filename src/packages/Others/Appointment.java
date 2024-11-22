@@ -1,7 +1,6 @@
 package packages.Others;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
