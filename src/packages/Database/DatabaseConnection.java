@@ -198,34 +198,71 @@ public class DatabaseConnection {
     
 
 
-public static boolean cancelAppointment(int Id, String Name) {      //id is of the who is canceling and name is whom it is being cancelled with
-    String query = """
-    DELETE FROM Appointments 
-    WHERE (doctor_id = ? AND patient_id = 
-           (SELECT patientID FROM Patient WHERE name = ?))
-       OR (patient_id = ? AND doctor_id = 
-           (SELECT doctorID FROM Doctor WHERE name = ?))
-    """;
-
+    public static boolean cancelAppointment(int Id, String Name) {
+        String fetchAppointmentQuery = """
+        SELECT doctor_id, appointedDay 
+        FROM Appointments 
+        WHERE (doctor_id = ? AND patient_id = 
+               (SELECT patientID FROM Patient WHERE name = ?))
+           OR (patient_id = ? AND doctor_id = 
+               (SELECT doctorID FROM Doctor WHERE name = ?))
+        """;
+    
+        String deleteQuery = """
+        DELETE FROM Appointments 
+        WHERE (doctor_id = ? AND patient_id = 
+               (SELECT patientID FROM Patient WHERE name = ?))
+           OR (patient_id = ? AND doctor_id = 
+               (SELECT doctorID FROM Doctor WHERE name = ?))
+        """;
+    
+        String updateScheduleQuery = """
+        UPDATE DoctorSchedule
+        SET totalBooked = totalBooked - 1
+        WHERE doctorID = ? AND dayOfWeek = ?
+        """;
+    
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            PreparedStatement statement = connection.prepareStatement(query)) {
-
-            // Set the doctorId and patientName parameters
-            statement.setInt(1, Id);
-            statement.setString(2, Name);
-            statement.setInt(3, Id);
-            statement.setString(4, Name);
-
-            // Execute the query and return true if one or more rows were affected
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
-
+             PreparedStatement fetchStmt = connection.prepareStatement(fetchAppointmentQuery);
+             PreparedStatement deleteStmt = connection.prepareStatement(deleteQuery);
+             PreparedStatement updateStmt = connection.prepareStatement(updateScheduleQuery)) {
+    
+            // Fetch doctorID and appointedDay
+            fetchStmt.setInt(1, Id);
+            fetchStmt.setString(2, Name);
+            fetchStmt.setInt(3, Id);
+            fetchStmt.setString(4, Name);
+    
+            ResultSet resultSet = fetchStmt.executeQuery();
+    
+            if (resultSet.next()) {
+                int doctorID = resultSet.getInt("doctor_id");
+                String appointedDay = resultSet.getString("appointedDay");
+    
+                // Delete the appointment
+                deleteStmt.setInt(1, Id);
+                deleteStmt.setString(2, Name);
+                deleteStmt.setInt(3, Id);
+                deleteStmt.setString(4, Name);
+    
+                int rowsAffected = deleteStmt.executeUpdate();
+    
+                if (rowsAffected > 0) {
+                    // Update the DoctorSchedule to decrease totalBooked
+                    updateStmt.setInt(1, doctorID);
+                    updateStmt.setString(2, appointedDay);
+                    updateStmt.executeUpdate();
+                    return true; // Successfully canceled and updated totalBooked
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+    
+        return false; // Cancellation failed
     }
-
+    
+    
     public static List<MedicalHistory> getMedicalReports(List<Integer> patientIds) {
         List<MedicalHistory> medicalReports = new ArrayList<>();
         if (patientIds.isEmpty()) return medicalReports;
