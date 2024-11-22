@@ -52,12 +52,16 @@ CREATE TABLE Admin (
 -- Create the Appointments table
 CREATE TABLE Appointments (
     appointmentID INT AUTO_INCREMENT PRIMARY KEY,
-    patient_id INT NOT NULL,
-    doctor_id INT NOT NULL,
-    time_of_appointment DATETIME NOT NULL,
-    FOREIGN KEY (patient_id) REFERENCES Patient(patientID),
-    FOREIGN KEY (doctor_id) REFERENCES Doctor(doctorID)
+    patientID INT NOT NULL,
+    doctorID INT NOT NULL,
+    specialization VARCHAR(255) NOT NULL,
+    start_time INT NOT NULL,
+    end_time INT NOT NULL,
+    date DATE NOT NULL,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+    FOREIGN KEY (doctorID) REFERENCES Doctor(doctorID)
 );
+
 
 CREATE TABLE MedicalHistory (
     patientId INT PRIMARY KEY, -- Patient ID, serves as the primary key
@@ -69,6 +73,14 @@ CREATE TABLE MedicalHistory (
     familyHistory TEXT,        -- Family medical history
     notes TEXT,                -- Additional notes
     lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-update timestamp
+);
+
+CREATE TABLE Bills(
+    billID INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT NOT NULL,
+    amount INT NOT NULL default 0,
+    paid boolean NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID)
 );
 
 
@@ -210,6 +222,14 @@ INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
 (3, 2, '2024-11-17 11:00:00'),
 (4, 2, '2024-11-17 11:30:00'),
 (5, 3, '2024-11-17 12:00:00');
+
+INSERT INTO Bills (patientID, amount, paid) VALUES
+(1, 150, TRUE),    -- John Doe, Bill paid
+(2, 200, FALSE),   -- Jane Roe, Bill unpaid
+(3, 120, TRUE),    -- Sam Green, Bill paid
+(4, 180, FALSE),   -- Lisa White, Bill unpaid
+(5, 220, TRUE);    -- Paul Black, Bill paid
+
 
 -- Attempt to insert overlapping appointment (this will fail)
 INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES

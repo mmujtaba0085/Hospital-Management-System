@@ -1,6 +1,6 @@
 package packages.Others;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,17 +10,21 @@ public class Appointment {
     private int appointmentID;
     private String patientName;
     private String doctorName;
-    private Timestamp timeOfAppointment;
+    private int start_time;
+    private int end_time;
+    private Date date;
     private BooleanProperty selected = new SimpleBooleanProperty(false);
 
     
 
 
-    public Appointment(int appointmentID, String patientName, String doctorName, Timestamp timeOfAppointment) {
+    public Appointment(int appointmentID, String patientName, String doctorName, int start, int end, Date date) {
         this.appointmentID = appointmentID;
         this.patientName = patientName;
         this.doctorName = doctorName;
-        this.timeOfAppointment = timeOfAppointment;
+        this.start_time = start;
+        this.end_time=end;
+        this.date=date;
     }
     public Appointment(){
         this.appointmentID = 0;
@@ -59,15 +63,15 @@ public class Appointment {
         return doctorName;
     }
 
-    public Timestamp getTimeOfAppointment() {
-        return timeOfAppointment;
+    public int getStartTime() {
+        return start_time;
     }
 
-    @Override
-    public String toString() {
-        return "Appointment ID: " + appointmentID + 
-               ", Patient: " + patientName + 
-               ", Doctor: " + doctorName + 
-               ", Time: " + timeOfAppointment;
+    public int getEndTime(){
+        return end_time;
+    }
+
+    public Date getDate(){
+        return date;
     }
 }

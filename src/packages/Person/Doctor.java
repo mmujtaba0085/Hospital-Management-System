@@ -48,4 +48,10 @@ public class Doctor extends Person {
     public void setHireDate(Date date) {
         hirDate=date;
     }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    public Date getHireDate() {
+        return hirDate;
+    }
 }
