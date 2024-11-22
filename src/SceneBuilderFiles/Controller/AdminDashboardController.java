@@ -1,13 +1,19 @@
 package SceneBuilderFiles.Controller;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -17,8 +23,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
@@ -276,6 +284,7 @@ public class AdminDashboardController {
     
         // Retrieve Admin's personal details using the admin's ID
         admin = DatabaseConnection.getAdminPersonalDeatils(admin.getID());
+        System.out.println("------------------Admin ID "+admin.getID());
     
         if (admin != null) {
             // Create a label for "Name" and another for the actual name value
@@ -344,7 +353,7 @@ public class AdminDashboardController {
     }
     
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void viewPatientList() {
         mainContentTitle.setText("Patient List");
@@ -361,7 +370,7 @@ public class AdminDashboardController {
         // Create a TextField for search input
         TextField searchBox = new TextField();
         searchBox.setPromptText("Search by Name...");
-        searchBox.setLayoutX(10);  // Position the search box
+        searchBox.setLayoutX(10); // Position the search box
         searchBox.setLayoutY(10);
         searchBox.setPrefWidth(300);
     
@@ -377,6 +386,16 @@ public class AdminDashboardController {
                 String lowerCaseFilter = newValue.toLowerCase();
                 return patient.getName().toLowerCase().contains(lowerCaseFilter);
             });
+        });
+    
+        // Create a Button for adding a new patient
+        Button addNewPatientButton = new Button("Add New Patient");
+        addNewPatientButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+        addNewPatientButton.setLayoutX(530); // Position the button next to the search box
+        addNewPatientButton.setLayoutY(10);
+        addNewPatientButton.setOnAction(event -> {
+            // Call a method to open the form for adding a new patient
+            openAddNewPatientForm();
         });
     
         // Create a TableView for displaying patients
@@ -423,10 +442,11 @@ public class AdminDashboardController {
             }
         });
     
-        // Add the search box and the TableView to the mainContentArea
+        // Add the search box, "Add New Patient" button, and TableView to the mainContentArea
         mainContentArea.getChildren().clear(); // Clear any existing content
-        mainContentArea.getChildren().addAll(searchBox, patientTable);
+        mainContentArea.getChildren().addAll(searchBox, addNewPatientButton, patientTable);
     }
+    
     
     // Method to display selected patient's details
     private void displayPatientDetails(Patient patient) {
@@ -476,7 +496,99 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(detailsPane);
     }
 
-    
+    private void openAddNewPatientForm() {
+        // Create a new stage for the add patient form
+        Stage addPatientStage = new Stage();
+        addPatientStage.setTitle("Add New Patient");
+
+        // Create a VBox to hold the form elements
+        VBox formVBox = new VBox(10); // Spacing between form elements
+        formVBox.setPadding(new Insets(20));
+
+        // Create labels and text fields for patient details
+        Label nameLabel = new Label("Name:");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Enter Patient's name");
+        
+        Label emailLabel = new Label("Email:");
+        TextField emailField = new TextField();
+        emailField.setPromptText("Enter Patient's email");
+
+        Label phoneLabel = new Label("Phone Number:");
+        TextField phoneField = new TextField();
+        phoneField.setPromptText("Enter Patient's phone number");
+
+        Label checkupLabel = new Label("Check-up Date:");
+        DatePicker checkupDatePicker = new DatePicker();
+        checkupDatePicker.setPromptText("Enter checkup date");
+
+        // Create a button to submit the form
+        Button submitButton = new Button("Submit");
+        submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+        // Handle form submission
+        submitButton.setOnAction(e -> {
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String phone = phoneField.getText();
+            LocalDate checkupDate = checkupDatePicker.getValue();
+
+            // Validate input data
+            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || checkupDate == null) {
+                showError("All fields must be filled out!");
+            } else {
+                // Create a new Patient object with the provided data
+                Patient newPatient = new Patient();
+                newPatient.setName(name);
+                newPatient.setEmail(email);
+                newPatient.setPhoneNumber(phone);
+                newPatient.setCheckupDate(Date.valueOf(checkupDate)); // Convert LocalDate to Date
+
+                // Add the new patient to the database (implement the logic for adding a patient to your database)
+                boolean success = DatabaseConnection.addNewPatient(newPatient);
+                if (success) {
+                    showInfo("Patient added successfully!");
+                    addPatientStage.close();
+                } else {
+                    showError("Error adding patient. Please try again.");
+                }
+            }
+        });
+
+        // Create a button to cancel and close the form
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        cancelButton.setOnAction(e -> addPatientStage.close());
+
+        // Create a HBox for buttons (Submit & Cancel)
+        HBox buttonHBox = new HBox(10, submitButton, cancelButton);
+        buttonHBox.setAlignment(Pos.CENTER);
+
+        // Add all elements to the VBox
+        formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, checkupLabel, checkupDatePicker, buttonHBox);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(formVBox, 400, 350);
+        addPatientStage.setScene(scene);
+        addPatientStage.show();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
 
     @SuppressWarnings("unchecked")
@@ -550,10 +662,22 @@ public class AdminDashboardController {
             }
         });
     
-        // Add the search box and table to the main content area
+        // Create an "Add New Doctor" button
+        Button addDoctorButton = new Button("Add New Doctor");
+        addDoctorButton.setLayoutX(530);  // Position the button next to the search box
+        addDoctorButton.setLayoutY(10);   // Align vertically with the search box
+        addDoctorButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+    
+        // Set action for the "Add New Doctor" button
+        addDoctorButton.setOnAction(event -> {
+            openAddNewDoctorForm();
+        });
+    
+        // Add the search box, table, and button to the main content area
         mainContentArea.getChildren().clear(); // Clear existing content
-        mainContentArea.getChildren().addAll(searchBox, doctorTable);
+        mainContentArea.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
     }
+    
     
     private void displayDoctorDetails(Doctor doctor) {
         // Create a new AnchorPane for displaying doctor details
@@ -596,7 +720,83 @@ public class AdminDashboardController {
         mainContentArea.getChildren().clear();
         mainContentArea.getChildren().add(detailsPane);
     }
-    
+
+    private void openAddNewDoctorForm() {
+        // Create a new stage for the add doctor form
+        Stage addDoctorStage = new Stage();
+        addDoctorStage.setTitle("Add New Doctor");
+
+        // Create a VBox to hold the form elements
+        VBox formVBox = new VBox(10); // Spacing between form elements
+        formVBox.setPadding(new Insets(20));
+
+        // Create labels and text fields for doctor details
+        Label nameLabel = new Label("Name:");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Enter Doctor's name");
+        
+        Label emailLabel = new Label("Email:");
+        TextField emailField = new TextField();
+        emailField.setPromptText("Enter Doctor's email");
+
+        Label phoneLabel = new Label("Phone Number:");
+        TextField phoneField = new TextField();
+        phoneField.setPromptText("Enter Doctor's phone number");
+
+        Label checkupLabel = new Label("Check-up Date:");
+        DatePicker hireDatePicker = new DatePicker();
+        hireDatePicker.setPromptText("Enter checkup date");
+
+        // Create a button to submit the form
+        Button submitButton = new Button("Submit");
+        submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+        // Handle form submission
+        submitButton.setOnAction(e -> {
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String phone = phoneField.getText();
+            LocalDate hireDate = hireDatePicker.getValue();
+
+            // Validate input data
+            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || hireDate == null) {
+                showError("All fields must be filled out!");
+            } else {
+                // Create a new Doctor object with the provided data
+                Doctor newDoctor = new Doctor();
+                newDoctor.setName(name);
+                newDoctor.setEmail(email);
+                newDoctor.setPhoneNumber(phone);
+                newDoctor.setHireDate(Date.valueOf(hireDate)); // Convert LocalDate to Date
+
+                // Add the new doctot to the database (implement the logic for adding a patient to your database)
+                boolean success = DatabaseConnection.addNewDoctor(newDoctor);
+                if (success) {
+                    showInfo("Doctor added successfully!");
+                    addDoctorStage.close();
+                } else {
+                    showError("Error adding doctor. Please try again.");
+                }
+            }
+        });
+
+        // Create a button to cancel and close the form
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        cancelButton.setOnAction(e -> addDoctorStage.close());
+
+        // Create a HBox for buttons (Submit & Cancel)
+        HBox buttonHBox = new HBox(10, submitButton, cancelButton);
+        buttonHBox.setAlignment(Pos.CENTER);
+
+        // Add all elements to the VBox
+        formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, checkupLabel, hireDatePicker, buttonHBox);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(formVBox, 400, 350);
+        addDoctorStage.setScene(scene);
+        addDoctorStage.show();
+    }
 
     @SuppressWarnings("unchecked")
     @FXML

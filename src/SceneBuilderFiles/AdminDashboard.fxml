@@ -15,45 +15,37 @@
         <!-- Sidebar with collapsible sections for sub-options -->
         <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
             <children>
-                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Admin's Dashboard" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Admin's Dashboard" textFill="WHITE" />
 
                 <!-- Home / Overview -->
-                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
-
-                <!-- Appointments Management with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Appointments Management">
-                    <content>
-                        <VBox>
-                            <Button onAction="#viewSchedule" text="View Schedule" />
-                            <Button onAction="#rescheduleAppointments" text="Reschedule" />
-                            <Button onAction="#cancelAppointments" text="Cancel Appointments" />
-                        </VBox>
-                    </content>
-                </TitledPane>
+                <Button onAction="#showOverview" prefHeight="40.0" prefWidth="228.0" text="Home" />
 
                 <!-- Personal List -->
-                <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="26.0" prefWidth="252.0" text="Personal Details" />
+                <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="40.0" prefWidth="252.0" text="Personal Details" />
+
+                <!-- Appointments Management with Sub-options -->
+                <Button onAction="#viewSchedule" prefHeight="40.0" prefWidth="252.0" text="View Schedule" />
                 
                 <!-- Patient List -->
-                <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="26.0" prefWidth="252.0" text="Patient's List" />
+                <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="40.0" prefWidth="252.0" text="Patient's List" />
 
                 <!-- Doctor List -->
-                <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="26.0" prefWidth="252.0" text="Doctor's List" />
+                <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="40.0" prefWidth="252.0" text="Doctor's List" />
 
                 <!-- Prescriptions -->
-                <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="26.0" prefWidth="252.0" text="Appointments List" />
+                <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="40.0" prefWidth="252.0" text="Appointments List" />
 
                 <!-- Communication -->
-                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="26.0" prefWidth="250.0" text="Communication" />
+                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="40.0" prefWidth="250.0" text="Communication" />
 
                 <!-- Billing and Payments -->
-                <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="26.0" prefWidth="234.0" text="Billing Details" />
+                <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="40.0" prefWidth="234.0" text="Billing Details" />
 
                 <!-- Settings -->
-                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
+                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="40.0" prefWidth="233.0" text="Settings" />
 
                 <!-- Help & Support -->
-                <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="26.0" prefWidth="237.0" text="Help and Support" />
+                <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="40.0" prefWidth="237.0" text="Help and Support" />
             </children>
         </VBox>
 

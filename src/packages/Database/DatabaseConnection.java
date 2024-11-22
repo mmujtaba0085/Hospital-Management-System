@@ -318,6 +318,72 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
         }
     }
 
+    public static Patient getPatientPersonalDetails(int patientId) {
+        Patient patient = null;
+        String query = """
+        SELECT email, name, phoneNumber, checkupDate
+        FROM Patient
+        WHERE patientID = ?;
+        """;
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Set the doctorId and patientName parameters
+            statement.setInt(1, patientId);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                String email = resultSet.getString("email");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date checkupDate = resultSet.getDate("checkupDate");
+    
+                // Create and populate the Patient object
+                patient=new Patient(patientId, name, email, phoneNumber, checkupDate);
+            }
+            return patient;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return patient;
+        }
+    }
+
+    public static boolean addNewPatient(Patient patient) {
+        String sql = "INSERT INTO Patient (name, email, phoneNumber, checkupDate) VALUES (?, ?, ?, ?)";
+    
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, patient.getName());
+            stmt.setString(2, patient.getEmail());
+            stmt.setString(3, patient.getPhoneNumber());
+            stmt.setDate(4, patient.getCheckupDate());
+    
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean addNewDoctor(Doctor doctor) {
+        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate) VALUES (?, ?, ?, ?)";
+    
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, doctor.getName());
+            stmt.setString(2, doctor.getEmail());
+            stmt.setString(3, doctor.getPhoneNumber());
+            stmt.setDate(4, doctor.getHireDate());
+    
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public static List<MedicalHistory> searchMedicalHistory(String query) {
         List<MedicalHistory> results = new ArrayList<>();
@@ -480,33 +546,71 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
     }
     
 
-// Load schedule from database
-public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
-    String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
-    ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
+    // Load schedule from database
+    public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
+        String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
+        ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
 
-    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-         PreparedStatement statement = connection.prepareStatement(query)) {
-        
-        // Set the doctor ID
-        statement.setInt(1, doctor.getID());
-        
-        ResultSet resultSet = statement.executeQuery();
-        
-        // Process the result set and update the schedule list
-        while (resultSet.next()) {
-            String dayOfWeek = resultSet.getString("dayOfWeek");
-            String startTime = resultSet.getString("startTime");
-            String endTime = resultSet.getString("endTime");
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
+            
+            // Set the doctor ID
+            statement.setInt(1, doctor.getID());
+            
+            ResultSet resultSet = statement.executeQuery();
+            
+            // Process the result set and update the schedule list
+            while (resultSet.next()) {
+                String dayOfWeek = resultSet.getString("dayOfWeek");
+                String startTime = resultSet.getString("startTime");
+                String endTime = resultSet.getString("endTime");
 
-            scheduleList.add(new Schedule(dayOfWeek, startTime, endTime));
+                scheduleList.add(new Schedule(dayOfWeek, startTime, endTime));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+
+        return scheduleList;
     }
 
-    return scheduleList;
-}
+    public static LinkedList<Bill> getSpecificPatientBill(Patient patient) {
+        LinkedList<Bill> billList = new LinkedList<>();
+        
+        // SQL query to get bills for a specific patient
+        String query = """
+            SELECT b.billID, p.name, b.amount, b.paid
+            FROM Bills b
+            JOIN Patient p ON b.patientID = p.patientID;
+        """;
+
+        Bill b=new Bill();
+        // Establish the connection to the database
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            // Set the patient ID parameter
+            stmt.setInt(1, patient.getID());
+            
+            // Execute the query
+            try (ResultSet rs = stmt.executeQuery()) {
+                
+                // Process the result set
+                while (rs.next()) {
+                    b.setID(rs.getInt("bill_id"));
+                    b.setPatientName(rs.getString("name"));
+                    b.setAmount(rs.getDouble("amount"));
+                    b.setPaid(rs.getBoolean("paid"));
+                    // Create a Bill object and add it to the LinkedList
+                    billList.add(b);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle exceptions properly in real-world scenarios
+        }
+        
+        return billList;
+    }
 
     public static List<String> distinctSpecialization(){
         String query = "SELECT DISTINCT specialization FROM Doctor ORDER BY specialization";
