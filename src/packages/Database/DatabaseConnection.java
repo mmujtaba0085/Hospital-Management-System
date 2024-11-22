@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -161,10 +162,10 @@ public class DatabaseConnection {
 
     public static List<Appointment> ViewAppointments(String email) {
         String query = """
-            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.start_time
+            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.start_time, a.end_time, a.date
             FROM Appointments a 
-            LEFT JOIN Patient p ON a.patient_id = p.patientID 
-            LEFT JOIN Doctor d ON a.doctor_id = d.doctorID 
+            LEFT JOIN Patient p ON a.patientID = p.patientID 
+            LEFT JOIN Doctor d ON a.doctorID = d.doctorID 
             WHERE p.email = ? OR d.email = ?
             """;
 
@@ -184,10 +185,12 @@ public class DatabaseConnection {
                 int appointmentID = resultSet.getInt("appointmentID");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
-                Timestamp timeOfAppointment = resultSet.getTimestamp("start_time");
+                int startTimeOfAppointment = resultSet.getInt("start_time");
+                int endTimeOfAppointment = resultSet.getInt("end_time");
+                java.sql.Date dateOfAppointment = resultSet.getDate("date");
 
                 // Create an Appointment object and add it to the list
-                appointments.add(new Appointment(appointmentID, patientName, doctorName, timeOfAppointment));
+                appointments.add(new Appointment(appointmentID, patientName, doctorName, startTimeOfAppointment, endTimeOfAppointment, dateOfAppointment));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -289,6 +292,27 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
         
 
         return patientIds;
+    }
+    
+    public static int getDoctorIDByName(String doctorName){
+        int doctorID = 0;
+        String query = "SELECT doctorID FROM Doctor WHERE name = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setString(1, doctorName);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                doctorID = rs.getInt("doctorID");
+                return doctorID;
+            }
+            else{
+                return 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching patient IDs: " + e.getMessage());
+            return 0;
+        }
     }
 
     public static Admin getAdminPersonalDeatils(int adminId) {
@@ -545,36 +569,41 @@ public static boolean cancelAppointment(int Id, String Name) {      //id is of t
         }
     }
     
-    public static boolean bookAppointment(int patientID, String specialization, int startTime, int endTime) {
-        
-            // SQL query to insert appointment into the database
-            String query = "INSERT INTO Appointments (patientID, specialization, start_time, end_time) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            PreparedStatement preparedStatement = connection.prepareStatement(query)){
-
-                preparedStatement.setInt(1, patientID);
-                preparedStatement.setString(2, specialization);
-                preparedStatement.setInt(3, startTime);
-                preparedStatement.setInt(4, endTime);
-        
-                // Execute the query
-                int rowsAffected = preparedStatement.executeUpdate();
-        
-                // Check if the appointment was successfully inserted
-                if (rowsAffected > 0) {
-                    System.out.println("Appointment booked successfully in the database.");
-                    return true;
-                } else {
-                    System.out.println("Error: No rows affected while booking the appointment.");
-                    return false;
-                }
+    public static boolean bookAppointmentWithDoctor(int patientId, String specialization, int startTime, int endTime, LocalDate date, int doctorID) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String query = "INSERT INTO Appointments (patientID, specialization, start_time, end_time, date, doctorID) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, patientId);
+            stmt.setString(2, specialization);
+            stmt.setInt(3, startTime);
+            stmt.setInt(4, endTime);
+            stmt.setDate(5, java.sql.Date.valueOf(date));
+            stmt.setInt(6, doctorID);
+    
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
         } catch (SQLException e) {
-            System.out.println("Error while booking the appointment: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
+
+    public static List<String> getDoctorsBySpecialization(String specialization) {
+        List<String> doctors = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String query = "SELECT name FROM Doctor WHERE specialization = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, specialization);
     
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                doctors.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }
     
 
     // Load schedule from database

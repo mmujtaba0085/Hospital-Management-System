@@ -53,10 +53,13 @@ CREATE TABLE Admin (
 CREATE TABLE Appointments (
     appointmentID INT AUTO_INCREMENT PRIMARY KEY,
     patientID INT NOT NULL,
+    doctorID INT NOT NULL,
     specialization VARCHAR(255) NOT NULL,
     start_time INT NOT NULL,
     end_time INT NOT NULL,
-    FOREIGN KEY (patientID) REFERENCES Patient(patientID)
+    date DATE NOT NULL,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+    FOREIGN KEY (doctorID) REFERENCES Doctor(doctorID)
 );
 
 

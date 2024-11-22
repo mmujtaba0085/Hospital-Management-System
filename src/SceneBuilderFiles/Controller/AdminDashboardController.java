@@ -449,6 +449,7 @@ public class AdminDashboardController {
     
     
     // Method to display selected patient's details
+    @SuppressWarnings("unused")
     private void displayPatientDetails(Patient patient) {
         // Create a new AnchorPane for displaying details
         AnchorPane detailsPane = new AnchorPane();
@@ -496,6 +497,7 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(detailsPane);
     }
 
+    @SuppressWarnings("unused")
     private void openAddNewPatientForm() {
         // Create a new stage for the add patient form
         Stage addPatientStage = new Stage();
@@ -591,7 +593,7 @@ public class AdminDashboardController {
 
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void viewDoctorList() {
         mainContentTitle.setText("Doctor List");
@@ -679,6 +681,7 @@ public class AdminDashboardController {
     }
     
     
+    @SuppressWarnings("unused")
     private void displayDoctorDetails(Doctor doctor) {
         // Create a new AnchorPane for displaying doctor details
         AnchorPane detailsPane = new AnchorPane();
@@ -721,6 +724,7 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(detailsPane);
     }
 
+    @SuppressWarnings("unused")
     private void openAddNewDoctorForm() {
         // Create a new stage for the add doctor form
         Stage addDoctorStage = new Stage();
@@ -838,6 +842,7 @@ public class AdminDashboardController {
         mainContentTitle.setText("Communication");
     }
 
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
     public void openBilling() {
         mainContentTitle.setText("Billing and Payments");
