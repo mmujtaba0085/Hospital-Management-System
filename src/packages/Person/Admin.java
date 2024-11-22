@@ -2,7 +2,6 @@ package packages.Person;
 
 import java.sql.Date;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 public class Admin extends Person {
     @SuppressWarnings("unused")
@@ -42,37 +41,6 @@ public class Admin extends Person {
                 Doctors.get(i).patientDetails();
             }
         }
-    }
-    public void addPatient(LinkedList<Patient> Patients){
-        Patient p=new Patient();
-        Scanner scanner = new Scanner(System.in);
-        String n, em;
-        String pn;
-        System.out.println("Enter Name: ");
-        n=scanner.nextLine();
-        System.out.println("Enter Email: ");
-        em=scanner.nextLine();
-        System.out.println("Enter Phone Number: ");
-        pn=scanner.nextLine();
-        //p.setPatientDetails(n, em, pn);
-        Patients.add(p);
-        scanner.close();
-    }
-    public void addDoctor(LinkedList<Doctor> Doctors){
-        Doctor d=new Doctor();
-        Scanner scanner = new Scanner(System.in);
-        String n, em, sp, pn;
-        System.out.println("Enter Name: ");
-        n=scanner.nextLine();
-        System.out.println("Enter Email: ");
-        em=scanner.nextLine();
-        System.out.println("Enter Phone Number: ");
-        pn=scanner.nextLine();
-        System.out.println("Enter Specialization: ");
-        sp=scanner.nextLine();
-        //d.setDoctorDetails(n, em, pn, sp);
-        Doctors.add(d);
-        scanner.close();
     }
     public int getID() {
         return ID;

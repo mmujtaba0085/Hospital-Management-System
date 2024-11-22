@@ -9,6 +9,7 @@ public class Schedule {
     private int doctorId;
     private String DoctorName;
     private String daysAvailable;
+    private String specialization;
 
 
     public Schedule(String day, String startTime, String endTime) {
@@ -17,13 +18,23 @@ public class Schedule {
         this.endTime = new SimpleStringProperty(endTime);
         this.doctorId=0;
         daysAvailable="";
+        specialization="";
+        
     }
     public Schedule(int docID,String DoctorName,String daysAvailable) {
         this.DoctorName = DoctorName;
         this.doctorId=docID;
         this.daysAvailable=daysAvailable;
+        specialization="";
     }
 
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization=specialization;
+    }
     public String getDay() {
         return day.get();
     }
