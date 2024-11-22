@@ -71,6 +71,14 @@ CREATE TABLE MedicalHistory (
     lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-update timestamp
 );
 
+CREATE TABLE Bills(
+    billID INT AUTO_INCREMENT PRIMARY KEY,
+    patientID INT NOT NULL,
+    amount INT NOT NULL default 0,
+    paid boolean NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (patientID) REFERENCES Patient(patientID)
+);
+
 
 
 
@@ -210,6 +218,14 @@ INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
 (3, 2, '2024-11-17 11:00:00'),
 (4, 2, '2024-11-17 11:30:00'),
 (5, 3, '2024-11-17 12:00:00');
+
+INSERT INTO Bills (patientID, amount, paid) VALUES
+(1, 150, TRUE),    -- John Doe, Bill paid
+(2, 200, FALSE),   -- Jane Roe, Bill unpaid
+(3, 120, TRUE),    -- Sam Green, Bill paid
+(4, 180, FALSE),   -- Lisa White, Bill unpaid
+(5, 220, TRUE);    -- Paul Black, Bill paid
+
 
 -- Attempt to insert overlapping appointment (this will fail)
 INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
