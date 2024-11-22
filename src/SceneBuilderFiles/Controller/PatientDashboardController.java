@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -23,12 +24,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Schedule;
-import packages.Person.Doctor;
 import packages.Person.Patient;
 
 public class PatientDashboardController {
@@ -84,7 +82,7 @@ public class PatientDashboardController {
         System.out.println("Fetching appointments...");
 
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(patient.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(patient.getEmail());
 
         // Create a TableView for displaying appointments
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -99,8 +97,8 @@ public class PatientDashboardController {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
 
         // Add columns to the table
         appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
@@ -127,64 +125,61 @@ public class PatientDashboardController {
     /**
      * Handles booking a new appointment.
      */
+    @SuppressWarnings("unchecked")
     @FXML
-    private void bookAppointment(ActionEvent event) {
+    private void bookAppointment() {
         mainContentTitle.setText("Book New Appointment");
-        if(patient==null)
-        {
+        if (patient == null) {
             mainContentTitle.setText("Error: Patient not found!");
             System.out.println("Patient is not set.");
             return;
         }
-
+    
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().clear();
-        mainContentTitle.setText("Set Weekly Schedule");
-        
+    
         VBox scheduleBox = new VBox(10);
         scheduleBox.setPadding(new Insets(20));
-
+    
         // Create TableView
         TableView<Schedule> scheduleTable = new TableView<>();
         scheduleTable.setEditable(false);
     
         // Columns
-        TableColumn<Schedule, String> docnameColume = new TableColumn<>("Doctor Name");
-        docnameColume.setCellValueFactory(new PropertyValueFactory<>("doctorname"));
-
-        
-
-        TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
-        dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
+        TableColumn<Schedule, String> docnameColumn = new TableColumn<>("Doctor Name");
+        docnameColumn.setCellValueFactory(new PropertyValueFactory<>("DoctorName"));
     
-        TableColumn<Schedule, String> startTimeColumn = new TableColumn<>("Start Time");
-        startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        TableColumn<Schedule, String> daysAvailableColumn = new TableColumn<>("Days Available");
+        daysAvailableColumn.setCellValueFactory(new PropertyValueFactory<>("availableDays"));
     
-        TableColumn<Schedule, String> endTimeColumn = new TableColumn<>("End Time");
-        endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-
-        // ComboBoxes for selecting time range
-        Label timeLabel = new Label("Select Appointment Time Range (24-hour format):");
-        ComboBox<Integer> startTimeComboBox = new ComboBox<>();
-        ComboBox<Integer> endTimeComboBox = new ComboBox<>();
-        ComboBox<String> docSpecialization =  new ComboBox<>();
-
-        for (int i = 0; i < 24; i++) { 
-            startTimeComboBox.getItems().add(i);
-            endTimeComboBox.getItems().add(i);
-        }
-
-        List<String> Allspecialization = DatabaseConnection.distinctSpecialization();
-        for(int i=0;i<Allspecialization.size();i++){
-            docSpecialization.getItems().add(Allspecialization.get(i));
-        }
-
-        startTimeComboBox.setPromptText("Start Time");
-        endTimeComboBox.setPromptText("End Time");
+        scheduleTable.getColumns().addAll(docnameColumn, daysAvailableColumn);
+    
+        // ComboBoxes for specialization
+        Label specializationLabel = new Label("Select Doctor Specialization:");
+        ComboBox<String> docSpecialization = new ComboBox<>();
+    
+        List<String> allSpecializations = DatabaseConnection.distinctSpecialization();
+        docSpecialization.getItems().addAll(allSpecializations);
         docSpecialization.setPromptText("Specialization");
-
+    
+        // Search Button
+        Button searchButton = new Button("Search");
+        searchButton.setOnAction(event -> {
+            String specialization = docSpecialization.getValue();
+    
+            if (specialization == null || specialization.isEmpty()) {
+                showErrorDialog("Please select the doctor's specialization.");
+                return;
+            }
+    
+            // Fetch schedule data from database
+            ObservableList<Schedule> scheduleList = DatabaseConnection.SpecializedAppoint(specialization);
+            scheduleTable.setItems(scheduleList);
+            scheduleTable.refresh();
+        });
+    
         // Add components to the layout
-        scheduleBox.getChildren().addAll(timeLabel, docSpecialization, startTimeComboBox, endTimeComboBox);
+        scheduleBox.getChildren().addAll(specializationLabel, docSpecialization, searchButton, scheduleTable);
     
         // Add layout to main content area
         mainContentPane.getChildren().addAll(mainContentTitle, scheduleBox);
@@ -192,10 +187,100 @@ public class PatientDashboardController {
         AnchorPane.setLeftAnchor(scheduleBox, 20.0);
         AnchorPane.setRightAnchor(scheduleBox, 20.0);
         AnchorPane.setBottomAnchor(scheduleBox, 20.0);
-        
-        // Add logic to open booking form or process booking
+    
         System.out.println("Booking a new appointment.");
+    
+        scheduleTable.setOnMouseClicked(event -> {
+            Schedule selectedSchedule = scheduleTable.getSelectionModel().getSelectedItem();
+            if (selectedSchedule != null) {
+                int doctorID = selectedSchedule.getDoctorID();
+        
+                // Check if the patient already has an appointment with the selected doctor
+                boolean hasAppointment = DatabaseConnection.hasExistingAppointment(patient.getID(), doctorID);
+        
+                if (hasAppointment) {
+                    showErrorDialog("You already have an appointment with this doctor.");
+                } else {
+                    showDoctorDays(doctorID); // Proceed to select day and book
+                }
+            }
+        });
+        
     }
+    
+    private void showDoctorDays(int doctorID) {
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().clear();
+    
+        VBox daySelectionBox = new VBox(10);
+        daySelectionBox.setPadding(new Insets(20));
+    
+        Label availableDaysLabel = new Label("Select a Day:");
+        ComboBox<String> availableDaysComboBox = new ComboBox<>();
+    
+        // Fetch available days for the selected doctor
+        List<String> availableDays = DatabaseConnection.getDoctorAvailableDays(doctorID);
+        if (availableDays.isEmpty()) {
+            showErrorDialog("No available days for this doctor.");
+            return;
+        }
+        availableDaysComboBox.getItems().addAll(availableDays);
+    
+        Button confirmButton = new Button("Confirm Appointment");
+confirmButton.setOnAction(event -> {
+    String selectedDay = availableDaysComboBox.getValue();
+
+    if (selectedDay == null || selectedDay.isEmpty()) {
+        showErrorDialog("Please select a day for the appointment.");
+        return;
+    }
+
+    // Check if patient already has an appointment with this doctor (redundant double-check)
+    boolean hasAppointment = DatabaseConnection.hasExistingAppointment(patient.getID(), doctorID);
+
+    if (hasAppointment) {
+        showErrorDialog("You already have an appointment with this doctor.");
+        return;
+    }
+
+    // Proceed to book appointment
+    boolean success = DatabaseConnection.checkAndBookAppointment(
+        doctorID, selectedDay, patient.getID(), new Timestamp(System.currentTimeMillis())
+    );
+
+    if (success) {
+        showConfirmationDialog("Appointment booked successfully for " + selectedDay + "!");
+    } else {
+        showErrorDialog("Booking failed! No slots available for the selected day.");
+    }
+});
+
+
+    
+        daySelectionBox.getChildren().addAll(availableDaysLabel, availableDaysComboBox, confirmButton);
+        mainContentPane.getChildren().addAll(mainContentTitle, daySelectionBox);
+        AnchorPane.setTopAnchor(daySelectionBox, 50.0);
+        AnchorPane.setLeftAnchor(daySelectionBox, 20.0);
+        AnchorPane.setRightAnchor(daySelectionBox, 20.0);
+        AnchorPane.setBottomAnchor(daySelectionBox, 20.0);
+    
+        System.out.println("Doctor's available days displayed.");
+    }
+    
+    private void showConfirmationDialog(String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }    
 
     /**
      * Handles rescheduling an appointment.
@@ -223,7 +308,7 @@ public class PatientDashboardController {
         System.out.println("Fetching appointments...");
     
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(patient.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(patient.getEmail());
     
         // Create a TableView for displaying appointments with checkboxes
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -291,7 +376,7 @@ public class PatientDashboardController {
             }
     
             // Show confirmation dialog
-            boolean confirmation = showConfirmationDialog("Are you sure you want to cancel the selected appointments?");
+            boolean confirmation = showConfirmationDialog2("Are you sure you want to cancel the selected appointments?");
             if (!confirmation) {
                 System.out.println("Cancellation aborted.");
                 return;
@@ -330,7 +415,7 @@ public class PatientDashboardController {
         AnchorPane.setRightAnchor(cancelButton, 20.0);
     }
     
-    private boolean showConfirmationDialog(String message) {
+    private boolean showConfirmationDialog2(String message) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText(null);

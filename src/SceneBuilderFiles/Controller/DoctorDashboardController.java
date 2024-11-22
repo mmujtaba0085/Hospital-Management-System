@@ -22,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -94,7 +93,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching appointments...");
 
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
 
         // Create a TableView for displaying appointments
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -286,7 +285,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching appointments...");
     
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
     
         // Create a TableView for displaying appointments with checkboxes
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -511,7 +510,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching medical reports...");
 
         // Retrieve appointments for the doctor
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
 
         if (appointments.isEmpty()) {
             mainContentTitle.setText("No appointments found for this doctor.");

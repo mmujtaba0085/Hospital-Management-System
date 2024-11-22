@@ -159,42 +159,43 @@ public class DatabaseConnection {
 
     }
 
-    public static List<Appointment> ViewAppointments(String email) {
+    public static List<Appointment> viewAppointments(String email) {
         String query = """
-            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.time_of_appointment 
+            SELECT a.appointmentID, p.name AS patient_name, d.name AS doctor_name, a.appointedDay
             FROM Appointments a 
             LEFT JOIN Patient p ON a.patient_id = p.patientID 
             LEFT JOIN Doctor d ON a.doctor_id = d.doctorID 
             WHERE p.email = ? OR d.email = ?
-            """;
-
+        """;
+    
         List<Appointment> appointments = new ArrayList<>();
-
+    
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(query)) {
-
+    
             // Set email for both parameters
             statement.setString(1, email);
             statement.setString(2, email);
-
+    
             ResultSet resultSet = statement.executeQuery();
-
+    
             // Loop through the result set and add appointments to the list
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
-                Timestamp timeOfAppointment = resultSet.getTimestamp("time_of_appointment");
-
+                String appointedDay = resultSet.getString("appointedDay");
+    
                 // Create an Appointment object and add it to the list
-                appointments.add(new Appointment(appointmentID, patientName, doctorName, timeOfAppointment));
+                appointments.add(new Appointment(appointmentID, patientName, doctorName, appointedDay));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+    
         return appointments;
     }
+    
 
 
 public static boolean cancelAppointment(int Id, String Name) {      //id is of the who is canceling and name is whom it is being cancelled with
@@ -475,4 +476,147 @@ public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         return specialization;
 
     }
+    
+    public static ObservableList<Schedule> SpecializedAppoint(String specialization) {
+        String query = """
+            SELECT d.doctorID AS DoctorID, 
+                   d.name AS DoctorName, 
+                   GROUP_CONCAT(ds.dayOfWeek SEPARATOR ', ') AS DaysAvailable
+            FROM 
+                Doctor d
+            JOIN 
+                DoctorSchedule ds ON d.doctorID = ds.doctorID
+            WHERE 
+                d.specialization = ?
+            GROUP BY 
+                d.doctorID, d.name
+            ORDER BY 
+                d.name
+        """;
+    
+        ObservableList<Schedule> doctorAvailable = FXCollections.observableArrayList();
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, specialization); // Bind specialization parameter
+            ResultSet result = statement.executeQuery();
+    
+            while (result.next()) {
+                String doctorName = result.getString("DoctorName");
+                String daysAvailable = result.getString("DaysAvailable");
+                int docID=result.getInt("DoctorID");
+                doctorAvailable.add(new Schedule(docID,doctorName, daysAvailable));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return doctorAvailable;
+    }
+    
+    public static boolean checkAndBookAppointment(int doctorID, String appointedDay, int patientID, Timestamp appointmentTime) {
+        String query = """
+            SELECT totalBooked, TIME_TO_SEC(TIMEDIFF(endTime, startTime)) / 30 AS totalSlots
+            FROM DoctorSchedule
+            WHERE doctorID = ? AND dayOfWeek = ?
+        """;
+    
+        String updateQuery = """
+            UPDATE DoctorSchedule
+            SET totalBooked = totalBooked + 1
+            WHERE doctorID = ? AND dayOfWeek = ?;
+        """;
+    
+        String insertQuery = """
+            INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment, appointedDay)
+            VALUES (?, ?, ?, ?)
+        """;
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement selectStmt = connection.prepareStatement(query);
+             PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
+             PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
+    
+            // Check availability for the selected day
+            selectStmt.setInt(1, doctorID);
+            selectStmt.setString(2, appointedDay);
+    
+            ResultSet resultSet = selectStmt.executeQuery();
+            if (resultSet.next()) {
+                int totalBooked = resultSet.getInt("totalBooked");
+                int totalSlots = resultSet.getInt("totalSlots");
+    
+                if (totalBooked < totalSlots) {
+                    // Update DoctorSchedule to increment totalBooked
+                    updateStmt.setInt(1, doctorID);
+                    updateStmt.setString(2, appointedDay);
+                    updateStmt.executeUpdate();
+    
+                    // Insert appointment with appointedDay
+                    insertStmt.setInt(1, patientID);
+                    insertStmt.setInt(2, doctorID);
+                    insertStmt.setTimestamp(3, appointmentTime);
+                    insertStmt.setString(4, appointedDay);
+                    insertStmt.executeUpdate();
+    
+                    return true; // Successfully booked
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return false; // Booking failed
+    }
+    
+    
+    
+
+    public static List<String> getDoctorAvailableDays(int doctorID) {
+        String query = "SELECT dayOfWeek FROM DoctorSchedule WHERE doctorID = ?";
+        List<String> daysAvailable = new ArrayList<>();
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            statement.setInt(1, doctorID);
+            ResultSet resultSet = statement.executeQuery();
+    
+            while (resultSet.next()) {
+                daysAvailable.add(resultSet.getString("dayOfWeek"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return daysAvailable;
+    }
+
+    public static boolean hasExistingAppointment(int patientID, int doctorID) {
+        String query = """
+            SELECT COUNT(*) AS appointmentCount
+            FROM Appointments
+            WHERE patient_id = ? AND doctor_id = ?
+        """;
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            statement.setInt(1, patientID);
+            statement.setInt(2, doctorID);
+    
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt("appointmentCount");
+                return count > 0; // Return true if there is an existing appointment
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return false; // Default to no existing appointment
+    }
+    
+    
 }
