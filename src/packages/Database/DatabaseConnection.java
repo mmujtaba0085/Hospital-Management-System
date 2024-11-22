@@ -23,7 +23,6 @@ public class DatabaseConnection {
     private static final String USER = "root"; 
     private static final String PASSWORD = "icu321@"; 
 
-    // Method to authenticate and return role code
     public static int authenticateUser(String username, String password) {
         String query = "SELECT role FROM login WHERE username = ? AND password = ?";
         
@@ -59,7 +58,6 @@ public class DatabaseConnection {
         }   
     }
 
-    // Checking if the user is a doctor and is registered in the system
     public static Doctor DoctorDetail(String email,String password){
         Doctor doctor=null;
         if(authenticateUser(email, password)!=2){
@@ -93,7 +91,6 @@ public class DatabaseConnection {
 
     }
 
-    // checking if the user is a patient and is registered in the system
     public static Patient PatientDetail(String email,String password){
         Patient patient=null;
         if(authenticateUser(email, password)!=4){
@@ -126,7 +123,6 @@ public class DatabaseConnection {
 
     }
 
-    // checking if admin is the user and registered in the system
     public static Admin AdminDetail(String email,String password){
         Admin admin=null;
         if(authenticateUser(email, password)!=1){
@@ -196,8 +192,6 @@ public class DatabaseConnection {
         return appointments;
     }
     
-
-
     public static boolean cancelAppointment(int Id, String Name) {
         String fetchAppointmentQuery = """
         SELECT doctor_id, appointedDay 
@@ -261,8 +255,7 @@ public class DatabaseConnection {
     
         return false; // Cancellation failed
     }
-    
-    
+ 
     public static List<MedicalHistory> getMedicalReports(List<Integer> patientIds) {
         List<MedicalHistory> medicalReports = new ArrayList<>();
         if (patientIds.isEmpty()) return medicalReports;
@@ -301,7 +294,6 @@ public class DatabaseConnection {
         return medicalReports;
     }
     
-
     public static List<Integer> getPatientIdsByName(List<String> patientNames) {
         List<Integer> patientIds = new ArrayList<>();
         if (patientNames.isEmpty()) return patientIds;
@@ -355,7 +347,6 @@ public class DatabaseConnection {
             return admin;
         }
     }
-
 
     public static List<MedicalHistory> searchMedicalHistory(String query) {
         List<MedicalHistory> results = new ArrayList<>();
@@ -492,9 +483,7 @@ public class DatabaseConnection {
         }
     }
     
-
-// Load schedule from database
-public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
+    public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
     String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
     ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
 
@@ -633,9 +622,6 @@ public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         return false; // Booking failed
     }
     
-    
-    
-
     public static List<String> getDoctorAvailableDays(int doctorID) {
         String query = "SELECT dayOfWeek FROM DoctorSchedule WHERE doctorID = ?";
         List<String> daysAvailable = new ArrayList<>();
@@ -682,5 +668,51 @@ public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         return false; // Default to no existing appointment
     }
     
+    public static int getDoctorIDByName(String doctorName) {
+        String query = "SELECT doctorID FROM Doctor WHERE name = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            statement.setString(1, doctorName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("doctorID");
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Return an invalid ID if not found
+    }
+    
+    public static boolean isSlotAvailable(int doctorID, String dayOfWeek) {
+        String query = """
+            SELECT totalBooked, TIME_TO_SEC(TIMEDIFF(endTime, startTime)) / 3600 AS timeDiff
+            FROM DoctorSchedule
+            WHERE doctorID = ? AND dayOfWeek = ?
+        """;
+    
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            statement.setInt(1, doctorID);
+            statement.setString(2, dayOfWeek);
+    
+            ResultSet resultSet = statement.executeQuery();
+    
+            if (resultSet.next()) {
+                int totalBooked = resultSet.getInt("totalBooked");
+                int timeDiff = resultSet.getInt("timeDiff"); // Time difference in hours
+                int maxSlots = timeDiff * 2; // Total slots = (time difference in hours) * 2
+    
+                return totalBooked < maxSlots; // Return true if slots are available
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return false; // Default to no slots available if an error occurs
+    }
     
 }

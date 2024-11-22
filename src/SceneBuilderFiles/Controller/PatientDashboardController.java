@@ -1,5 +1,10 @@
 package SceneBuilderFiles.Controller;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -285,12 +290,150 @@ confirmButton.setOnAction(event -> {
     /**
      * Handles rescheduling an appointment.
      */
-    @FXML
-    private void rescheduleAppointment(ActionEvent event) {
-        mainContentTitle.setText("Reschedule Appointment");
-        // Add logic for rescheduling
-        System.out.println("Rescheduling an appointment.");
+    @SuppressWarnings("unchecked")
+@FXML
+private void rescheduleAppointment(ActionEvent event) {
+    mainContentTitle.setText("Reschedule Appointment");
+    if (patient == null) {
+        mainContentTitle.setText("Error: Patient not found!");
+        System.out.println("Patient is not set.");
+        return;
     }
+
+    List<Appointment> appointments = DatabaseConnection.viewAppointments(patient.getEmail());
+
+    // Check if no appointments are found
+    if (appointments.isEmpty()) {
+        showNoAppointmentsPopup(); // Show a popup informing no appointments to reschedule
+        return; // Exit the method since there are no appointments to reschedule
+    }
+
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().clear(); // Clear existing content
+
+    VBox rescheduleBox = new VBox(10);
+    rescheduleBox.setPadding(new Insets(20));
+
+    // Create a TableView for displaying appointments
+    TableView<Appointment> appointmentTable = new TableView<>();
+
+    // Define TableColumns for the Appointment properties
+    TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
+    idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+
+    TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
+    patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+    TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
+    doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+
+    TableColumn<Appointment, String> dayColumn = new TableColumn<>("Appointed Day");
+    dayColumn.setCellValueFactory(new PropertyValueFactory<>("appointedDay"));
+
+    // Add columns to the table
+    appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, dayColumn);
+
+    // Populate the TableView with the appointments
+    appointmentTable.getItems().addAll(appointments);
+
+    // Add a reschedule button
+    Button rescheduleButton = new Button("Reschedule Selected");
+    rescheduleButton.setOnAction(e -> {
+        Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+        if (selectedAppointment == null) {
+            showErrorDialog("Please select an appointment to reschedule.");
+            return;
+        }
+
+        // Proceed to select a new day for the same doctor
+        selectNewDayForReschedule(selectedAppointment);
+    });
+
+    // Add the TableView and button to the main content area
+    rescheduleBox.getChildren().addAll(appointmentTable, rescheduleButton);
+    mainContentPane.getChildren().addAll(mainContentTitle, rescheduleBox);
+    AnchorPane.setTopAnchor(rescheduleBox, 50.0);
+    AnchorPane.setLeftAnchor(rescheduleBox, 20.0);
+    AnchorPane.setRightAnchor(rescheduleBox, 20.0);
+    AnchorPane.setBottomAnchor(rescheduleBox, 20.0);
+}
+
+private void showNoAppointmentsPopup() {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION); // Information alert
+    alert.setTitle("No Appointments");
+    alert.setHeaderText(null);
+    alert.setContentText("You have no appointments in scheduled.");
+    alert.showAndWait(); // Display the alert and wait for user acknowledgment
+}
+
+
+private void selectNewDayForReschedule(Appointment oldAppointment) {
+    mainContentTitle.setText("Select New Day for Reschedule");
+
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().clear();
+
+    VBox daySelectionBox = new VBox(10);
+    daySelectionBox.setPadding(new Insets(20));
+
+    Label availableDaysLabel = new Label("Select a New Day:");
+    ComboBox<String> availableDaysComboBox = new ComboBox<>();
+
+    int doctorID = DatabaseConnection.getDoctorIDByName(oldAppointment.getDoctorName());
+
+    // Fetch available days for the same doctor
+    List<String> availableDays = DatabaseConnection.getDoctorAvailableDays(doctorID);
+    if (availableDays.isEmpty()) {
+        showErrorDialog("No available days for this doctor.");
+        return;
+    }
+
+    // Remove the current appointed day from the available days
+    availableDays.remove(oldAppointment.getAppointedDay());
+    if (availableDays.isEmpty()) {
+        showErrorDialog("No other available days for this doctor.");
+        return;
+    }
+
+    availableDaysComboBox.getItems().addAll(availableDays);
+
+    Button confirmButton = new Button("Confirm Reschedule");
+    confirmButton.setOnAction(event -> {
+        String selectedDay = availableDaysComboBox.getValue();
+
+        if (selectedDay == null || selectedDay.isEmpty()) {
+            showErrorDialog("Please select a new day for the appointment.");
+            return;
+        }
+
+        // Proceed to book the new appointment
+        boolean success = DatabaseConnection.isSlotAvailable(DatabaseConnection.getDoctorIDByName(oldAppointment.getDoctorName()), selectedDay);
+
+        if (success) {
+            
+            boolean cancelSuccess = DatabaseConnection.cancelAppointment(patient.getID(), oldAppointment.getDoctorName());
+            if (cancelSuccess) {
+                DatabaseConnection.checkAndBookAppointment(doctorID, selectedDay, patient.getID(), new Timestamp(System.currentTimeMillis()));
+                showConfirmationDialog("Appointment rescheduled successfully to " + selectedDay + "!");
+            } else {
+                showErrorDialog("Failed to cancel the old appointment.");
+            }
+        } else {
+            showErrorDialog("Rescheduling failed! No slots available for the selected day.");
+        }
+    });
+
+    daySelectionBox.getChildren().addAll(availableDaysLabel, availableDaysComboBox, confirmButton);
+    mainContentPane.getChildren().addAll(mainContentTitle, daySelectionBox);
+    AnchorPane.setTopAnchor(daySelectionBox, 50.0);
+    AnchorPane.setLeftAnchor(daySelectionBox, 20.0);
+    AnchorPane.setRightAnchor(daySelectionBox, 20.0);
+    AnchorPane.setBottomAnchor(daySelectionBox, 20.0);
+
+    System.out.println("Selecting a new day for reschedule.");
+}
+
+
 
     /**
      * Handles canceling an appointment.
@@ -309,7 +452,13 @@ confirmButton.setOnAction(event -> {
     
         // Retrieve appointments using the doctor's email
         List<Appointment> appointments = DatabaseConnection.viewAppointments(patient.getEmail());
-    
+
+
+        // Check if no appointments are found
+        if (appointments.isEmpty()) {
+            showNoAppointmentsPopup(); // Show a popup informing no appointments to reschedule
+            return; // Exit the method since there are no appointments to reschedule
+        }
         // Create a TableView for displaying appointments with checkboxes
         TableView<Appointment> appointmentTable = new TableView<>();
         appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // Enable multiple selection
