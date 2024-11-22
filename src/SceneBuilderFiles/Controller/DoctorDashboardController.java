@@ -132,7 +132,7 @@ public class DoctorDashboardController {
         AnchorPane.setRightAnchor(appointmentTable, 20.0);
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void weekschedule() {
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
@@ -272,7 +272,7 @@ public class DoctorDashboardController {
         alert.showAndWait();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void cancelAppointments() {
         if (doctor == null) {
@@ -402,7 +402,7 @@ public class DoctorDashboardController {
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void viewPatientDetails() {
         mainContentTitle.setText("Patient Details");
@@ -497,7 +497,7 @@ public class DoctorDashboardController {
         mainContentTitle.setText("Update Health Records");
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     public void viewMedicalHistory() {
         if (doctor == null) {
@@ -589,6 +589,7 @@ public class DoctorDashboardController {
         });
     }
 
+    @SuppressWarnings("unused")
     private void displayPatientDetails(MedicalHistory selectedPatient, int prevTab) {
         // Create a new pane for displaying the selected patient's full history
         VBox detailsPane = new VBox();

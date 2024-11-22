@@ -1,17 +1,29 @@
-.sidebar-button {
-    -fx-background-color: #e0e0e0;
-    -fx-font-size: 14px;
-    -fx-text-fill: #333;
-    -fx-padding: 10px;
-    -fx-border-color: #ccc;
-    -fx-border-width: 0 0 1 0;
+/* Apply a linear gradient to the VBox */
+.top_left_vbox {
+    -fx-background-color: linear-gradient(to bottom, #2E8BC0, #FF6F61, #FFD662);
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
 }
 
-.sidebar-button:hover {
-    -fx-background-color: #d0d0d0;
-}
-
-.titled-pane > .title {
-    -fx-font-size: 16px;
+/* Style for labels */
+.label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #ffffff; /* Set text color to white for contrast */
     -fx-font-weight: bold;
+}
+
+/* Style for value labels (e.g., Name, Email, Phone) */
+.value-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #ffffff; /* Set text color to white for contrast */
+}
+
+/* Style for the ImageView */
+.image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 4, 4);
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-fit-width: 200px; /* Enforce a consistent width */
+    -fx-fit-height: 150px; /* Enforce a consistent height */
 }
