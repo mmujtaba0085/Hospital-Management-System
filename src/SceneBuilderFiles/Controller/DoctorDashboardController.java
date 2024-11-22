@@ -93,7 +93,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching appointments...");
 
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
 
         // Create a TableView for displaying appointments
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -285,7 +285,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching appointments...");
     
         // Retrieve appointments using the doctor's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
     
         // Create a TableView for displaying appointments with checkboxes
         TableView<Appointment> appointmentTable = new TableView<>();
@@ -510,7 +510,7 @@ public class DoctorDashboardController {
         System.out.println("Fetching medical reports...");
 
         // Retrieve appointments for the doctor
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(doctor.getEmail());
+        List<Appointment> appointments = DatabaseConnection.viewAppointments(doctor.getEmail());
 
         if (appointments.isEmpty()) {
             mainContentTitle.setText("No appointments found for this doctor.");
