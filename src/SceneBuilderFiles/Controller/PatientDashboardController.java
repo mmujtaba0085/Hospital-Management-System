@@ -72,10 +72,7 @@ public class PatientDashboardController {
         subOptionPane.setVisible(false); // Hide sub-options by default
     }
 
-
-    /**
-     * Displays the home/overview section.
-     */
+    //Displays the home/overview section.
     @FXML
     private void showOverview(ActionEvent event) {
         mainContentTitle.setText("Home / Overview");
@@ -169,9 +166,7 @@ public class PatientDashboardController {
     }
     
 
-    /**
-     * Handles viewing upcoming appointments.
-     */
+    
     @SuppressWarnings("unchecked")
     @FXML
     private void viewAppointments() {
@@ -225,11 +220,8 @@ public class PatientDashboardController {
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
-    /**
-     * Handles booking a new appointment.
-     */
-
-@SuppressWarnings("unchecked")
+   
+    @SuppressWarnings("unchecked")
     @FXML
     private void bookAppointment() {
         mainContentTitle.setText("Book New Appointment");
@@ -390,8 +382,8 @@ confirmButton.setOnAction(event -> {
      * Handles rescheduling an appointment.
      */
     @SuppressWarnings("unchecked")
-@FXML
-private void rescheduleAppointment(ActionEvent event) {
+    @FXML
+    private void rescheduleAppointment(ActionEvent event) {
     mainContentTitle.setText("Reschedule Appointment");
     if (patient == null) {
         mainContentTitle.setText("Error: Patient not found!");
@@ -457,7 +449,7 @@ private void rescheduleAppointment(ActionEvent event) {
     AnchorPane.setBottomAnchor(rescheduleBox, 20.0);
 }
 
-private void showNoAppointmentsPopup() {
+    private void showNoAppointmentsPopup() {
     Alert alert = new Alert(Alert.AlertType.INFORMATION); // Information alert
     alert.setTitle("No Appointments");
     alert.setHeaderText(null);
@@ -466,7 +458,7 @@ private void showNoAppointmentsPopup() {
 }
 
 
-private void selectNewDayForReschedule(Appointment oldAppointment) {
+    private void selectNewDayForReschedule(Appointment oldAppointment) {
     mainContentTitle.setText("Select New Day for Reschedule");
 
     Pane mainContentPane = (Pane) mainContentTitle.getParent();
@@ -532,11 +524,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     System.out.println("Selecting a new day for reschedule.");
 }
 
-
-
-    /**
-     * Handles canceling an appointment.
-     */
     @FXML
     private void cancelAppointment(ActionEvent event) {
         if (patient == null) {
@@ -672,18 +659,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         return result == ButtonType.OK;
     }
     
-    // Helper method to show alerts
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    /**
-     * Handles viewing health records.
-     */
     @FXML
     private void viewHealthRecords(ActionEvent event) {
         mainContentTitle.setText("View Health Records");
@@ -691,9 +666,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing health records.");
     }
 
-    /**
-     * Handles viewing test results.
-     */
     @FXML
     private void viewTestResults(ActionEvent event) {
         mainContentTitle.setText("View Test Results");
@@ -701,9 +673,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing test results.");
     }
 
-    /**
-     * Handles downloading medical history.
-     */
     @FXML
     private void downloadMedicalHistory(ActionEvent event) {
         mainContentTitle.setText("Download Medical History");
@@ -711,9 +680,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Downloading medical history.");
     }
 
-    /**
-     * Handles viewing prescriptions.
-     */
     @FXML
     private void viewPrescriptions(ActionEvent event) {
         mainContentTitle.setText("Prescriptions");
@@ -721,9 +687,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing prescriptions.");
     }
 
-    /**
-     * Handles viewing billing details.
-     */
+    
     @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void viewBillingDetails(ActionEvent event) {
@@ -782,11 +746,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         mainContentArea.getChildren().clear();
         mainContentArea.getChildren().addAll(backButton, billTable);
     }
-
-
-    /**
-     * Handles making a payment.
-     */
+ 
     @FXML
     private void makePayment(ActionEvent event) {
         mainContentTitle.setText("Make a Payment");
@@ -794,9 +754,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Making a payment.");
     }
 
-    /**
-     * Handles downloading invoices.
-     */
     @FXML
     private void downloadInvoice(ActionEvent event) {
         mainContentTitle.setText("Download Invoice");
@@ -804,9 +761,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Downloading invoice.");
     }
 
-    /**
-     * Handles viewing notifications.
-     */
     @FXML
     private void viewNotifications(ActionEvent event) {
         mainContentTitle.setText("Notifications");
@@ -814,9 +768,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing notifications.");
     }
 
-    /**
-     * Handles editing profile settings.
-     */
     @FXML
     private void editProfile(ActionEvent event) {
         mainContentTitle.setText("Profile Settings");
@@ -824,9 +775,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Editing profile settings.");
     }
 
-    /**
-     * Handles opening the help and support section.
-     */
     @FXML
     private void openHelp(ActionEvent event) {
         mainContentTitle.setText("Help and Support");

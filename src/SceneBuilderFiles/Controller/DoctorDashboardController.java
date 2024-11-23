@@ -28,6 +28,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -591,79 +592,160 @@ public class DoctorDashboardController {
 
     @SuppressWarnings("unused")
     private void displayPatientDetails(MedicalHistory selectedPatient, int prevTab) {
-        // Create a new pane for displaying the selected patient's full history
-        VBox detailsPane = new VBox();
-        detailsPane.setSpacing(10);
+    // Create a new pane for displaying the selected patient's full history
+    VBox detailsPane = new VBox();
+    detailsPane.setSpacing(10);
+
+    // Display patient name in bold
+    Label patientNameLabel = new Label(selectedPatient.getPatientName());
+    patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Display allergies
+    Label allergiesLabel = new Label("Allergies:");
+    allergiesLabel.setStyle("-fx-font-weight: bold;");
+    Label allergiesDetails = new Label(selectedPatient.getAllergies());
+
+    // Display medications
+    Label medicationsLabel = new Label("Medications:");
+    medicationsLabel.setStyle("-fx-font-weight: bold;");
+    Label medicationsDetails = new Label(selectedPatient.getMedications());
+
+    // Similarly for past illnesses, surgeries, family history, and notes
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
+    Label pastIllnessesDetails = new Label(selectedPatient.getPastIllnesses());
+
+    Label surgeriesLabel = new Label("Surgeries:");
+    surgeriesLabel.setStyle("-fx-font-weight: bold;");
+    Label surgeriesDetails = new Label(selectedPatient.getSurgeries());
+
+    Label familyHistoryLabel = new Label("Family History:");
+    familyHistoryLabel.setStyle("-fx-font-weight: bold;");
+    Label familyHistoryDetails = new Label(selectedPatient.getFamilyHistory());
+
+    Label notesLabel = new Label("Notes:");
+    notesLabel.setStyle("-fx-font-weight: bold;");
+    Label notesDetails = new Label(selectedPatient.getNotes());
+
+    // Add a "Back" button
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px;");
+    backButton.setOnAction(event -> {
+        if (prevTab == 1) {
+            viewMedicalHistory(); // Reload the previous TableView
+        } else if (prevTab == 2) {
+            viewPatientDetails();
+        }
+    });
+
+    // Add an "Update Health Records" button
+    Button updateButton = new Button("Update Health Records");
+    updateButton.setStyle("-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+    updateButton.setOnAction(event -> {
+        if (prevTab==1) {
+            openHealthRecordsForm(selectedPatient);
+        } else {
+            showErrorDialog("This patient does not have an active appointment with you.");
+        }
+    });
+
+    // Add all labels, the back button, and the update button to the details pane
+    detailsPane.getChildren().addAll(
+            patientNameLabel,
+            allergiesLabel, allergiesDetails,
+            medicationsLabel, medicationsDetails,
+            pastIllnessesLabel, pastIllnessesDetails,
+            surgeriesLabel, surgeriesDetails,
+            familyHistoryLabel, familyHistoryDetails,
+            notesLabel, notesDetails,
+            backButton,
+            updateButton // Add the update button at the end
+    );
+
+    // Add details pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(detailsPane);
+
+    // Position the details pane within the pane
+    AnchorPane.setTopAnchor(detailsPane, 50.0);
+    AnchorPane.setLeftAnchor(detailsPane, 20.0);
+    AnchorPane.setRightAnchor(detailsPane, 20.0);
+}
+
     
-        // Display patient name in bold
-        Label patientNameLabel = new Label(selectedPatient.getPatientName());
-        patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
     
-        // Display allergies in bold and simple text
-        Label allergiesLabel = new Label("Allergies:");
-        allergiesLabel.setStyle("-fx-font-weight: bold;");
-        Label allergiesDetails = new Label(selectedPatient.getAllergies());
-    
-        // Display medications in bold and simple text
-        Label medicationsLabel = new Label("Medications:");
-        medicationsLabel.setStyle("-fx-font-weight: bold;");
-        Label medicationsDetails = new Label(selectedPatient.getMedications());
-    
-        // Similarly for past illnesses, surgeries, family history, and notes
-        Label pastIllnessesLabel = new Label("Past Illnesses:");
-        pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
-        Label pastIllnessesDetails = new Label(selectedPatient.getPastIllnesses());
-    
-        Label surgeriesLabel = new Label("Surgeries:");
-        surgeriesLabel.setStyle("-fx-font-weight: bold;");
-        Label surgeriesDetails = new Label(selectedPatient.getSurgeries());
-    
-        Label familyHistoryLabel = new Label("Family History:");
-        familyHistoryLabel.setStyle("-fx-font-weight: bold;");
-        Label familyHistoryDetails = new Label(selectedPatient.getFamilyHistory());
-    
-        Label notesLabel = new Label("Notes:");
-        notesLabel.setStyle("-fx-font-weight: bold;");
-        Label notesDetails = new Label(selectedPatient.getNotes());
-    
-        // Add a back button
-        Button backButton = new Button("Back");
-        backButton.setStyle("-fx-font-size: 14px;");
-        backButton.setOnAction(event -> {
-            if(prevTab==1)
-            {
-                viewMedicalHistory(); // Reload the previous TableView
-            }
-            else if(prevTab==2)
-            {
-                viewPatientDetails();
-            }
-        });
-    
-        // Add all labels and the back button to the details pane
-        detailsPane.getChildren().addAll(
-                patientNameLabel,
-                allergiesLabel, allergiesDetails,
-                medicationsLabel, medicationsDetails,
-                pastIllnessesLabel, pastIllnessesDetails,
-                surgeriesLabel, surgeriesDetails,
-                familyHistoryLabel, familyHistoryDetails,
-                notesLabel, notesDetails,
-                backButton // Add back button at the end
+    private void openHealthRecordsForm(MedicalHistory patientRecord) {
+    // Create a new pane for updating health records
+    VBox updatePane = new VBox();
+    updatePane.setSpacing(10);
+
+    // Title label
+    Label titleLabel = new Label("Update Health Records for " + patientRecord.getPatientName());
+    titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Editable text fields for health record fields
+    TextField allergiesField = new TextField(patientRecord.getAllergies());
+    TextField medicationsField = new TextField(patientRecord.getMedications());
+    TextField pastIllnessesField = new TextField(patientRecord.getPastIllnesses());
+    TextField surgeriesField = new TextField(patientRecord.getSurgeries());
+    TextField familyHistoryField = new TextField(patientRecord.getFamilyHistory());
+    TextArea notesField = new TextArea(patientRecord.getNotes());
+
+    // Labels for the fields
+    Label allergiesLabel = new Label("Allergies:");
+    Label medicationsLabel = new Label("Medications:");
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    Label surgeriesLabel = new Label("Surgeries:");
+    Label familyHistoryLabel = new Label("Family History:");
+    Label notesLabel = new Label("Notes:");
+
+    // Save button
+    Button saveButton = new Button("Save");
+    saveButton.setStyle("-fx-font-size: 14px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+    saveButton.setOnAction(event -> {
+        boolean success = DatabaseConnection.updateHealthRecords(
+                patientRecord.getPatientId(),
+                allergiesField.getText(),
+                medicationsField.getText(),
+                pastIllnessesField.getText(),
+                surgeriesField.getText(),
+                familyHistoryField.getText(),
+                notesField.getText()
         );
+        if (success) {
+            showConfirmationDialog("Health records updated successfully.");
+            viewMedicalHistory(); // Reload medical history
+        } else {
+            showErrorDialog("Failed to update health records. Please try again.");
+        }
+    });
+
+    // Add all components to the update pane
+    updatePane.getChildren().addAll(
+            titleLabel,
+            allergiesLabel, allergiesField,
+            medicationsLabel, medicationsField,
+            pastIllnessesLabel, pastIllnessesField,
+            surgeriesLabel, surgeriesField,
+            familyHistoryLabel, familyHistoryField,
+            notesLabel, notesField,
+            saveButton
+    );
+
+
+    // Add update pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(updatePane);
     
-        // Add details pane to the main content
-        Pane mainContentPane = (Pane) mainContentTitle.getParent();
-        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
-        mainContentPane.getChildren().add(detailsPane);
-    
-        // Position the details pane within the pane
-        AnchorPane.setTopAnchor(detailsPane, 50.0); // Adjust based on desired positioning
-        AnchorPane.setLeftAnchor(detailsPane, 20.0);
-        AnchorPane.setRightAnchor(detailsPane, 20.0);
-    }
-    
-    
+
+    // Position the update pane
+    AnchorPane.setTopAnchor(updatePane, 50.0);
+    AnchorPane.setLeftAnchor(updatePane, 20.0);
+    AnchorPane.setRightAnchor(updatePane, 20.0);
+}
+
     
 
 

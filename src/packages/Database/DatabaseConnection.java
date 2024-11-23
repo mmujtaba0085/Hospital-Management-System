@@ -198,8 +198,6 @@ public class DatabaseConnection {
         return appointments;
     }
     
-
-    
     public static boolean cancelAppointment(int Id, String Name) {
         String fetchAppointmentQuery = """
         SELECT doctorID, appointedDay 
@@ -642,7 +640,6 @@ public class DatabaseConnection {
     }
     
 
-    // Load schedule from database
     public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
         ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
@@ -824,9 +821,7 @@ public class DatabaseConnection {
     
         return false; // Booking failed
     }
-    
-    
-    
+     
     public static boolean isSlotAvailable(int doctorID, String dayOfWeek) {
         String query = """
             SELECT totalBooked, TIME_TO_SEC(TIMEDIFF(endTime, startTime)) / 3600 AS timeDiff
@@ -854,7 +849,6 @@ public class DatabaseConnection {
         return false; // Default to no slots available if an error occurs
     }
     
-
     public static List<String> getDoctorAvailableDays(int doctorID) {
         String query = "SELECT dayOfWeek FROM DoctorSchedule WHERE doctorID = ?";
         List<String> daysAvailable = new ArrayList<>();
@@ -921,4 +915,26 @@ public class DatabaseConnection {
         return specialization;
     }
     
+    public static boolean updateHealthRecords(int patientId, String allergies, String medications, String pastIllnesses,
+                                          String surgeries, String familyHistory, String notes) {
+    String query = "UPDATE MedicalHistory SET allergies = ?, medications = ?, pastIllnesses = ?, " +
+                   "surgeries = ?, familyHistory = ?, notes = ? WHERE patientID = ?";
+
+    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = connection.prepareStatement(query)) {
+        ps.setString(1, allergies);
+        ps.setString(2, medications);
+        ps.setString(3, pastIllnesses);
+        ps.setString(4, surgeries);
+        ps.setString(5, familyHistory);
+        ps.setString(6, notes);
+        ps.setInt(7, patientId);
+
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 }
