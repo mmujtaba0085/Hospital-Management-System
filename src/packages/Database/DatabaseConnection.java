@@ -937,4 +937,29 @@ public class DatabaseConnection {
     return false;
 }
 
+    public static boolean removeAppointment(int patientId, int doctorId) {
+        String query = "DELETE FROM Appointments WHERE patientID = ? AND doctorID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean addBill(int patientId) {
+        String query = "INSERT INTO Bills (patientID, amount, paid) VALUES (?, 1500, FALSE)";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, patientId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 }

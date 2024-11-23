@@ -675,7 +675,7 @@ public class DoctorDashboardController {
 
     
     
-    private void openHealthRecordsForm(MedicalHistory patientRecord) {
+private void openHealthRecordsForm(MedicalHistory patientRecord) {
     // Create a new pane for updating health records
     VBox updatePane = new VBox();
     updatePane.setSpacing(10);
@@ -715,9 +715,42 @@ public class DoctorDashboardController {
         );
         if (success) {
             showConfirmationDialog("Health records updated successfully.");
-            viewMedicalHistory(); // Reload medical history
         } else {
             showErrorDialog("Failed to update health records. Please try again.");
+        }
+    });
+
+    // Conclude Appointment button
+    Button concludeButton = new Button("Conclude Appointment");
+    concludeButton.setStyle("-fx-font-size: 14px; -fx-background-color: #FF5722; -fx-text-fill: white;");
+    concludeButton.setOnAction(event -> {
+        // First, save changes to health records
+        boolean recordsUpdated = DatabaseConnection.updateHealthRecords(
+                patientRecord.getPatientId(),
+                allergiesField.getText(),
+                medicationsField.getText(),
+                pastIllnessesField.getText(),
+                surgeriesField.getText(),
+                familyHistoryField.getText(),
+                notesField.getText()
+        );
+
+        if (recordsUpdated) {
+            // If records are successfully updated, conclude the appointment
+            boolean removed = DatabaseConnection.removeAppointment(patientRecord.getPatientId(), doctor.getID());
+            if (removed) {
+                boolean billAdded = DatabaseConnection.addBill(patientRecord.getPatientId());
+                if (billAdded) {
+                    showConfirmationDialog("Changes saved, appointment concluded, and bill added successfully.");
+                    viewMedicalHistory(); // Navigate back to the main medical history view
+                } else {
+                    showErrorDialog("Failed to add the bill for this patient.");
+                }
+            } else {
+                showErrorDialog("Failed to conclude the appointment. Please try again.");
+            }
+        } else {
+            showErrorDialog("Failed to save changes to health records. Appointment not concluded.");
         }
     });
 
@@ -730,22 +763,20 @@ public class DoctorDashboardController {
             surgeriesLabel, surgeriesField,
             familyHistoryLabel, familyHistoryField,
             notesLabel, notesField,
-            saveButton
+            saveButton,
+            concludeButton // Add conclude button
     );
-
 
     // Add update pane to the main content
     Pane mainContentPane = (Pane) mainContentTitle.getParent();
     mainContentPane.getChildren().forEach(child -> child.setVisible(false));
     mainContentPane.getChildren().add(updatePane);
-    
 
     // Position the update pane
     AnchorPane.setTopAnchor(updatePane, 50.0);
     AnchorPane.setLeftAnchor(updatePane, 20.0);
     AnchorPane.setRightAnchor(updatePane, 20.0);
 }
-
     
 
 
