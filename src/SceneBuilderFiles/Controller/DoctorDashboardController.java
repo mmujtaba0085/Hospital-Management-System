@@ -75,6 +75,11 @@ public class DoctorDashboardController {
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
 
+    @FXML
+    public void Profile(){
+        
+    }
+
     // Sidebar Handlers
     @FXML
     public void showOverview() {

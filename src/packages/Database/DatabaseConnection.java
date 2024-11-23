@@ -667,18 +667,18 @@ public class DatabaseConnection {
         return scheduleList;
     }
 
-    public static LinkedList<Bill> getSpecificPatientBill(Patient patient) {
-        LinkedList<Bill> billList = new LinkedList<>();
+    public static ObservableList<Bill> getSpecificPatientBill(Patient patient) {
+        ObservableList<Bill> billList = FXCollections.observableArrayList();
         
-        // SQL query to get bills for a specific patient
+        // Corrected SQL query
         String query = """
-            SELECT b.billID, p.name, b.amount, b.paid
+            SELECT b.billID, p.name AS patientName, b.amount, b.paid
             FROM Bills b
-            JOIN Patient p ON b.patientID = p.patientID;
+            JOIN Patient p ON b.patientID = p.patientID
+            WHERE b.patientID = ?;
         """;
-
-        Bill b=new Bill();
-        // Establish the connection to the database
+    
+        // Database connection and data fetching
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
@@ -687,24 +687,25 @@ public class DatabaseConnection {
             
             // Execute the query
             try (ResultSet rs = stmt.executeQuery()) {
-                
-                // Process the result set
+                // Process each row in the result set
                 while (rs.next()) {
-                    b.setID(rs.getInt("bill_id"));
-                    b.setPatientName(rs.getString("name"));
-                    b.setAmount(rs.getDouble("amount"));
-                    b.setPaid(rs.getBoolean("paid"));
-                    // Create a Bill object and add it to the LinkedList
-                    billList.add(b);
+                    Bill bill = new Bill();
+                    bill.setID(rs.getInt("billID"));
+                    bill.setPatientName(rs.getString("patientName"));
+                    bill.setAmount(rs.getDouble("amount"));
+                    bill.setPaid(rs.getBoolean("paid"));
+                    
+                    // Add the bill to the list
+                    billList.add(bill);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly in real-world scenarios
+            e.printStackTrace(); // Replace with proper logging in production
         }
         
         return billList;
     }
-
+    
     public static List<String> distinctSpecialization(){
         String query = "SELECT DISTINCT specialization FROM Doctor ORDER BY specialization";
         List<String> specialization=null;

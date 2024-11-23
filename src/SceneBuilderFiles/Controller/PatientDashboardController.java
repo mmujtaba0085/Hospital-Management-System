@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
+import packages.Others.MedicalHistory;
 import packages.Others.Schedule;
 import packages.Person.Patient;
 
@@ -661,9 +663,62 @@ confirmButton.setOnAction(event -> {
     
     @FXML
     private void viewHealthRecords(ActionEvent event) {
-        mainContentTitle.setText("View Health Records");
-        // Add logic to fetch and display health records
-        System.out.println("Viewing health records.");
+        VBox detailsPane = new VBox();
+    detailsPane.setSpacing(10);
+    List<Integer> patientIds=new ArrayList<>();
+    patientIds.add(patient.getID());
+    List<MedicalHistory> selectedPatient=DatabaseConnection.getMedicalReports(patientIds);
+    // Display patient name in bold
+    Label patientNameLabel = new Label(selectedPatient.get(0).getPatientName());
+    patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Display allergies
+    Label allergiesLabel = new Label("Allergies:");
+    allergiesLabel.setStyle("-fx-font-weight: bold;");
+    Label allergiesDetails = new Label(selectedPatient.get(0).getAllergies());
+
+    // Display medications
+    Label medicationsLabel = new Label("Medications:");
+    medicationsLabel.setStyle("-fx-font-weight: bold;");
+    Label medicationsDetails = new Label(selectedPatient.get(0).getMedications());
+
+    // Similarly for past illnesses, surgeries, family history, and notes
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
+    Label pastIllnessesDetails = new Label(selectedPatient.get(0).getPastIllnesses());
+
+    Label surgeriesLabel = new Label("Surgeries:");
+    surgeriesLabel.setStyle("-fx-font-weight: bold;");
+    Label surgeriesDetails = new Label(selectedPatient.get(0).getSurgeries());
+
+    Label familyHistoryLabel = new Label("Family History:");
+    familyHistoryLabel.setStyle("-fx-font-weight: bold;");
+    Label familyHistoryDetails = new Label(selectedPatient.get(0).getFamilyHistory());
+
+    Label notesLabel = new Label("Notes:");
+    notesLabel.setStyle("-fx-font-weight: bold;");
+    Label notesDetails = new Label(selectedPatient.get(0).getNotes());
+
+    // Add all labels, the back button, and the update button to the details pane
+    detailsPane.getChildren().addAll(
+            patientNameLabel,
+            allergiesLabel, allergiesDetails,
+            medicationsLabel, medicationsDetails,
+            pastIllnessesLabel, pastIllnessesDetails,
+            surgeriesLabel, surgeriesDetails,
+            familyHistoryLabel, familyHistoryDetails,
+            notesLabel, notesDetails
+    );
+
+    // Add details pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(detailsPane);
+
+    // Position the details pane within the pane
+    AnchorPane.setTopAnchor(detailsPane, 50.0);
+    AnchorPane.setLeftAnchor(detailsPane, 20.0);
+    AnchorPane.setRightAnchor(detailsPane, 20.0);
     }
 
     @FXML
@@ -694,14 +749,12 @@ confirmButton.setOnAction(event -> {
         mainContentTitle.setText("Billing Details");
 
         // Fetch billing information for the specific patient
-        LinkedList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
+        ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
 
-        // Convert the LinkedList to an ObservableList for the TableView
-        ObservableList<Bill> billObservableList = FXCollections.observableArrayList(billList);
 
         // Create a TableView for displaying bills
         TableView<Bill> billTable = new TableView<>();
-        billTable.setItems(billObservableList);
+        billTable.setItems(billList);
 
         // Define TableColumn for Bill ID
         TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");

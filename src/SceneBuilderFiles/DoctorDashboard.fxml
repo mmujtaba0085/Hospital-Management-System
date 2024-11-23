@@ -19,6 +19,7 @@
 
                 <!-- Home / Overview -->
                 <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
+                <Button onAction="#Profile" prefHeight="26.0" prefWidth="228.0" text="ViewProfile" />
 
                 <!-- Appointments Management with Sub-options -->
                 <TitledPane alignment="TOP_CENTER" expanded="false" prefWidth="222.0" text="Appointments Management">
