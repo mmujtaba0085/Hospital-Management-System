@@ -963,4 +963,82 @@ public class DatabaseConnection {
         return false;
     }
     
+    public static boolean updateDoctorProfile(int doctorId, String name, String phone, String address, String specialization) {
+        String sql = "UPDATE Doctor SET name = ?, phoneNumber = ?, address = ?, specialization = ? WHERE doctorID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setString(4, specialization);
+            pstmt.setInt(5, doctorId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating doctor profile: " + e.getMessage());
+            return false;
+        }
+    }
+  
+    public static boolean updatePatientProfile(int patientID, String name, String phone, String address) {
+        String sql = "UPDATE Patient SET name = ?, phoneNumber = ?, address = ? WHERE patientID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setInt(4, patientID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating patient profile: " + e.getMessage());
+            return false;
+        }
+    }
+   
+    public static boolean updatePassword(String email, String currentPassword, String newPassword) {
+        // First verify current password
+        String verifySql = "SELECT password FROM login WHERE username = ?";
+        String updateSql = "UPDATE login SET password = ? WHERE username = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);) {
+            // Verify current password
+            try (PreparedStatement verifyStmt = connection.prepareStatement(verifySql)) {
+                verifyStmt.setString(1, email);
+                ResultSet rs = verifyStmt.executeQuery();
+                
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    // You should use proper password hashing in production
+                    if (!currentPassword.equals(storedPassword)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            
+            // Update to new password
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                // You should hash the password in production
+                updateStmt.setString(1, newPassword);
+                updateStmt.setString(2, email);
+                
+                int rowsAffected = updateStmt.executeUpdate();
+                return rowsAffected > 0;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating doctor password: " + e.getMessage());
+            return false;
+        }
+    }
 }

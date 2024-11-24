@@ -21,9 +21,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
@@ -76,10 +80,188 @@ public class DoctorDashboardController {
     }
 
     @FXML
-    public void Profile(){
-        
-    }
+public void viewProfile() {
+    mainContentTitle.setText("My Profile");
+    
+    // Create main content pane
+    VBox profileBox = new VBox(15);
+    profileBox.setPadding(new Insets(20));
+    
+    // Profile Information Section
+    VBox infoBox = new VBox(10);
+    infoBox.setStyle("-fx-padding: 20px; -fx-background-color: #f5f5f5; -fx-background-radius: 5px;");
+    
+    // Create labels for doctor information
+    Label nameLabel = new Label("Name: " + doctor.getName());
+    Label emailLabel = new Label("Email: " + doctor.getEmail());
+    Label specializationLabel = new Label("Specialization: " + doctor.getSpecialization());
+    Label phoneLabel = new Label("Phone: " + doctor.getPhoneNumber());
+    Label addressLabel = new Label("Address: " + doctor.getAddress());
+    
+    // Style the labels
+    String labelStyle = "-fx-font-size: 14px;";
+    nameLabel.setStyle(labelStyle);
+    emailLabel.setStyle(labelStyle);
+    specializationLabel.setStyle(labelStyle);
+    phoneLabel.setStyle(labelStyle);
+    addressLabel.setStyle(labelStyle);
+    
+    infoBox.getChildren().addAll(nameLabel, emailLabel, specializationLabel, phoneLabel, addressLabel);
+    
+    // Create buttons
+    Button editProfileButton = new Button("Edit Profile");
+    Button changePasswordButton = new Button("Change Password");
+    
+    // Style the buttons
+    String buttonStyle = "-fx-font-size: 14px; -fx-min-width: 150px;";
+    editProfileButton.setStyle(buttonStyle);
+    changePasswordButton.setStyle(buttonStyle);
+    
+    // Button actions
+    editProfileButton.setOnAction(e -> showEditProfileDialog());
+    changePasswordButton.setOnAction(e -> showChangePasswordDialog());
+    
+    // Add all components to the main profile box
+    profileBox.getChildren().addAll(infoBox, editProfileButton, changePasswordButton);
+    
+    // Add to main content area
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().clear();
+    mainContentPane.getChildren().addAll(mainContentTitle, profileBox);
+    
+    // Set anchors
+    AnchorPane.setTopAnchor(profileBox, 50.0);
+    AnchorPane.setLeftAnchor(profileBox, 20.0);
+    AnchorPane.setRightAnchor(profileBox, 20.0);
+}
 
+private void showEditProfileDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Edit Profile");
+    dialog.setHeaderText("Update your profile information");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    TextField nameField = new TextField(doctor.getName());
+    TextField phoneField = new TextField(doctor.getPhoneNumber());
+    TextField addressField = new TextField(doctor.getAddress());
+    TextField specializationField = new TextField(doctor.getSpecialization());
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Name:"), 0, 0);
+    grid.add(nameField, 1, 0);
+    grid.add(new Label("Phone:"), 0, 1);
+    grid.add(phoneField, 1, 1);
+    grid.add(new Label("Address:"), 0, 2);
+    grid.add(addressField, 1, 2);
+    grid.add(new Label("Specialization:"), 0, 3);
+    grid.add(specializationField, 1, 3);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            // Update doctor object
+            doctor.setName(nameField.getText());
+            doctor.setPhoneNumber(phoneField.getText());
+            doctor.setAddress(addressField.getText());
+            doctor.setSpecialization(specializationField.getText());
+            
+            // Update in database
+            boolean success = DatabaseConnection.updateDoctorProfile(
+                doctor.getID(),
+                nameField.getText(),
+                phoneField.getText(),
+                addressField.getText(),
+                specializationField.getText()
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully!");
+                viewProfile(); // Refresh the profile view
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to update profile. Please try again.");
+            }
+        }
+    });
+}
+
+private void showChangePasswordDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Change Password");
+    dialog.setHeaderText("Enter your current and new password");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    PasswordField currentPasswordField = new PasswordField();
+    PasswordField newPasswordField = new PasswordField();
+    PasswordField confirmPasswordField = new PasswordField();
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Current Password:"), 0, 0);
+    grid.add(currentPasswordField, 1, 0);
+    grid.add(new Label("New Password:"), 0, 1);
+    grid.add(newPasswordField, 1, 1);
+    grid.add(new Label("Confirm Password:"), 0, 2);
+    grid.add(confirmPasswordField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                showAlert(AlertType.ERROR, "Error", "New passwords do not match!");
+                return;
+            }
+            
+            // Update password in database
+            boolean success = DatabaseConnection.updatePassword(
+                doctor.getEmail(),
+                currentPassword,
+                newPassword
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Password changed successfully!");
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to change password. Please check your current password and try again.");
+            }
+        }
+    });
+}
+
+private void showAlert(AlertType alertType, String title, String content) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
     // Sidebar Handlers
     @FXML
     public void showOverview() {
