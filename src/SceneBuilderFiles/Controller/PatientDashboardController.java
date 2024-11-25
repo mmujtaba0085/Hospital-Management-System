@@ -17,7 +17,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
@@ -780,6 +779,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     /**
      * Handles making a payment.
      */
+    @SuppressWarnings("unused")
     @FXML
     private void makePayment(ActionEvent event) {
         mainContentTitle.setText("Make a Payment");
@@ -909,138 +909,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         mainContentTitle.setText("Notifications");
         // Add logic to fetch and display notifications
         System.out.println("Viewing notifications.");
-    }
-
-    /**
-     * Handles editing profile settings.
-     */
-    @SuppressWarnings("unused")
-    @FXML
-    private void editProfile(ActionEvent event) {
-        mainContentTitle.setText("Profile Settings");
-        
-        // Create a layout for the profile form
-        VBox profileForm = new VBox(10);
-        profileForm.setPadding(new Insets(20));
-
-        // Fetch the patient's current details
-        Patient currentPatient = DatabaseConnection.getPatientPersonalDetails(patient.getID());
-        if (currentPatient == null) {
-            System.out.println("Error: Patient not found.");
-            return;
-        }
-
-        // Create form fields
-        Label nameLabel = new Label("Name:");
-        nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
-
-        TextField nameField = new TextField(currentPatient.getName());
-        nameField.setLayoutX(350); // X position
-        nameField.setLayoutY(50); // Y position
-        nameField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
-
-        // Email label and field
-        Label emailLabel = new Label("Email:");
-        emailLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
-
-        TextField emailField = new TextField(currentPatient.getEmail());
-        emailField.setLayoutX(350); // X position
-        emailField.setLayoutY(80); // Y position
-        emailField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
-
-        // Phone label and field
-        Label phoneLabel = new Label("Phone Number:");
-        phoneLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
-
-        TextField phoneField = new TextField(currentPatient.getPhoneNumber());
-        phoneField.setLayoutX(350); // X position
-        phoneField.setLayoutY(80); // Y position
-        phoneField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
-
-
-        /*Label addressLabel = new Label("Address:");
-        TextArea addressField = new TextArea(currentPatient.getAddress());
-        addressField.setPrefRowCount(3); */
-
-        // Save button
-        Button saveButton = new Button("Save Changes");
-
-        // Style the button
-        saveButton.setStyle("""
-            -fx-background-color: #4CAF50; /* Green background */
-            -fx-text-fill: white;          /* White text */
-            -fx-font-size: 14px;           /* Text size */
-            -fx-font-weight: bold;         /* Bold text */
-            -fx-padding: 10px 20px;        /* Padding */
-            -fx-border-radius: 5px;        /* Rounded corners */
-            -fx-background-radius: 5px;    /* Background radius */
-            -fx-border-color: #45a049;     /* Border color matching background */
-            -fx-border-width: 1px;         /* Border width */
-        """);
-
-        // Set x and y position
-        saveButton.setLayoutX(350); // X position
-        saveButton.setLayoutY(200); // Y position
-
-        // Add hover effect
-        saveButton.setOnMouseEntered(mouseEvent -> saveButton.setStyle("""
-            -fx-background-color: #45a049; /* Slightly darker green */
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-            -fx-border-radius: 5px;
-            -fx-background-radius: 5px;
-            -fx-border-color: #45a049;
-            -fx-border-width: 1px;
-        """));
-        saveButton.setOnMouseExited(mouseEvent -> saveButton.setStyle("""
-            -fx-background-color: #4CAF50;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-            -fx-border-radius: 5px;
-            -fx-background-radius: 5px;
-            -fx-border-color: #45a049;
-            -fx-border-width: 1px;
-        """));
-
-        saveButton.setOnAction(e -> {
-            // Validate input
-            if (nameField.getText().isEmpty() || emailField.getText().isEmpty() || phoneField.getText().isEmpty()) {
-                System.out.println("Error: All fields must be filled.");
-                return;
-            }
-
-            // Update patient details
-            currentPatient.setName(nameField.getText());
-            currentPatient.setEmail(emailField.getText());
-            currentPatient.setPhoneNumber(phoneField.getText());
-            //currentPatient.setAddress(addressField.getText());
-
-            // Save changes to the database
-            boolean success = DatabaseConnection.updatePatientDetails(currentPatient);
-            if (success) {
-                System.out.println("Profile updated successfully.");
-                mainContentTitle.setText("Profile Updated");
-            } else {
-                System.out.println("Error: Failed to update profile.");
-            }
-        });
-
-        // Add components to the form
-        profileForm.getChildren().addAll(
-            nameLabel, nameField,
-            emailLabel, emailField,
-            phoneLabel, phoneField,
-            //addressLabel, addressField,
-            saveButton
-        );
-
-        // Add the form to the main content area
-        mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().add(profileForm);
     }
 
 

@@ -71,6 +71,10 @@ public class Bill {
         return patientName;
     }
 
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
     public List<Service> getServices() {
         return services;
     }
@@ -89,6 +93,10 @@ public class Bill {
 
     public void setPatientName(String name){
         this.patientName = name;
+    }
+
+    public void setAccountNumber(String accountNumber){
+        this.accountNumber = accountNumber;
     }
 
     public void setServices(List<Service> services) {
