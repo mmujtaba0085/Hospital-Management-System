@@ -21,13 +21,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -74,6 +79,189 @@ public class DoctorDashboardController {
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
 
+    @FXML
+public void viewProfile() {
+    mainContentTitle.setText("My Profile");
+    
+    // Create main content pane
+    VBox profileBox = new VBox(15);
+    profileBox.setPadding(new Insets(20));
+    
+    // Profile Information Section
+    VBox infoBox = new VBox(10);
+    infoBox.setStyle("-fx-padding: 20px; -fx-background-color: #f5f5f5; -fx-background-radius: 5px;");
+    
+    // Create labels for doctor information
+    Label nameLabel = new Label("Name: " + doctor.getName());
+    Label emailLabel = new Label("Email: " + doctor.getEmail());
+    Label specializationLabel = new Label("Specialization: " + doctor.getSpecialization());
+    Label phoneLabel = new Label("Phone: " + doctor.getPhoneNumber());
+    Label addressLabel = new Label("Address: " + doctor.getAddress());
+    
+    // Style the labels
+    String labelStyle = "-fx-font-size: 14px;";
+    nameLabel.setStyle(labelStyle);
+    emailLabel.setStyle(labelStyle);
+    specializationLabel.setStyle(labelStyle);
+    phoneLabel.setStyle(labelStyle);
+    addressLabel.setStyle(labelStyle);
+    
+    infoBox.getChildren().addAll(nameLabel, emailLabel, specializationLabel, phoneLabel, addressLabel);
+    
+    // Create buttons
+    Button editProfileButton = new Button("Edit Profile");
+    Button changePasswordButton = new Button("Change Password");
+    
+    // Style the buttons
+    String buttonStyle = "-fx-font-size: 14px; -fx-min-width: 150px;";
+    editProfileButton.setStyle(buttonStyle);
+    changePasswordButton.setStyle(buttonStyle);
+    
+    // Button actions
+    editProfileButton.setOnAction(e -> showEditProfileDialog());
+    changePasswordButton.setOnAction(e -> showChangePasswordDialog());
+    
+    // Add all components to the main profile box
+    profileBox.getChildren().addAll(infoBox, editProfileButton, changePasswordButton);
+    
+    // Add to main content area
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().clear();
+    mainContentPane.getChildren().addAll(mainContentTitle, profileBox);
+    
+    // Set anchors
+    AnchorPane.setTopAnchor(profileBox, 50.0);
+    AnchorPane.setLeftAnchor(profileBox, 20.0);
+    AnchorPane.setRightAnchor(profileBox, 20.0);
+}
+
+private void showEditProfileDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Edit Profile");
+    dialog.setHeaderText("Update your profile information");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    TextField nameField = new TextField(doctor.getName());
+    TextField phoneField = new TextField(doctor.getPhoneNumber());
+    TextField addressField = new TextField(doctor.getAddress());
+    TextField specializationField = new TextField(doctor.getSpecialization());
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Name:"), 0, 0);
+    grid.add(nameField, 1, 0);
+    grid.add(new Label("Phone:"), 0, 1);
+    grid.add(phoneField, 1, 1);
+    grid.add(new Label("Address:"), 0, 2);
+    grid.add(addressField, 1, 2);
+    grid.add(new Label("Specialization:"), 0, 3);
+    grid.add(specializationField, 1, 3);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            // Update doctor object
+            doctor.setName(nameField.getText());
+            doctor.setPhoneNumber(phoneField.getText());
+            doctor.setAddress(addressField.getText());
+            doctor.setSpecialization(specializationField.getText());
+            
+            // Update in database
+            boolean success = DatabaseConnection.updateDoctorProfile(
+                doctor.getID(),
+                nameField.getText(),
+                phoneField.getText(),
+                addressField.getText(),
+                specializationField.getText()
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully!");
+                viewProfile(); // Refresh the profile view
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to update profile. Please try again.");
+            }
+        }
+    });
+}
+
+private void showChangePasswordDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Change Password");
+    dialog.setHeaderText("Enter your current and new password");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    PasswordField currentPasswordField = new PasswordField();
+    PasswordField newPasswordField = new PasswordField();
+    PasswordField confirmPasswordField = new PasswordField();
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Current Password:"), 0, 0);
+    grid.add(currentPasswordField, 1, 0);
+    grid.add(new Label("New Password:"), 0, 1);
+    grid.add(newPasswordField, 1, 1);
+    grid.add(new Label("Confirm Password:"), 0, 2);
+    grid.add(confirmPasswordField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                showAlert(AlertType.ERROR, "Error", "New passwords do not match!");
+                return;
+            }
+            
+            // Update password in database
+            boolean success = DatabaseConnection.updatePassword(
+                doctor.getEmail(),
+                currentPassword,
+                newPassword
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Password changed successfully!");
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to change password. Please check your current password and try again.");
+            }
+        }
+    });
+}
+
+private void showAlert(AlertType alertType, String title, String content) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
     // Sidebar Handlers
     @FXML
     public void showOverview() {
@@ -591,79 +779,191 @@ public class DoctorDashboardController {
 
     @SuppressWarnings("unused")
     private void displayPatientDetails(MedicalHistory selectedPatient, int prevTab) {
-        // Create a new pane for displaying the selected patient's full history
-        VBox detailsPane = new VBox();
-        detailsPane.setSpacing(10);
+    // Create a new pane for displaying the selected patient's full history
+    VBox detailsPane = new VBox();
+    detailsPane.setSpacing(10);
+
+    // Display patient name in bold
+    Label patientNameLabel = new Label(selectedPatient.getPatientName());
+    patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Display allergies
+    Label allergiesLabel = new Label("Allergies:");
+    allergiesLabel.setStyle("-fx-font-weight: bold;");
+    Label allergiesDetails = new Label(selectedPatient.getAllergies());
+
+    // Display medications
+    Label medicationsLabel = new Label("Medications:");
+    medicationsLabel.setStyle("-fx-font-weight: bold;");
+    Label medicationsDetails = new Label(selectedPatient.getMedications());
+
+    // Similarly for past illnesses, surgeries, family history, and notes
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
+    Label pastIllnessesDetails = new Label(selectedPatient.getPastIllnesses());
+
+    Label surgeriesLabel = new Label("Surgeries:");
+    surgeriesLabel.setStyle("-fx-font-weight: bold;");
+    Label surgeriesDetails = new Label(selectedPatient.getSurgeries());
+
+    Label familyHistoryLabel = new Label("Family History:");
+    familyHistoryLabel.setStyle("-fx-font-weight: bold;");
+    Label familyHistoryDetails = new Label(selectedPatient.getFamilyHistory());
+
+    Label notesLabel = new Label("Notes:");
+    notesLabel.setStyle("-fx-font-weight: bold;");
+    Label notesDetails = new Label(selectedPatient.getNotes());
+
+    // Add a "Back" button
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px;");
+    backButton.setOnAction(event -> {
+        if (prevTab == 1) {
+            viewMedicalHistory(); // Reload the previous TableView
+        } else if (prevTab == 2) {
+            viewPatientDetails();
+        }
+    });
+
+    // Add an "Update Health Records" button
+    Button updateButton = new Button("Update Health Records");
+    updateButton.setStyle("-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+    updateButton.setOnAction(event -> {
+        if (prevTab==1) {
+            openHealthRecordsForm(selectedPatient);
+        } else {
+            showErrorDialog("This patient does not have an active appointment with you.");
+        }
+    });
+
+    // Add all labels, the back button, and the update button to the details pane
+    detailsPane.getChildren().addAll(
+            patientNameLabel,
+            allergiesLabel, allergiesDetails,
+            medicationsLabel, medicationsDetails,
+            pastIllnessesLabel, pastIllnessesDetails,
+            surgeriesLabel, surgeriesDetails,
+            familyHistoryLabel, familyHistoryDetails,
+            notesLabel, notesDetails,
+            backButton,
+            updateButton // Add the update button at the end
+    );
+
+    // Add details pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(detailsPane);
+
+    // Position the details pane within the pane
+    AnchorPane.setTopAnchor(detailsPane, 50.0);
+    AnchorPane.setLeftAnchor(detailsPane, 20.0);
+    AnchorPane.setRightAnchor(detailsPane, 20.0);
+}
+
     
-        // Display patient name in bold
-        Label patientNameLabel = new Label(selectedPatient.getPatientName());
-        patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
     
-        // Display allergies in bold and simple text
-        Label allergiesLabel = new Label("Allergies:");
-        allergiesLabel.setStyle("-fx-font-weight: bold;");
-        Label allergiesDetails = new Label(selectedPatient.getAllergies());
-    
-        // Display medications in bold and simple text
-        Label medicationsLabel = new Label("Medications:");
-        medicationsLabel.setStyle("-fx-font-weight: bold;");
-        Label medicationsDetails = new Label(selectedPatient.getMedications());
-    
-        // Similarly for past illnesses, surgeries, family history, and notes
-        Label pastIllnessesLabel = new Label("Past Illnesses:");
-        pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
-        Label pastIllnessesDetails = new Label(selectedPatient.getPastIllnesses());
-    
-        Label surgeriesLabel = new Label("Surgeries:");
-        surgeriesLabel.setStyle("-fx-font-weight: bold;");
-        Label surgeriesDetails = new Label(selectedPatient.getSurgeries());
-    
-        Label familyHistoryLabel = new Label("Family History:");
-        familyHistoryLabel.setStyle("-fx-font-weight: bold;");
-        Label familyHistoryDetails = new Label(selectedPatient.getFamilyHistory());
-    
-        Label notesLabel = new Label("Notes:");
-        notesLabel.setStyle("-fx-font-weight: bold;");
-        Label notesDetails = new Label(selectedPatient.getNotes());
-    
-        // Add a back button
-        Button backButton = new Button("Back");
-        backButton.setStyle("-fx-font-size: 14px;");
-        backButton.setOnAction(event -> {
-            if(prevTab==1)
-            {
-                viewMedicalHistory(); // Reload the previous TableView
-            }
-            else if(prevTab==2)
-            {
-                viewPatientDetails();
-            }
-        });
-    
-        // Add all labels and the back button to the details pane
-        detailsPane.getChildren().addAll(
-                patientNameLabel,
-                allergiesLabel, allergiesDetails,
-                medicationsLabel, medicationsDetails,
-                pastIllnessesLabel, pastIllnessesDetails,
-                surgeriesLabel, surgeriesDetails,
-                familyHistoryLabel, familyHistoryDetails,
-                notesLabel, notesDetails,
-                backButton // Add back button at the end
+private void openHealthRecordsForm(MedicalHistory patientRecord) {
+    // Create a new pane for updating health records
+    VBox updatePane = new VBox();
+    updatePane.setSpacing(10);
+
+    // Title label
+    Label titleLabel = new Label("Update Health Records for " + patientRecord.getPatientName());
+    titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Editable text fields for health record fields
+    TextField allergiesField = new TextField(patientRecord.getAllergies());
+    TextField medicationsField = new TextField(patientRecord.getMedications());
+    TextField pastIllnessesField = new TextField(patientRecord.getPastIllnesses());
+    TextField surgeriesField = new TextField(patientRecord.getSurgeries());
+    TextField familyHistoryField = new TextField(patientRecord.getFamilyHistory());
+    TextArea notesField = new TextArea(patientRecord.getNotes());
+
+    // Labels for the fields
+    Label allergiesLabel = new Label("Allergies:");
+    Label medicationsLabel = new Label("Medications:");
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    Label surgeriesLabel = new Label("Surgeries:");
+    Label familyHistoryLabel = new Label("Family History:");
+    Label notesLabel = new Label("Notes:");
+
+    // Save button
+    Button saveButton = new Button("Save");
+    saveButton.setStyle("-fx-font-size: 14px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+    saveButton.setOnAction(event -> {
+        boolean success = DatabaseConnection.updateHealthRecords(
+                patientRecord.getPatientId(),
+                allergiesField.getText(),
+                medicationsField.getText(),
+                pastIllnessesField.getText(),
+                surgeriesField.getText(),
+                familyHistoryField.getText(),
+                notesField.getText()
         );
-    
-        // Add details pane to the main content
-        Pane mainContentPane = (Pane) mainContentTitle.getParent();
-        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
-        mainContentPane.getChildren().add(detailsPane);
-    
-        // Position the details pane within the pane
-        AnchorPane.setTopAnchor(detailsPane, 50.0); // Adjust based on desired positioning
-        AnchorPane.setLeftAnchor(detailsPane, 20.0);
-        AnchorPane.setRightAnchor(detailsPane, 20.0);
-    }
-    
-    
+        if (success) {
+            showConfirmationDialog("Health records updated successfully.");
+        } else {
+            showErrorDialog("Failed to update health records. Please try again.");
+        }
+    });
+
+    // Conclude Appointment button
+    Button concludeButton = new Button("Conclude Appointment");
+    concludeButton.setStyle("-fx-font-size: 14px; -fx-background-color: #FF5722; -fx-text-fill: white;");
+    concludeButton.setOnAction(event -> {
+        // First, save changes to health records
+        boolean recordsUpdated = DatabaseConnection.updateHealthRecords(
+                patientRecord.getPatientId(),
+                allergiesField.getText(),
+                medicationsField.getText(),
+                pastIllnessesField.getText(),
+                surgeriesField.getText(),
+                familyHistoryField.getText(),
+                notesField.getText()
+        );
+
+        if (recordsUpdated) {
+            // If records are successfully updated, conclude the appointment
+            boolean removed = DatabaseConnection.removeAppointment(patientRecord.getPatientId(), doctor.getID());
+            if (removed) {
+                boolean billAdded = DatabaseConnection.addBill(patientRecord.getPatientId());
+                if (billAdded) {
+                    showConfirmationDialog("Changes saved, appointment concluded, and bill added successfully.");
+                    viewMedicalHistory(); // Navigate back to the main medical history view
+                } else {
+                    showErrorDialog("Failed to add the bill for this patient.");
+                }
+            } else {
+                showErrorDialog("Failed to conclude the appointment. Please try again.");
+            }
+        } else {
+            showErrorDialog("Failed to save changes to health records. Appointment not concluded.");
+        }
+    });
+
+    // Add all components to the update pane
+    updatePane.getChildren().addAll(
+            titleLabel,
+            allergiesLabel, allergiesField,
+            medicationsLabel, medicationsField,
+            pastIllnessesLabel, pastIllnessesField,
+            surgeriesLabel, surgeriesField,
+            familyHistoryLabel, familyHistoryField,
+            notesLabel, notesField,
+            saveButton,
+            concludeButton // Add conclude button
+    );
+
+    // Add update pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(updatePane);
+
+    // Position the update pane
+    AnchorPane.setTopAnchor(updatePane, 50.0);
+    AnchorPane.setLeftAnchor(updatePane, 20.0);
+    AnchorPane.setRightAnchor(updatePane, 20.0);
+}
     
 
 

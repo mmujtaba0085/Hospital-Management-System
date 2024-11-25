@@ -198,8 +198,6 @@ public class DatabaseConnection {
         return appointments;
     }
     
-
-    
     public static boolean cancelAppointment(int Id, String Name) {
         String fetchAppointmentQuery = """
         SELECT doctorID, appointedDay 
@@ -642,7 +640,6 @@ public class DatabaseConnection {
     }
     
 
-    // Load schedule from database
     public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
         ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
@@ -670,18 +667,18 @@ public class DatabaseConnection {
         return scheduleList;
     }
 
-    public static LinkedList<Bill> getSpecificPatientBill(Patient patient) {
-        LinkedList<Bill> billList = new LinkedList<>();
+    public static ObservableList<Bill> getSpecificPatientBill(Patient patient) {
+        ObservableList<Bill> billList = FXCollections.observableArrayList();
         
-        // SQL query to get bills for a specific patient
+        // Corrected SQL query
         String query = """
-            SELECT b.billID, p.name, b.amount, b.paid
+            SELECT b.billID, p.name AS patientName, b.amount, b.paid
             FROM Bills b
-            JOIN Patient p ON b.patientID = p.patientID;
+            JOIN Patient p ON b.patientID = p.patientID
+            WHERE b.patientID = ?;
         """;
-
-        Bill b=new Bill();
-        // Establish the connection to the database
+    
+        // Database connection and data fetching
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
@@ -690,24 +687,25 @@ public class DatabaseConnection {
             
             // Execute the query
             try (ResultSet rs = stmt.executeQuery()) {
-                
-                // Process the result set
+                // Process each row in the result set
                 while (rs.next()) {
-                    b.setID(rs.getInt("bill_id"));
-                    b.setPatientName(rs.getString("name"));
-                    b.setAmount(rs.getDouble("amount"));
-                    b.setPaid(rs.getBoolean("paid"));
-                    // Create a Bill object and add it to the LinkedList
-                    billList.add(b);
+                    Bill bill = new Bill();
+                    bill.setID(rs.getInt("billID"));
+                    bill.setPatientName(rs.getString("patientName"));
+                    bill.setAmount(rs.getDouble("amount"));
+                    bill.setPaid(rs.getBoolean("paid"));
+                    
+                    // Add the bill to the list
+                    billList.add(bill);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly in real-world scenarios
+            e.printStackTrace(); // Replace with proper logging in production
         }
         
         return billList;
     }
-
+    
     public static List<String> distinctSpecialization(){
         String query = "SELECT DISTINCT specialization FROM Doctor ORDER BY specialization";
         List<String> specialization=null;
@@ -824,9 +822,7 @@ public class DatabaseConnection {
     
         return false; // Booking failed
     }
-    
-    
-    
+     
     public static boolean isSlotAvailable(int doctorID, String dayOfWeek) {
         String query = """
             SELECT totalBooked, TIME_TO_SEC(TIMEDIFF(endTime, startTime)) / 3600 AS timeDiff
@@ -854,7 +850,6 @@ public class DatabaseConnection {
         return false; // Default to no slots available if an error occurs
     }
     
-
     public static List<String> getDoctorAvailableDays(int doctorID) {
         String query = "SELECT dayOfWeek FROM DoctorSchedule WHERE doctorID = ?";
         List<String> daysAvailable = new ArrayList<>();
@@ -921,4 +916,129 @@ public class DatabaseConnection {
         return specialization;
     }
     
+    public static boolean updateHealthRecords(int patientId, String allergies, String medications, String pastIllnesses,
+                                          String surgeries, String familyHistory, String notes) {
+    String query = "UPDATE MedicalHistory SET allergies = ?, medications = ?, pastIllnesses = ?, " +
+                   "surgeries = ?, familyHistory = ?, notes = ? WHERE patientID = ?";
+
+    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = connection.prepareStatement(query)) {
+        ps.setString(1, allergies);
+        ps.setString(2, medications);
+        ps.setString(3, pastIllnesses);
+        ps.setString(4, surgeries);
+        ps.setString(5, familyHistory);
+        ps.setString(6, notes);
+        ps.setInt(7, patientId);
+
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+    public static boolean removeAppointment(int patientId, int doctorId) {
+        String query = "DELETE FROM Appointments WHERE patientID = ? AND doctorID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean addBill(int patientId) {
+        String query = "INSERT INTO Bills (patientID, amount, paid) VALUES (?, 1500, FALSE)";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, patientId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static boolean updateDoctorProfile(int doctorId, String name, String phone, String address, String specialization) {
+        String sql = "UPDATE Doctor SET name = ?, phoneNumber = ?, address = ?, specialization = ? WHERE doctorID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setString(4, specialization);
+            pstmt.setInt(5, doctorId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating doctor profile: " + e.getMessage());
+            return false;
+        }
+    }
+  
+    public static boolean updatePatientProfile(int patientID, String name, String phone, String address) {
+        String sql = "UPDATE Patient SET name = ?, phoneNumber = ?, address = ? WHERE patientID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setInt(4, patientID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating patient profile: " + e.getMessage());
+            return false;
+        }
+    }
+   
+    public static boolean updatePassword(String email, String currentPassword, String newPassword) {
+        // First verify current password
+        String verifySql = "SELECT password FROM login WHERE username = ?";
+        String updateSql = "UPDATE login SET password = ? WHERE username = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);) {
+            // Verify current password
+            try (PreparedStatement verifyStmt = connection.prepareStatement(verifySql)) {
+                verifyStmt.setString(1, email);
+                ResultSet rs = verifyStmt.executeQuery();
+                
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    // You should use proper password hashing in production
+                    if (!currentPassword.equals(storedPassword)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            
+            // Update to new password
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                // You should hash the password in production
+                updateStmt.setString(1, newPassword);
+                updateStmt.setString(2, email);
+                
+                int rowsAffected = updateStmt.executeUpdate();
+                return rowsAffected > 0;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating doctor password: " + e.getMessage());
+            return false;
+        }
+    }
 }
