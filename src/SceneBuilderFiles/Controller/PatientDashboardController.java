@@ -1,5 +1,6 @@
 package SceneBuilderFiles.Controller;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,11 +17,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -193,8 +196,8 @@ public class PatientDashboardController {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
+        TableColumn<Appointment, Date> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
 
         // Add columns to the table
         appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
@@ -667,16 +670,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
         return result == ButtonType.OK;
     }
-    
-    // Helper method to show alerts
-    @SuppressWarnings("unused")
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 
     /**
      * Handles viewing health records.
@@ -745,8 +738,11 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
         // Define TableColumn for Amount
-        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Amount");
+        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        
+        TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remainng Amount");
+        remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
 
         // Define TableColumn for Payment Status
         TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
@@ -756,7 +752,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         });
 
         // Add all columns to the TableView
-        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, paymentStatusColumn);
+        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn);
 
         // Adjust TableView layout
         billTable.setPrefWidth(mainContentArea.getPrefWidth());
@@ -787,9 +783,113 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     @FXML
     private void makePayment(ActionEvent event) {
         mainContentTitle.setText("Make a Payment");
-        // Add logic for processing payments
         System.out.println("Making a payment.");
+
+        // Clear any existing content in the mainContentArea
+        mainContentArea.getChildren().clear();
+
+        // Create form labels and fields
+        Label accountNumberLabel = new Label("Account Number:");
+        TextField accountNumberField = new TextField();
+        accountNumberField.setPromptText("Enter account number");
+        accountNumberField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
+
+        Label amountLabel = new Label("Amount:");
+        TextField amountField = new TextField();
+        amountField.setPromptText("Enter amount to pay");
+        amountField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
+
+        // Create the "Submit Payment" button
+        Button submitButton = new Button("Submit Payment");
+        submitButton.setStyle("""
+            -fx-background-color: #4CAF50;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+        """);
+
+        // Create the "Cancel" button
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("""
+            -fx-background-color: #e74c3c;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+        """);
+
+        // Position elements in a VBox
+        VBox formLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, submitButton, cancelButton);
+        formLayout.setLayoutX(20);
+        formLayout.setLayoutY(20);
+        formLayout.setStyle("-fx-padding: 20px; -fx-background-color: #f9f9f9; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        mainContentArea.getChildren().add(formLayout);
+
+        // Add action for the "Submit Payment" button
+        submitButton.setOnAction(e -> {
+            String accountNumber = accountNumberField.getText();
+            String amount = amountField.getText();
+
+            if (accountNumber.isEmpty() || amount.isEmpty()) {
+                System.out.println("All fields are required.");
+                showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
+                return;
+            }
+
+            try {
+                double paymentAmount = Double.parseDouble(amount);
+
+                // Fetch patient's bill details
+                Bill patientBill = DatabaseConnection.getBillByPatientID(patient.getID());
+
+                if (patientBill == null) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Account not found or no outstanding bill.");
+                    return;
+                }
+
+                if (paymentAmount <= 0) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Payment amount must be greater than zero.");
+                    return;
+                }
+
+                else if (paymentAmount >= patientBill.getRemainingAmount()) {
+                    // Fully paid
+                    DatabaseConnection.updateBillStatus(patient.getID(), 0, true); // Mark as paid
+                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "The bill has been fully paid.");
+                } else {
+                    // Partial payment
+                    double remainingAmount = patientBill.getRemainingAmount() - paymentAmount;
+                    System.out.println("remaining amount: "+remainingAmount);
+                    DatabaseConnection.updateBillStatus(patient.getID(), remainingAmount, false); // Update remaining balance
+                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Partial payment made. Remaining balance: " + remainingAmount);
+                }
+
+            } catch (NumberFormatException ex) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Amount", "Please enter a valid amount.");
+            }
+        });
+
+        // Add action for the "Cancel" button
+        cancelButton.setOnAction(e -> {
+            mainContentTitle.setText("Dashboard");
+            mainContentArea.getChildren().clear();
+        });
     }
+
+
+    // Helper method to show alerts
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     /**
      * Handles downloading invoices.
@@ -814,12 +914,135 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     /**
      * Handles editing profile settings.
      */
+    @SuppressWarnings("unused")
     @FXML
     private void editProfile(ActionEvent event) {
         mainContentTitle.setText("Profile Settings");
-        // Add logic to fetch and display profile settings form
-        System.out.println("Editing profile settings.");
+        
+        // Create a layout for the profile form
+        VBox profileForm = new VBox(10);
+        profileForm.setPadding(new Insets(20));
+
+        // Fetch the patient's current details
+        Patient currentPatient = DatabaseConnection.getPatientPersonalDetails(patient.getID());
+        if (currentPatient == null) {
+            System.out.println("Error: Patient not found.");
+            return;
+        }
+
+        // Create form fields
+        Label nameLabel = new Label("Name:");
+        nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+
+        TextField nameField = new TextField(currentPatient.getName());
+        nameField.setLayoutX(350); // X position
+        nameField.setLayoutY(50); // Y position
+        nameField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
+
+        // Email label and field
+        Label emailLabel = new Label("Email:");
+        emailLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+
+        TextField emailField = new TextField(currentPatient.getEmail());
+        emailField.setLayoutX(350); // X position
+        emailField.setLayoutY(80); // Y position
+        emailField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
+
+        // Phone label and field
+        Label phoneLabel = new Label("Phone Number:");
+        phoneLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+
+        TextField phoneField = new TextField(currentPatient.getPhoneNumber());
+        phoneField.setLayoutX(350); // X position
+        phoneField.setLayoutY(80); // Y position
+        phoneField.setStyle("-fx-font-size: 14px; -fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 5px; -fx-padding: 5px;");
+
+
+        /*Label addressLabel = new Label("Address:");
+        TextArea addressField = new TextArea(currentPatient.getAddress());
+        addressField.setPrefRowCount(3); */
+
+        // Save button
+        Button saveButton = new Button("Save Changes");
+
+        // Style the button
+        saveButton.setStyle("""
+            -fx-background-color: #4CAF50; /* Green background */
+            -fx-text-fill: white;          /* White text */
+            -fx-font-size: 14px;           /* Text size */
+            -fx-font-weight: bold;         /* Bold text */
+            -fx-padding: 10px 20px;        /* Padding */
+            -fx-border-radius: 5px;        /* Rounded corners */
+            -fx-background-radius: 5px;    /* Background radius */
+            -fx-border-color: #45a049;     /* Border color matching background */
+            -fx-border-width: 1px;         /* Border width */
+        """);
+
+        // Set x and y position
+        saveButton.setLayoutX(350); // X position
+        saveButton.setLayoutY(200); // Y position
+
+        // Add hover effect
+        saveButton.setOnMouseEntered(mouseEvent -> saveButton.setStyle("""
+            -fx-background-color: #45a049; /* Slightly darker green */
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+            -fx-border-color: #45a049;
+            -fx-border-width: 1px;
+        """));
+        saveButton.setOnMouseExited(mouseEvent -> saveButton.setStyle("""
+            -fx-background-color: #4CAF50;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+            -fx-border-color: #45a049;
+            -fx-border-width: 1px;
+        """));
+
+        saveButton.setOnAction(e -> {
+            // Validate input
+            if (nameField.getText().isEmpty() || emailField.getText().isEmpty() || phoneField.getText().isEmpty()) {
+                System.out.println("Error: All fields must be filled.");
+                return;
+            }
+
+            // Update patient details
+            currentPatient.setName(nameField.getText());
+            currentPatient.setEmail(emailField.getText());
+            currentPatient.setPhoneNumber(phoneField.getText());
+            //currentPatient.setAddress(addressField.getText());
+
+            // Save changes to the database
+            boolean success = DatabaseConnection.updatePatientDetails(currentPatient);
+            if (success) {
+                System.out.println("Profile updated successfully.");
+                mainContentTitle.setText("Profile Updated");
+            } else {
+                System.out.println("Error: Failed to update profile.");
+            }
+        });
+
+        // Add components to the form
+        profileForm.getChildren().addAll(
+            nameLabel, nameField,
+            emailLabel, emailField,
+            phoneLabel, phoneField,
+            //addressLabel, addressField,
+            saveButton
+        );
+
+        // Add the form to the main content area
+        mainContentArea.getChildren().clear();
+        mainContentArea.getChildren().add(profileForm);
     }
+
 
     /**
      * Handles opening the help and support section.
