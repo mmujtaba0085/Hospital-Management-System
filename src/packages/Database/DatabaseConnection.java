@@ -683,7 +683,7 @@ public class DatabaseConnection {
         // Database connection and data fetching
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            
+            Bill b=new Bill();
             // Set the patient ID parameter
             stmt.setInt(1, patient.getID());
             
