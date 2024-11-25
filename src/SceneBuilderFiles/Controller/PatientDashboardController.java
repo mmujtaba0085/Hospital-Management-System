@@ -1,12 +1,6 @@
 package SceneBuilderFiles.Controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -229,7 +222,7 @@ public class PatientDashboardController {
      * Handles booking a new appointment.
      */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void bookAppointment() {
         mainContentTitle.setText("Book New Appointment");
@@ -312,6 +305,7 @@ public class PatientDashboardController {
     }
 
     
+    @SuppressWarnings("unused")
     private void showDoctorDays(int doctorID) {
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().clear();
@@ -389,7 +383,7 @@ confirmButton.setOnAction(event -> {
     /**
      * Handles rescheduling an appointment.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
 @FXML
 private void rescheduleAppointment(ActionEvent event) {
     mainContentTitle.setText("Reschedule Appointment");
@@ -466,6 +460,7 @@ private void showNoAppointmentsPopup() {
 }
 
 
+@SuppressWarnings("unused")
 private void selectNewDayForReschedule(Appointment oldAppointment) {
     mainContentTitle.setText("Select New Day for Reschedule");
 
@@ -537,6 +532,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     /**
      * Handles canceling an appointment.
      */
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void cancelAppointment(ActionEvent event) {
         if (patient == null) {
@@ -673,6 +669,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     }
     
     // Helper method to show alerts
+    @SuppressWarnings("unused")
     private void showAlert(Alert.AlertType alertType, String title, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
