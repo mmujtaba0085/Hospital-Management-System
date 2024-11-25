@@ -41,8 +41,6 @@
                     <content>
                         <VBox>
                             <Button onAction="#viewHealthRecords" prefHeight="26.0" prefWidth="198.0" text="View Health Records" />
-                            <Button onAction="#viewTestResults" prefHeight="26.0" prefWidth="198.0" text="View Test Results" />
-                            <Button onAction="#downloadMedicalHistory" prefHeight="26.0" prefWidth="198.0" text="Download Medical History" />
                         </VBox>
                     </content>
                 </TitledPane>
@@ -56,7 +54,6 @@
                         <VBox>
                             <Button onAction="#viewBillingDetails" prefHeight="26.0" prefWidth="198.0" text="View Billing Details" />
                             <Button onAction="#makePayment" prefHeight="26.0" prefWidth="198.0" text="Make a Payment" />
-                            <Button onAction="#downloadInvoice" prefHeight="26.0" prefWidth="200.0" text="Download Invoice" />
                         </VBox>
                     </content>
                 </TitledPane>
