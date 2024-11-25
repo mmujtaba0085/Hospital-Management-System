@@ -600,7 +600,7 @@ private void rescheduleAppointment(ActionEvent event) {
 
     // Add a reschedule button
     Button rescheduleButton = new Button("Reschedule Selected");
-    rescheduleBox.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+    rescheduleButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
     rescheduleButton.setOnAction(e -> {
         Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
         if (selectedAppointment == null) {
