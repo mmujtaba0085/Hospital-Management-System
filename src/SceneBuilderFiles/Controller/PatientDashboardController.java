@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -29,11 +30,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
+import packages.Others.MedicalHistory;
 import packages.Others.Schedule;
 import packages.Person.Patient;
 
@@ -67,10 +70,7 @@ public class PatientDashboardController {
         subOptionPane.setVisible(false); // Hide sub-options by default
     }
 
-
-    /**
-     * Displays the home/overview section.
-     */
+    //Displays the home/overview section.
     @FXML
     private void showOverview(ActionEvent event) {
         mainContentTitle.setText("Home / Overview");
@@ -78,6 +78,181 @@ public class PatientDashboardController {
         System.out.println("Displaying Home / Overview.");
     }
 
+    public void viewProfile() {
+    mainContentTitle.setText("My Profile");
+    
+    // Create main content pane
+    VBox profileBox = new VBox(15);
+    profileBox.setPadding(new Insets(20));
+    
+    // Profile Information Section
+    VBox infoBox = new VBox(10);
+    infoBox.setStyle("-fx-padding: 20px; -fx-background-color: #f5f5f5; -fx-background-radius: 5px;");
+    
+    // Create labels for patient information
+    Label nameLabel = new Label("Name: " + patient.getName());
+    Label emailLabel = new Label("Email: " + patient.getEmail());
+    Label phoneLabel = new Label("Phone: " + patient.getPhoneNumber());
+    Label addressLabel = new Label("Address: " + patient.getAddress());
+    
+    // Style the labels
+    String labelStyle = "-fx-font-size: 14px;";
+    nameLabel.setStyle(labelStyle);
+    emailLabel.setStyle(labelStyle);
+    phoneLabel.setStyle(labelStyle);
+    addressLabel.setStyle(labelStyle);
+    
+    infoBox.getChildren().addAll(nameLabel, emailLabel, phoneLabel, addressLabel);
+    
+    // Create buttons
+    Button editProfileButton = new Button("Edit Profile");
+    Button changePasswordButton = new Button("Change Password");
+    
+    // Style the buttons
+    String buttonStyle = "-fx-font-size: 14px; -fx-min-width: 150px;";
+    editProfileButton.setStyle(buttonStyle);
+    changePasswordButton.setStyle(buttonStyle);
+    
+    // Button actions
+    editProfileButton.setOnAction(e -> showEditProfileDialog());
+    changePasswordButton.setOnAction(e -> showChangePasswordDialog());
+    
+    // Add all components to the main profile box
+    profileBox.getChildren().addAll(infoBox, editProfileButton, changePasswordButton);
+    
+    // Add to main content area
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().clear();
+    mainContentPane.getChildren().addAll(mainContentTitle, profileBox);
+    
+    // Set anchors
+    AnchorPane.setTopAnchor(profileBox, 50.0);
+    AnchorPane.setLeftAnchor(profileBox, 20.0);
+    AnchorPane.setRightAnchor(profileBox, 20.0);
+}
+
+private void showEditProfileDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Edit Profile");
+    dialog.setHeaderText("Update your profile information");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    TextField nameField = new TextField(patient.getName());
+    TextField phoneField = new TextField(patient.getPhoneNumber());
+    TextField addressField = new TextField(patient.getAddress());
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Name:"), 0, 0);
+    grid.add(nameField, 1, 0);
+    grid.add(new Label("Phone:"), 0, 1);
+    grid.add(phoneField, 1, 1);
+    grid.add(new Label("Address:"), 0, 2);
+    grid.add(addressField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            // Update doctor object
+            patient.setName(nameField.getText());
+            patient.setPhoneNumber(phoneField.getText());
+            patient.setAddress(addressField.getText());
+            
+            // Update in database
+            boolean success = DatabaseConnection.updatePatientProfile(
+                patient.getID(),
+                nameField.getText(),
+                phoneField.getText(),
+                addressField.getText()
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully!");
+                viewProfile(); // Refresh the profile view
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to update profile. Please try again.");
+            }
+        }
+    });
+}
+
+private void showChangePasswordDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Change Password");
+    dialog.setHeaderText("Enter your current and new password");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    PasswordField currentPasswordField = new PasswordField();
+    PasswordField newPasswordField = new PasswordField();
+    PasswordField confirmPasswordField = new PasswordField();
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Current Password:"), 0, 0);
+    grid.add(currentPasswordField, 1, 0);
+    grid.add(new Label("New Password:"), 0, 1);
+    grid.add(newPasswordField, 1, 1);
+    grid.add(new Label("Confirm Password:"), 0, 2);
+    grid.add(confirmPasswordField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                showAlert(AlertType.ERROR, "Error", "New passwords do not match!");
+                return;
+            }
+            
+            // Update password in database
+            boolean success = DatabaseConnection.updatePassword(
+                patient.getEmail(),
+                currentPassword,
+                newPassword
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Password changed successfully!");
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to change password. Please check your current password and try again.");
+            }
+        }
+    });
+}
+
+private void showAlert(AlertType alertType, String title, String content) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
 
     // Method to set Doctor object
     public void setPatient(Patient patient) {
@@ -164,9 +339,7 @@ public class PatientDashboardController {
     }
     
 
-    /**
-     * Handles viewing upcoming appointments.
-     */
+    
     @SuppressWarnings("unchecked")
     @FXML
     private void viewAppointments() {
@@ -220,9 +393,6 @@ public class PatientDashboardController {
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
-    /**
-     * Handles booking a new appointment.
-     */
 
 @SuppressWarnings({ "unchecked", "unused" })
     @FXML
@@ -385,6 +555,7 @@ confirmButton.setOnAction(event -> {
     /**
      * Handles rescheduling an appointment.
      */
+
     @SuppressWarnings({ "unchecked", "unused" })
 @FXML
 private void rescheduleAppointment(ActionEvent event) {
@@ -453,13 +624,14 @@ private void rescheduleAppointment(ActionEvent event) {
     AnchorPane.setBottomAnchor(rescheduleBox, 20.0);
 }
 
-private void showNoAppointmentsPopup() {
+    private void showNoAppointmentsPopup() {
     Alert alert = new Alert(Alert.AlertType.INFORMATION); // Information alert
     alert.setTitle("No Appointments");
     alert.setHeaderText(null);
     alert.setContentText("You have no appointments in scheduled.");
     alert.showAndWait(); // Display the alert and wait for user acknowledgment
 }
+
 
 
 @SuppressWarnings("unused")
@@ -528,6 +700,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
 
     System.out.println("Selecting a new day for reschedule.");
 }
+
 
 
 
@@ -670,19 +843,66 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         return result == ButtonType.OK;
     }
 
-    /**
-     * Handles viewing health records.
-     */
     @FXML
     private void viewHealthRecords(ActionEvent event) {
-        mainContentTitle.setText("View Health Records");
-        // Add logic to fetch and display health records
-        System.out.println("Viewing health records.");
+        VBox detailsPane = new VBox();
+    detailsPane.setSpacing(10);
+    List<Integer> patientIds=new ArrayList<>();
+    patientIds.add(patient.getID());
+    List<MedicalHistory> selectedPatient=DatabaseConnection.getMedicalReports(patientIds);
+    // Display patient name in bold
+    Label patientNameLabel = new Label(selectedPatient.get(0).getPatientName());
+    patientNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    // Display allergies
+    Label allergiesLabel = new Label("Allergies:");
+    allergiesLabel.setStyle("-fx-font-weight: bold;");
+    Label allergiesDetails = new Label(selectedPatient.get(0).getAllergies());
+
+    // Display medications
+    Label medicationsLabel = new Label("Medications:");
+    medicationsLabel.setStyle("-fx-font-weight: bold;");
+    Label medicationsDetails = new Label(selectedPatient.get(0).getMedications());
+
+    // Similarly for past illnesses, surgeries, family history, and notes
+    Label pastIllnessesLabel = new Label("Past Illnesses:");
+    pastIllnessesLabel.setStyle("-fx-font-weight: bold;");
+    Label pastIllnessesDetails = new Label(selectedPatient.get(0).getPastIllnesses());
+
+    Label surgeriesLabel = new Label("Surgeries:");
+    surgeriesLabel.setStyle("-fx-font-weight: bold;");
+    Label surgeriesDetails = new Label(selectedPatient.get(0).getSurgeries());
+
+    Label familyHistoryLabel = new Label("Family History:");
+    familyHistoryLabel.setStyle("-fx-font-weight: bold;");
+    Label familyHistoryDetails = new Label(selectedPatient.get(0).getFamilyHistory());
+
+    Label notesLabel = new Label("Notes:");
+    notesLabel.setStyle("-fx-font-weight: bold;");
+    Label notesDetails = new Label(selectedPatient.get(0).getNotes());
+
+    // Add all labels, the back button, and the update button to the details pane
+    detailsPane.getChildren().addAll(
+            patientNameLabel,
+            allergiesLabel, allergiesDetails,
+            medicationsLabel, medicationsDetails,
+            pastIllnessesLabel, pastIllnessesDetails,
+            surgeriesLabel, surgeriesDetails,
+            familyHistoryLabel, familyHistoryDetails,
+            notesLabel, notesDetails
+    );
+
+    // Add details pane to the main content
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(detailsPane);
+
+    // Position the details pane within the pane
+    AnchorPane.setTopAnchor(detailsPane, 50.0);
+    AnchorPane.setLeftAnchor(detailsPane, 20.0);
+    AnchorPane.setRightAnchor(detailsPane, 20.0);
     }
 
-    /**
-     * Handles viewing test results.
-     */
     @FXML
     private void viewTestResults(ActionEvent event) {
         mainContentTitle.setText("View Test Results");
@@ -690,9 +910,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing test results.");
     }
 
-    /**
-     * Handles downloading medical history.
-     */
     @FXML
     private void downloadMedicalHistory(ActionEvent event) {
         mainContentTitle.setText("Download Medical History");
@@ -700,9 +917,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Downloading medical history.");
     }
 
-    /**
-     * Handles viewing prescriptions.
-     */
     @FXML
     private void viewPrescriptions(ActionEvent event) {
         mainContentTitle.setText("Prescriptions");
@@ -710,23 +924,19 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Viewing prescriptions.");
     }
 
-    /**
-     * Handles viewing billing details.
-     */
+    
     @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void viewBillingDetails(ActionEvent event) {
         mainContentTitle.setText("Billing Details");
 
         // Fetch billing information for the specific patient
-        LinkedList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
+        ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
 
-        // Convert the LinkedList to an ObservableList for the TableView
-        ObservableList<Bill> billObservableList = FXCollections.observableArrayList(billList);
 
         // Create a TableView for displaying bills
         TableView<Bill> billTable = new TableView<>();
-        billTable.setItems(billObservableList);
+        billTable.setItems(billList);
 
         // Define TableColumn for Bill ID
         TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
@@ -775,10 +985,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         mainContentArea.getChildren().addAll(backButton, billTable);
     }
 
-
-    /**
-     * Handles making a payment.
-     */
     @SuppressWarnings("unused")
     @FXML
     private void makePayment(ActionEvent event) {
@@ -891,9 +1097,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     }
 
 
-    /**
-     * Handles downloading invoices.
-     */
     @FXML
     private void downloadInvoice(ActionEvent event) {
         mainContentTitle.setText("Download Invoice");
@@ -901,9 +1104,6 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         System.out.println("Downloading invoice.");
     }
 
-    /**
-     * Handles viewing notifications.
-     */
     @FXML
     private void viewNotifications(ActionEvent event) {
         mainContentTitle.setText("Notifications");
@@ -912,9 +1112,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     }
 
 
-    /**
-     * Handles opening the help and support section.
-     */
+
     @FXML
     private void openHelp(ActionEvent event) {
         mainContentTitle.setText("Help and Support");
