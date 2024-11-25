@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -22,9 +21,6 @@
 
                 <!-- Personal List -->
                 <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="40.0" prefWidth="252.0" text="Personal Details" />
-
-                <!-- Appointments Management with Sub-options -->
-                <Button onAction="#viewSchedule" prefHeight="40.0" prefWidth="252.0" text="View Schedule" />
                 
                 <!-- Patient List -->
                 <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="40.0" prefWidth="252.0" text="Patient's List" />

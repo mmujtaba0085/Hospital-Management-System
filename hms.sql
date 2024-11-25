@@ -34,6 +34,7 @@ CREATE TABLE Patient (
     name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phoneNumber VARCHAR(50) NOT NULL,
+    accountNumber VARCHAR(50) NOT NULL,
     checkupDate DATE NOT NULL
 );
 
@@ -55,8 +56,8 @@ CREATE TABLE Appointments (
     patientID INT NOT NULL,
     doctorID INT NOT NULL,
     specialization VARCHAR(255) NOT NULL,
-    start_time INT NOT NULL,
-    end_time INT NOT NULL,
+    start_time INT,
+    end_time INT,
     date DATE NOT NULL,
     FOREIGN KEY (patientID) REFERENCES Patient(patientID),
     FOREIGN KEY (doctorID) REFERENCES Doctor(doctorID)
@@ -79,6 +80,8 @@ CREATE TABLE Bills(
     billID INT AUTO_INCREMENT PRIMARY KEY,
     patientID INT NOT NULL,
     amount INT NOT NULL default 0,
+    remainingAmount INT NOT NULL default 0,
+    accountNumber VARCHAR(50) NOT NULL default '',
     paid boolean NOT NULL DEFAULT FALSE,
     FOREIGN KEY (patientID) REFERENCES Patient(patientID)
 );
@@ -191,12 +194,13 @@ INSERT INTO Doctor (name,specialization , email, phoneNumber, hireDate) VALUES
 
 
 
-INSERT INTO Patient (name, email, phoneNumber, checkupDate) VALUES
-('John Doe', 'john.doe@gmail.com', '123-456-7890', '2024-11-20'),
-('Jane Roe', 'jane.roe@gmail.com', '234-567-8901', '2024-11-21'),
-('Sam Green', 'sam.green@gmail.com', '345-678-9012', '2024-11-22'),
-('Lisa White', 'lisa.white@gmail.com', '456-789-0123', '2024-11-23'),
-('Paul Black', 'paul.black@gmail.com', '567-890-1234', '2024-11-24');
+INSERT INTO Patient (name, email, phoneNumber, checkupDate, accountNumber) VALUES
+('John Doe', 'john.doe@gmail.com', '123-456-7890', '2024-11-20', 'ACC12345'),
+('Jane Roe', 'jane.roe@gmail.com', '234-567-8901', '2024-11-21', 'ACC23456'),
+('Sam Green', 'sam.green@gmail.com', '345-678-9012', '2024-11-22', 'ACC34567'),
+('Lisa White', 'lisa.white@gmail.com', '456-789-0123', '2024-11-23', 'ACC45678'),
+('Paul Black', 'paul.black@gmail.com', '567-890-1234', '2024-11-24', 'ACC56789');
+
 
 
 INSERT INTO Admin (name, email, phoneNumber, hireDate) VALUES
@@ -216,19 +220,19 @@ INSERT INTO Receptionist (name, email, phoneNumber, hireDate) VALUES
 
 select * from appointments; 
 -- Insert valid appointments
-INSERT INTO Appointments (patient_id, doctor_id, time_of_appointment) VALUES
-(1, 1, '2024-11-17 10:00:00'),
-(2, 1, '2024-11-17 10:30:00'),
-(3, 2, '2024-11-17 11:00:00'),
-(4, 2, '2024-11-17 11:30:00'),
-(5, 3, '2024-11-17 12:00:00');
+INSERT INTO Appointments (patientID, doctorID, specialization, date) VALUES
+(1, 1, 'General Medicine', '2024-11-17'),
+(2, 1, 'General Medicine', '2024-11-17'),
+(3, 2, 'Cardiologist', '2024-11-17'),
+(4, 2, 'Cardiologist', '2024-11-17'),
+(5, 3, 'Dermatologist', '2024-11-17');
 
-INSERT INTO Bills (patientID, amount, paid) VALUES
-(1, 150, TRUE),    -- John Doe, Bill paid
-(2, 200, FALSE),   -- Jane Roe, Bill unpaid
-(3, 120, TRUE),    -- Sam Green, Bill paid
-(4, 180, FALSE),   -- Lisa White, Bill unpaid
-(5, 220, TRUE);    -- Paul Black, Bill paid
+INSERT INTO Bills (patientID, amount, remainingAmount, paid) VALUES
+(1, 150, 0, TRUE),    -- John Doe, Bill paid
+(2, 200, 200, FALSE),   -- Jane Roe, Bill unpaid
+(3, 120, 0, TRUE),    -- Sam Green, Bill paid
+(4, 180, 100, FALSE),   -- Lisa White, Bill unpaid
+(5, 220, 0, TRUE);    -- Paul Black, Bill paid
 
 
 -- Attempt to insert overlapping appointment (this will fail)

@@ -1,13 +1,7 @@
 package SceneBuilderFiles.Controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,9 +18,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
@@ -377,8 +368,8 @@ private void showAlert(AlertType alertType, String title, String content) {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
+        TableColumn<Appointment, Date> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
 
         // Add columns to the table
         appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
@@ -402,8 +393,8 @@ private void showAlert(AlertType alertType, String title, String content) {
         AnchorPane.setBottomAnchor(appointmentTable, 20.0);
     }
 
-   
-    @SuppressWarnings("unchecked")
+
+@SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void bookAppointment() {
         mainContentTitle.setText("Book New Appointment");
@@ -486,6 +477,7 @@ private void showAlert(AlertType alertType, String title, String content) {
     }
 
     
+    @SuppressWarnings("unused")
     private void showDoctorDays(int doctorID) {
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().clear();
@@ -563,9 +555,10 @@ confirmButton.setOnAction(event -> {
     /**
      * Handles rescheduling an appointment.
      */
-    @SuppressWarnings("unchecked")
-    @FXML
-    private void rescheduleAppointment(ActionEvent event) {
+
+    @SuppressWarnings({ "unchecked", "unused" })
+@FXML
+private void rescheduleAppointment(ActionEvent event) {
     mainContentTitle.setText("Reschedule Appointment");
     if (patient == null) {
         mainContentTitle.setText("Error: Patient not found!");
@@ -640,7 +633,9 @@ confirmButton.setOnAction(event -> {
 }
 
 
-    private void selectNewDayForReschedule(Appointment oldAppointment) {
+
+@SuppressWarnings("unused")
+private void selectNewDayForReschedule(Appointment oldAppointment) {
     mainContentTitle.setText("Select New Day for Reschedule");
 
     Pane mainContentPane = (Pane) mainContentTitle.getParent();
@@ -706,6 +701,13 @@ confirmButton.setOnAction(event -> {
     System.out.println("Selecting a new day for reschedule.");
 }
 
+
+
+
+    /**
+     * Handles canceling an appointment.
+     */
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void cancelAppointment(ActionEvent event) {
         if (patient == null) {
@@ -840,7 +842,7 @@ confirmButton.setOnAction(event -> {
         ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
         return result == ButtonType.OK;
     }
-    
+
     @FXML
     private void viewHealthRecords(ActionEvent event) {
         VBox detailsPane = new VBox();
@@ -945,8 +947,11 @@ confirmButton.setOnAction(event -> {
         patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
         // Define TableColumn for Amount
-        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Amount");
+        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        
+        TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remainng Amount");
+        remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
 
         // Define TableColumn for Payment Status
         TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
@@ -956,7 +961,7 @@ confirmButton.setOnAction(event -> {
         });
 
         // Add all columns to the TableView
-        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, paymentStatusColumn);
+        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn);
 
         // Adjust TableView layout
         billTable.setPrefWidth(mainContentArea.getPrefWidth());
@@ -979,13 +984,118 @@ confirmButton.setOnAction(event -> {
         mainContentArea.getChildren().clear();
         mainContentArea.getChildren().addAll(backButton, billTable);
     }
- 
+
+    @SuppressWarnings("unused")
     @FXML
     private void makePayment(ActionEvent event) {
         mainContentTitle.setText("Make a Payment");
-        // Add logic for processing payments
         System.out.println("Making a payment.");
+
+        // Clear any existing content in the mainContentArea
+        mainContentArea.getChildren().clear();
+
+        // Create form labels and fields
+        Label accountNumberLabel = new Label("Account Number:");
+        TextField accountNumberField = new TextField();
+        accountNumberField.setPromptText("Enter account number");
+        accountNumberField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
+
+        Label amountLabel = new Label("Amount:");
+        TextField amountField = new TextField();
+        amountField.setPromptText("Enter amount to pay");
+        amountField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
+
+        // Create the "Submit Payment" button
+        Button submitButton = new Button("Submit Payment");
+        submitButton.setStyle("""
+            -fx-background-color: #4CAF50;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+        """);
+
+        // Create the "Cancel" button
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("""
+            -fx-background-color: #e74c3c;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+        """);
+
+        // Position elements in a VBox
+        VBox formLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, submitButton, cancelButton);
+        formLayout.setLayoutX(20);
+        formLayout.setLayoutY(20);
+        formLayout.setStyle("-fx-padding: 20px; -fx-background-color: #f9f9f9; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        mainContentArea.getChildren().add(formLayout);
+
+        // Add action for the "Submit Payment" button
+        submitButton.setOnAction(e -> {
+            String accountNumber = accountNumberField.getText();
+            String amount = amountField.getText();
+
+            if (accountNumber.isEmpty() || amount.isEmpty()) {
+                System.out.println("All fields are required.");
+                showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
+                return;
+            }
+
+            try {
+                double paymentAmount = Double.parseDouble(amount);
+
+                // Fetch patient's bill details
+                Bill patientBill = DatabaseConnection.getBillByPatientID(patient.getID());
+
+                if (patientBill == null) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Account not found or no outstanding bill.");
+                    return;
+                }
+
+                if (paymentAmount <= 0) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Payment amount must be greater than zero.");
+                    return;
+                }
+
+                else if (paymentAmount >= patientBill.getRemainingAmount()) {
+                    // Fully paid
+                    DatabaseConnection.updateBillStatus(patient.getID(), 0, true); // Mark as paid
+                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "The bill has been fully paid.");
+                } else {
+                    // Partial payment
+                    double remainingAmount = patientBill.getRemainingAmount() - paymentAmount;
+                    System.out.println("remaining amount: "+remainingAmount);
+                    DatabaseConnection.updateBillStatus(patient.getID(), remainingAmount, false); // Update remaining balance
+                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Partial payment made. Remaining balance: " + remainingAmount);
+                }
+
+            } catch (NumberFormatException ex) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Amount", "Please enter a valid amount.");
+            }
+        });
+
+        // Add action for the "Cancel" button
+        cancelButton.setOnAction(e -> {
+            mainContentTitle.setText("Dashboard");
+            mainContentArea.getChildren().clear();
+        });
     }
+
+
+    // Helper method to show alerts
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     @FXML
     private void downloadInvoice(ActionEvent event) {
@@ -1001,12 +1111,7 @@ confirmButton.setOnAction(event -> {
         System.out.println("Viewing notifications.");
     }
 
-    @FXML
-    private void editProfile(ActionEvent event) {
-        mainContentTitle.setText("Profile Settings");
-        // Add logic to fetch and display profile settings form
-        System.out.println("Editing profile settings.");
-    }
+
 
     @FXML
     private void openHelp(ActionEvent event) {

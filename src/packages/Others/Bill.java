@@ -5,8 +5,10 @@ import java.util.List;
 public class Bill {
     private int billId;
     private double amount;
+    private double remainingAmount;
     private boolean paid;
     private String patientName;
+    private String accountNumber;
     private List<Service> services; // List of services for the patient
 
     public Bill() {
@@ -16,6 +18,18 @@ public class Bill {
 
     public Bill(int amount) {
         this.amount = amount;
+    }
+
+    public Bill(int billID, double amount, double remaining, String accountNumber, boolean paid){
+        this.billId = billID;
+        this.amount = amount;
+        this.remainingAmount = remaining;
+        this.accountNumber = accountNumber;
+        this.paid = paid;
+    }
+
+    public double getRemainingAmount(){
+        return this.remainingAmount;
     }
 
     // Method to generate the bill from a list of services
@@ -57,6 +71,10 @@ public class Bill {
         return patientName;
     }
 
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
     public List<Service> getServices() {
         return services;
     }
@@ -77,7 +95,15 @@ public class Bill {
         this.patientName = name;
     }
 
+    public void setAccountNumber(String accountNumber){
+        this.accountNumber = accountNumber;
+    }
+
     public void setServices(List<Service> services) {
         this.services = services;
+    }
+
+    public void setRemainingAmount(double remainingAmount) {
+        this.remainingAmount=remainingAmount;
     }
 }

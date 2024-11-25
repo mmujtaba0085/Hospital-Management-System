@@ -7,10 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+//import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -163,7 +164,7 @@ public class DatabaseConnection {
 
     public static List<Appointment> viewAppointments(String email) {
         String query = """
-            SELECT a.appointmentID, a.appointedDay, 
+            SELECT a.appointmentID, a.date, 
                    p.name AS patient_name, d.name AS doctor_name
             FROM Appointments a
             LEFT JOIN Patient p ON a.patientID = p.patientID
@@ -184,7 +185,7 @@ public class DatabaseConnection {
     
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
-                String appointedDay = resultSet.getString("appointedDay");
+                Date appointedDay = resultSet.getDate("date");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
     
@@ -672,7 +673,8 @@ public class DatabaseConnection {
         
         // Corrected SQL query
         String query = """
-            SELECT b.billID, p.name AS patientName, b.amount, b.paid
+
+            SELECT b.billID, p.name, b.amount, b.paid, b.remainingAmount
             FROM Bills b
             JOIN Patient p ON b.patientID = p.patientID
             WHERE b.patientID = ?;
@@ -689,14 +691,15 @@ public class DatabaseConnection {
             try (ResultSet rs = stmt.executeQuery()) {
                 // Process each row in the result set
                 while (rs.next()) {
-                    Bill bill = new Bill();
-                    bill.setID(rs.getInt("billID"));
-                    bill.setPatientName(rs.getString("patientName"));
-                    bill.setAmount(rs.getDouble("amount"));
-                    bill.setPaid(rs.getBoolean("paid"));
-                    
-                    // Add the bill to the list
-                    billList.add(bill);
+
+                    b.setID(rs.getInt("billID"));
+                    b.setPatientName(rs.getString("name"));
+                    b.setAmount(rs.getDouble("amount"));
+                    b.setRemainingAmount(rs.getDouble("RemainingAmount"));
+                    b.setPaid(rs.getBoolean("paid"));
+                    // Create a Bill object and add it to the LinkedList
+                    billList.add(b);
+
                 }
             }
         } catch (SQLException e) {
@@ -915,6 +918,101 @@ public class DatabaseConnection {
     
         return specialization;
     }
+
+    public static boolean addPatient(String name, String email, String phone, String password, Date date) {
+        String sql = "INSERT INTO Patient (name, email, phoneNumber, checkupDate) VALUES (?, ?, ?, ?)";
+    
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, email);
+            stmt.setString(3, phone);
+            stmt.setDate(4, date);
+    
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean addDoctor(String name, String email, String phone, String password, Date date) {
+        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, email);
+            stmt.setString(3, phone);
+            stmt.setDate(4, date);
+    
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+    }
+
+    public static boolean updatePatientDetails(Patient patient) {
+        String sql = """
+            UPDATE Patient
+            SET name = ?, email = ?, phoneNumber = ?
+            WHERE patientID = ?
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    
+            stmt.setString(1, patient.getName());
+            stmt.setString(2, patient.getEmail());
+            stmt.setString(3, patient.getPhoneNumber());
+            //stmt.setString(4, patient.getAddress());
+            stmt.setInt(4, patient.getID());
+    
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static Bill getBillByPatientID(int patientID) {
+        String sql = "SELECT * FROM Bills WHERE patientID = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, patientID);
+            ResultSet rs = stmt.executeQuery();
+    
+            if (rs.next()) {
+                return new Bill(
+                    rs.getInt("billID"),
+                    rs.getDouble("amount"),
+                    rs.getDouble("remainingAmount"),
+                    rs.getString("accountNumber"),
+                    rs.getBoolean("paid")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void updateBillStatus(int patientID, double remainingAmount, boolean isPaid) {
+        String sql = "UPDATE Bills SET remainingAmount = ?, Paid = ? WHERE patientID = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, remainingAmount);
+            stmt.setBoolean(2, isPaid);
+            stmt.setInt(3, patientID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     
     public static boolean updateHealthRecords(int patientId, String allergies, String medications, String pastIllnesses,
                                           String surgeries, String familyHistory, String notes) {

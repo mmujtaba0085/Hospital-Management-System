@@ -64,9 +64,6 @@
                 <!-- Notifications -->
                 <Button alignment="TOP_CENTER" onAction="#viewNotifications" prefHeight="26.0" prefWidth="250.0" text="Notifications" />
 
-                <!-- Profile Settings -->
-                <Button alignment="TOP_CENTER" onAction="#editProfile" prefHeight="26.0" prefWidth="234.0" text="Profile Settings" />
-
                 <!-- Help & Support -->
                 <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="26.0" prefWidth="237.0" text="Help and Support" />
             </children>
