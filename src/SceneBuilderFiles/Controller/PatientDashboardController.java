@@ -2,10 +2,14 @@ package SceneBuilderFiles.Controller;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -13,16 +17,22 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -33,6 +43,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
@@ -368,8 +379,8 @@ private void showAlert(AlertType alertType, String title, String content) {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-        TableColumn<Appointment, Date> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
 
         // Add columns to the table
         appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
@@ -394,7 +405,7 @@ private void showAlert(AlertType alertType, String title, String content) {
     }
 
 
-@SuppressWarnings({ "unchecked", "unused" })
+    @SuppressWarnings({ "unchecked", "unused" })
     @FXML
     private void bookAppointment() {
         mainContentTitle.setText("Book New Appointment");
@@ -557,8 +568,8 @@ confirmButton.setOnAction(event -> {
      */
 
     @SuppressWarnings({ "unchecked", "unused" })
-@FXML
-private void rescheduleAppointment(ActionEvent event) {
+    @FXML
+    private void rescheduleAppointment(ActionEvent event) {
     mainContentTitle.setText("Reschedule Appointment");
     if (patient == null) {
         mainContentTitle.setText("Error: Patient not found!");
@@ -594,7 +605,7 @@ private void rescheduleAppointment(ActionEvent event) {
     doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
     TableColumn<Appointment, String> dayColumn = new TableColumn<>("Appointed Day");
-    dayColumn.setCellValueFactory(new PropertyValueFactory<>("appointedDay"));
+    dayColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
 
     // Add columns to the table
     appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, dayColumn);
@@ -927,174 +938,153 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     
     @SuppressWarnings({ "unchecked", "unused" })
     @FXML
-    private void viewBillingDetails(ActionEvent event) {
-        mainContentTitle.setText("Billing Details");
+private void viewBillingDetails(ActionEvent event) {
+    mainContentTitle.setText("Billing Details");
 
-        // Fetch billing information for the specific patient
-        ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
+    ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
 
+    TableView<Bill> billTable = new TableView<>();
+    billTable.setItems(billList);
 
-        // Create a TableView for displaying bills
-        TableView<Bill> billTable = new TableView<>();
-        billTable.setItems(billList);
+    TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
+    billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
 
-        // Define TableColumn for Bill ID
-        TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
-        billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+    TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
+    patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
 
-        // Define TableColumn for Patient Name
-        TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
-        patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+    TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
+    amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-        // Define TableColumn for Amount
-        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
-        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        
-        TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remainng Amount");
-        remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
+    TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remaining Amount");
+    remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
 
-        // Define TableColumn for Payment Status
-        TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
-        paymentStatusColumn.setCellValueFactory(cellData -> {
-            boolean isPaid = cellData.getValue().getPaid();
-            return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
-        });
+    TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
+    paymentStatusColumn.setCellValueFactory(cellData -> {
+        boolean isPaid = cellData.getValue().getPaid();
+        return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
+    });
 
-        // Add all columns to the TableView
-        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn);
+    TableColumn<Bill, Void> makePaymentColumn = new TableColumn<>("Actions");
+    makePaymentColumn.setCellFactory(param -> new TableCell<>() {
+        private final Button makePaymentButton = new Button("Make Payment");
 
-        // Adjust TableView layout
-        billTable.setPrefWidth(mainContentArea.getPrefWidth());
-        billTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
-        billTable.setLayoutY(50);
+        {
+            makePaymentButton.setStyle("""
+                -fx-background-color: #4CAF50;
+                -fx-text-fill: white;
+                -fx-font-size: 12px;
+                -fx-padding: 5px;
+                -fx-border-radius: 3px;
+                -fx-background-radius: 3px;
+            """);
+            makePaymentButton.setOnAction(event -> {
+                Bill selectedBill = getTableView().getItems().get(getIndex());
+                makePayment(selectedBill);
+            });
+        }
 
-        // Create a Back Button
-        Button backButton = new Button("Back");
-        backButton.setLayoutX(10);
-        backButton.setLayoutY(10);
-        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || getTableView().getItems().get(getIndex()).getPaid()) {
+                setGraphic(null); // Hide the button for paid bills
+            } else {
+                setGraphic(makePaymentButton);
+            }
+        }
+    });
 
-        // Set the action for the Back Button to navigate to the previous screen
-        backButton.setOnAction(e -> {
-            // Replace this with the method to navigate back to the patient dashboard or relevant screen
-            viewPersonalDetails();
-        });
+    billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn, makePaymentColumn);
 
-        // Clear existing content in the mainContentArea and add the new components
-        mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().addAll(backButton, billTable);
-    }
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(e -> viewPersonalDetails());
+
+    mainContentArea.getChildren().clear();
+    mainContentArea.getChildren().addAll(backButton, billTable);
+}
+
 
     @SuppressWarnings("unused")
     @FXML
-    private void makePayment(ActionEvent event) {
-        mainContentTitle.setText("Make a Payment");
-        System.out.println("Making a payment.");
+private void makePayment(Bill bill) {
+    mainContentTitle.setText("Make a Payment");
+    mainContentArea.getChildren().clear();
 
-        // Clear any existing content in the mainContentArea
+    Label cardNumberLabel = new Label("Card Number:");
+    TextField cardNumberField = new TextField();
+    cardNumberField.setPromptText("Enter card number (16 digits)");
+
+    Label expiryDateLabel = new Label("Expiry Date (MM/YY):");
+    TextField expiryDateField = new TextField();
+    expiryDateField.setPromptText("MM/YY");
+
+    Label cvcLabel = new Label("CVC:");
+    TextField cvcField = new TextField();
+    cvcField.setPromptText("Enter 3-digit CVC");
+
+    Label amountLabel = new Label("Amount:");
+    TextField amountField = new TextField(String.valueOf(bill.getRemainingAmount()));
+    amountField.setDisable(true);
+
+    Button submitButton = new Button("Submit Payment");
+    submitButton.setStyle("""
+        -fx-background-color: #4CAF50;
+        -fx-text-fill: white;
+        -fx-font-size: 14px;
+        -fx-padding: 10px 20px;
+        -fx-border-radius: 5px;
+        -fx-background-radius: 5px;
+    """);
+
+    submitButton.setOnAction(e -> {
+        String cardNumber = cardNumberField.getText();
+        String expiryDate = expiryDateField.getText();
+        String cvc = cvcField.getText();
+
+        if (cardNumber.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
+            return;
+        }
+
+        if (!cardNumber.matches("\\d{16}")) {
+            showAlert(Alert.AlertType.ERROR, "Invalid Card", "Please enter a valid 16-digit card number.");
+            return;
+        }
+
+        if (!expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+            showAlert(Alert.AlertType.ERROR, "Invalid Expiry Date", "Please enter a valid expiry date (MM/YY).");
+            return;
+        }
+
+        if (!cvc.matches("\\d{3}")) {
+            showAlert(Alert.AlertType.ERROR, "Invalid CVC", "Please enter a valid 3-digit CVC.");
+            return;
+        }
+
+        String cardType = cardNumber.startsWith("4") ? "Visa" : cardNumber.startsWith("5") ? "MasterCard" : "Unknown Card Type";
+
+        VBox processingLayout = new VBox(10, new ProgressIndicator());
+        processingLayout.setAlignment(Pos.CENTER);
         mainContentArea.getChildren().clear();
+        mainContentArea.getChildren().add(processingLayout);
 
-        // Create form labels and fields
-        Label accountNumberLabel = new Label("Account Number:");
-        TextField accountNumberField = new TextField();
-        accountNumberField.setPromptText("Enter account number");
-        accountNumberField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
+        new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
+            DatabaseConnection.updateBillStatus(bill.getID(), 0, true);
+            Platform.runLater(() -> {
+                showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Payment processed for " + cardType + ".");
+                viewBillingDetails(new ActionEvent());
+            });
+        })).play();
+    });
 
-        Label amountLabel = new Label("Amount:");
-        TextField amountField = new TextField();
-        amountField.setPromptText("Enter amount to pay");
-        amountField.setStyle("-fx-pref-width: 200px; -fx-padding: 5px; -fx-border-color: #ccc;");
-
-        // Create the "Submit Payment" button
-        Button submitButton = new Button("Submit Payment");
-        submitButton.setStyle("""
-            -fx-background-color: #4CAF50;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-            -fx-border-radius: 5px;
-            -fx-background-radius: 5px;
-        """);
-
-        // Create the "Cancel" button
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setStyle("""
-            -fx-background-color: #e74c3c;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-            -fx-border-radius: 5px;
-            -fx-background-radius: 5px;
-        """);
-
-        // Position elements in a VBox
-        VBox formLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, submitButton, cancelButton);
-        formLayout.setLayoutX(20);
-        formLayout.setLayoutY(20);
-        formLayout.setStyle("-fx-padding: 20px; -fx-background-color: #f9f9f9; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-        mainContentArea.getChildren().add(formLayout);
-
-        // Add action for the "Submit Payment" button
-        submitButton.setOnAction(e -> {
-            String accountNumber = accountNumberField.getText();
-            String amount = amountField.getText();
-
-            if (accountNumber.isEmpty() || amount.isEmpty()) {
-                System.out.println("All fields are required.");
-                showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
-                return;
-            }
-
-            try {
-                double paymentAmount = Double.parseDouble(amount);
-
-                // Fetch patient's bill details
-                Bill patientBill = DatabaseConnection.getBillByPatientID(patient.getID());
-
-                if (patientBill == null) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Account not found or no outstanding bill.");
-                    return;
-                }
-
-                if (paymentAmount <= 0) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Payment amount must be greater than zero.");
-                    return;
-                }
-
-                else if (paymentAmount >= patientBill.getRemainingAmount()) {
-                    // Fully paid
-                    DatabaseConnection.updateBillStatus(patient.getID(), 0, true); // Mark as paid
-                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "The bill has been fully paid.");
-                } else {
-                    // Partial payment
-                    double remainingAmount = patientBill.getRemainingAmount() - paymentAmount;
-                    System.out.println("remaining amount: "+remainingAmount);
-                    DatabaseConnection.updateBillStatus(patient.getID(), remainingAmount, false); // Update remaining balance
-                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Partial payment made. Remaining balance: " + remainingAmount);
-                }
-
-            } catch (NumberFormatException ex) {
-                showAlert(Alert.AlertType.ERROR, "Invalid Amount", "Please enter a valid amount.");
-            }
-        });
-
-        // Add action for the "Cancel" button
-        cancelButton.setOnAction(e -> {
-            mainContentTitle.setText("Dashboard");
-            mainContentArea.getChildren().clear();
-        });
-    }
+    VBox formLayout = new VBox(10, cardNumberLabel, cardNumberField, expiryDateLabel, expiryDateField, cvcLabel, cvcField, amountLabel, amountField, submitButton);
+    formLayout.setStyle("-fx-padding: 20px;");
+    mainContentArea.getChildren().add(formLayout);
+}
 
 
-    // Helper method to show alerts
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 
 
     @FXML
@@ -1113,10 +1103,90 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
 
 
 
-    @FXML
-    private void openHelp(ActionEvent event) {
-        mainContentTitle.setText("Help and Support");
-        // Add logic to fetch and display help and support information
-        System.out.println("Opening help and support.");
-    }
+   @FXML
+private void openHelp(ActionEvent event) {
+    mainContentTitle.setText("Help and Support");
+
+    // Clear previous content
+    mainContentArea.getChildren().clear();
+
+    // Title Label
+    Label helpTitle = new Label("How can we assist you?");
+    helpTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    helpTitle.setAlignment(Pos.CENTER);
+
+    // Complaint Form Section
+    Label complaintLabel = new Label("Submit a Complaint:");
+    complaintLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    TextArea complaintTextArea = new TextArea();
+    complaintTextArea.setPromptText("Describe your issue...");
+    complaintTextArea.setStyle("-fx-pref-height: 100px; -fx-pref-width: 400px; -fx-padding: 5px;");
+
+    Button submitComplaintButton = new Button("Submit");
+    submitComplaintButton.setStyle("""
+        -fx-background-color: #4CAF50;
+        -fx-text-fill: white;
+        -fx-font-size: 14px;
+        -fx-padding: 5px 10px;
+        -fx-border-radius: 5px;
+        -fx-background-radius: 5px;
+    """);
+
+    submitComplaintButton.setOnAction(e -> {
+        String complaintText = complaintTextArea.getText();
+        if (complaintText.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Please describe your issue before submitting.");
+        } else {
+            boolean isComplaintInserted = DatabaseConnection.insertComplaint(patient.getID(), complaintText);
+            if (isComplaintInserted) {
+                showAlert(Alert.AlertType.INFORMATION, "Complaint Submitted", "Your complaint has been recorded. We will address it promptly.");
+                complaintTextArea.clear();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to submit your complaint. Please try again.");
+            }
+        }
+    });
+    
+
+    // Contact Information Section
+    Label contactLabel = new Label("Contact Hospital Administrators:");
+    contactLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    VBox contactDetails = new VBox(5,
+        new Label("Phone: +1 234 567 890"),
+        new Label("Email: admin@orenixhospital.com"),
+        new Label("Address: 123 Health Street, Cityville, Country")
+    );
+    contactDetails.setStyle("-fx-font-size: 12px;");
+
+    // FAQ Section
+    Label faqLabel = new Label("Frequently Asked Questions:");
+    faqLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    VBox faqContent = new VBox(10,
+        new Label("Q: How do I book an appointment?\nA: Navigate to the 'Book Appointment' section and choose your doctor."),
+        new Label("Q: Can I cancel my appointment?\nA: Yes, go to your 'Appointments' section and select 'Cancel'."),
+        new Label("Q: How can I pay for services?\nA: You can pay online using the 'Billing Details' section.")
+    );
+    faqContent.setStyle("-fx-font-size: 12px;");
+
+    // Back Button
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(e -> viewPersonalDetails());
+
+    // Layout for Complaint Section
+    VBox complaintSection = new VBox(10, complaintLabel, complaintTextArea, submitComplaintButton);
+    complaintSection.setAlignment(Pos.CENTER_LEFT);
+
+    // Layout for Help and Support Page
+    VBox helpLayout = new VBox(20, helpTitle, complaintSection, contactLabel, contactDetails, faqLabel, faqContent, backButton);
+    helpLayout.setAlignment(Pos.TOP_CENTER);
+    helpLayout.setPadding(new Insets(20));
+    helpLayout.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-width: 1px;");
+
+    mainContentArea.getChildren().add(helpLayout);
+}
+
 }

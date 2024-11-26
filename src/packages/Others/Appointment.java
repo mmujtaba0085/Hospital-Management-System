@@ -14,19 +14,19 @@ public class Appointment {
     private int end_time;
     private Date date;
     private BooleanProperty selected = new SimpleBooleanProperty(false);
-    private Date appointedDay;
+    private String appointedDay;
 
     // Add getter and setter
-    public Date getAppointedDay() {
+    public String getAppointedDay() {
         return appointedDay;
     }
 
-    public void setAppointedDay(Date appointedDay) {
+    public void setAppointedDay(String appointedDay) {
         this.appointedDay = appointedDay;
     }
 
     // Update constructor
-    public Appointment(int appointmentID, String patientName, String doctorName, Date appointedDay) {
+    public Appointment(int appointmentID, String patientName, String doctorName, String appointedDay) {
         this.appointmentID = appointmentID;
         this.patientName = patientName;
         this.doctorName = doctorName;

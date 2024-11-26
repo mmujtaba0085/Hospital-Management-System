@@ -31,9 +31,6 @@
                 <!-- Prescriptions -->
                 <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="40.0" prefWidth="252.0" text="Appointments List" />
 
-                <!-- Communication -->
-                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="40.0" prefWidth="250.0" text="Communication" />
-
                 <!-- Billing and Payments -->
                 <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="40.0" prefWidth="234.0" text="Billing Details" />
 
@@ -41,7 +38,7 @@
                 <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="40.0" prefWidth="233.0" text="Settings" />
 
                 <!-- Help & Support -->
-                <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="40.0" prefWidth="237.0" text="Help and Support" />
+                <Button alignment="TOP_CENTER" onAction="#viewComplaints" prefHeight="40.0" prefWidth="237.0" text="viewComplaints" />
             </children>
         </VBox>
 

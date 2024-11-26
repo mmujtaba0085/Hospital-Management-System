@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -14,11 +15,12 @@ import java.util.Collections;
 //import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import packages.Person.*;
 import packages.Others.*;
+
 
 public class DatabaseConnection {
 
@@ -163,8 +165,9 @@ public class DatabaseConnection {
     }
 
     public static List<Appointment> viewAppointments(String email) {
+        
         String query = """
-            SELECT a.appointmentID, a.date, 
+            SELECT a.appointmentID, a.appointedDay, 
                    p.name AS patient_name, d.name AS doctor_name
             FROM Appointments a
             LEFT JOIN Patient p ON a.patientID = p.patientID
@@ -185,7 +188,7 @@ public class DatabaseConnection {
     
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
-                Date appointedDay = resultSet.getDate("date");
+                String appointedDay = resultSet.getString("appointedDay");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
     
@@ -691,7 +694,7 @@ public class DatabaseConnection {
             try (ResultSet rs = stmt.executeQuery()) {
                 // Process each row in the result set
                 while (rs.next()) {
-
+                    Bill b=new Bill();
                     b.setID(rs.getInt("billID"));
                     b.setPatientName(rs.getString("name"));
                     b.setAmount(rs.getDouble("amount"));
@@ -1000,13 +1003,13 @@ public class DatabaseConnection {
         return null;
     }
 
-    public static void updateBillStatus(int patientID, double remainingAmount, boolean isPaid) {
-        String sql = "UPDATE Bills SET remainingAmount = ?, Paid = ? WHERE patientID = ?";
+    public static void updateBillStatus(int billID, double remainingAmount, boolean isPaid) {
+        String sql = "UPDATE Bills SET remainingAmount = ?, Paid = ? WHERE billID = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, remainingAmount);
             stmt.setBoolean(2, isPaid);
-            stmt.setInt(3, patientID);
+            stmt.setInt(3, billID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1049,11 +1052,12 @@ public class DatabaseConnection {
         return false;
     }
 
-    public static boolean addBill(int patientId) {
-        String query = "INSERT INTO Bills (patientID, amount, paid) VALUES (?, 1500, FALSE)";
+    public static boolean addBill(int patientId,int doctorID) {
+        String query = "INSERT INTO Bills (patientID, amount, paid,doctorID,remainingAmount) VALUES (?, 1500, FALSE,?,1500)";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, patientId);
+            ps.setInt(2, doctorID);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1136,6 +1140,62 @@ public class DatabaseConnection {
             
         } catch (SQLException e) {
             System.out.println("Error updating doctor password: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean insertComplaint(int patientID, String complaintText) {
+        String insertComplaintQuery = "INSERT INTO PatientComplaints (PatientID, ComplaintText) VALUES (?, ?)";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertComplaintQuery)) {
+
+            preparedStatement.setInt(1, patientID);
+            preparedStatement.setString(2, complaintText);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0; // Return true if insertion was successful
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false; // Return false if an error occurred
+        }
+    }
+
+    public static ObservableList<Complaint> getUnresolvedComplaints() {
+        ObservableList<Complaint> complaints = FXCollections.observableArrayList();
+        String query = "SELECT * FROM PatientComplaints WHERE Status = 'Pending'";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                int complaintID = resultSet.getInt("ComplaintID");
+                int patientID = resultSet.getInt("PatientID");
+                String complaintText = resultSet.getString("ComplaintText");
+                String status = resultSet.getString("Status");
+                Timestamp submissionDate = resultSet.getTimestamp("SubmissionDate");
+                
+                complaints.add(new Complaint(complaintID, patientID, complaintText, status, submissionDate));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return complaints;
+    }
+
+    
+    public static boolean markComplaintAsResolved(int complaintID) {
+        String updateQuery = "UPDATE PatientComplaints SET Status = 'Resolved' WHERE ComplaintID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+            preparedStatement.setInt(1, complaintID);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
