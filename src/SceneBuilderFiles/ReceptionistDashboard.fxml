@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -9,12 +10,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.AdminDashboardController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SceneBuilderFiles.Controller.ReceptionistDashboardController">
     <children>
         <!-- Sidebar with collapsible sections for sub-options -->
         <VBox fx:id="sidebar" layoutX="0.0" layoutY="0.0" prefHeight="886.0" prefWidth="222.0" style="-fx-background-color: #e1722f;">
             <children>
-                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Admin's Dashboard" textFill="WHITE" />
+                <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f;" text="Receptionist's Dashboard" textFill="WHITE" />
 
                 <!-- Home / Overview -->
                 <Button onAction="#showOverview" prefHeight="40.0" prefWidth="228.0" text="Home" />
@@ -28,24 +29,28 @@
                 <!-- Doctor List -->
                 <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="40.0" prefWidth="252.0" text="Doctor's List" />
 
-                <!-- Prescriptions -->
-                <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="40.0" prefWidth="252.0" text="Appointments List" />
+                <TitledPane alignment="TOP_CENTER" expanded="false" prefWidth="234.0" text="Appointments">
+                <content>
+                    <VBox>
+                            <Button onAction="#viewAppointments" prefHeight="26.0" prefWidth="196.0" text="View Appointment's List" />
+                            <Button onAction="#rescheduleAppointment" prefHeight="26.0" prefWidth="196.0" text="Reschedule Appointment" />
+                            <Button onAction="#cancelAppointment" prefHeight="26.0" prefWidth="196.0" text="Cancel Appointment" />
+                        </VBox>
+                </content>
+                </TitledPane>
+
+                <!-- Help & Support -->
+                <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="40.0" prefWidth="237.0" text="Help Centre" />
 
                 <!-- Billing and Payments -->
                 <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="40.0" prefWidth="234.0" text="Billing Details" />
-
-                <!-- Settings -->
-                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="40.0" prefWidth="233.0" text="Settings" />
-
-                <!-- Help & Support -->
-                <Button alignment="TOP_CENTER" onAction="#viewComplaints" prefHeight="40.0" prefWidth="237.0" text="viewComplaints" />
             </children>
         </VBox>
 
         <!-- Main Content Area -->
         <AnchorPane layoutX="222.0" layoutY="-8.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
             <children>
-                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Admin's Dashboard" />
+                <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Receptionist's Dashboard" />
                 <AnchorPane fx:id="mainContentArea" layoutX="15.0" layoutY="55.0" prefHeight="600.0" prefWidth="652.0">
                <children>
                   <Label layoutX="33.0" layoutY="47.0" prefHeight="35.0" prefWidth="70.0" text="Name">

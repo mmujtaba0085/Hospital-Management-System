@@ -79,8 +79,9 @@ public class DoctorDashboardController {
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
 
+    @SuppressWarnings("unused")
     @FXML
-public void viewProfile() {
+    public void viewProfile() {
     mainContentTitle.setText("My Profile");
     
     // Create main content pane
@@ -135,7 +136,7 @@ public void viewProfile() {
     AnchorPane.setRightAnchor(profileBox, 20.0);
 }
 
-private void showEditProfileDialog() {
+    private void showEditProfileDialog() {
     // Create a new dialog
     Dialog<ButtonType> dialog = new Dialog<>();
     dialog.setTitle("Edit Profile");
@@ -196,7 +197,7 @@ private void showEditProfileDialog() {
     });
 }
 
-private void showChangePasswordDialog() {
+    private void showChangePasswordDialog() {
     // Create a new dialog
     Dialog<ButtonType> dialog = new Dialog<>();
     dialog.setTitle("Change Password");
@@ -255,7 +256,7 @@ private void showChangePasswordDialog() {
     });
 }
 
-private void showAlert(AlertType alertType, String title, String content) {
+    private void showAlert(AlertType alertType, String title, String content) {
     Alert alert = new Alert(alertType);
     alert.setTitle(title);
     alert.setHeaderText(null);
@@ -296,8 +297,8 @@ private void showAlert(AlertType alertType, String title, String content) {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
 
-        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
 
         // Add columns to the table
         appointmentTable.getColumns().addAll(idColumn, patientColumn, doctorColumn, timeColumn);
@@ -519,8 +520,8 @@ private void showAlert(AlertType alertType, String title, String content) {
         TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
         doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
     
-        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
+        TableColumn<Appointment, String> timeColumn = new TableColumn<>("Appointment Time");
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("AppointedDay"));
     
         // Add columns to the table
         appointmentTable.getColumns().addAll(selectColumn, idColumn, patientColumn, doctorColumn, timeColumn);
@@ -864,7 +865,8 @@ private void showAlert(AlertType alertType, String title, String content) {
 
     
     
-private void openHealthRecordsForm(MedicalHistory patientRecord) {
+    @SuppressWarnings("unused")
+    private void openHealthRecordsForm(MedicalHistory patientRecord) {
     // Create a new pane for updating health records
     VBox updatePane = new VBox();
     updatePane.setSpacing(10);
@@ -928,7 +930,7 @@ private void openHealthRecordsForm(MedicalHistory patientRecord) {
             // If records are successfully updated, conclude the appointment
             boolean removed = DatabaseConnection.removeAppointment(patientRecord.getPatientId(), doctor.getID());
             if (removed) {
-                boolean billAdded = DatabaseConnection.addBill(patientRecord.getPatientId());
+                boolean billAdded = DatabaseConnection.addBill(patientRecord.getPatientId(),doctor.getID());
                 if (billAdded) {
                     showConfirmationDialog("Changes saved, appointment concluded, and bill added successfully.");
                     viewMedicalHistory(); // Navigate back to the main medical history view

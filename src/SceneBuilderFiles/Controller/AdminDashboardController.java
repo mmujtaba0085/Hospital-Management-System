@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -30,6 +31,7 @@ import javafx.stage.Stage;
 import packages.Database.DatabaseConnection;
 import packages.Others.Appointment;
 import packages.Others.Bill;
+import packages.Others.Complaint;
 import packages.Person.Admin;
 import packages.Person.Doctor;
 import packages.Person.Patient;
@@ -78,148 +80,9 @@ public class AdminDashboardController {
         mainContentTitle.setText("Overview");
     }
 
-    // Additional Sidebar Handlers
-    @FXML
-    public void rescheduleAppointments() {
-        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-        mainContentPane.getChildren().clear(); // Clear existing content
-        mainContentTitle.setText("Reschedule Appointments");
-        mainContentPane.getChildren().addAll(mainContentTitle); // Add title and appointments list
-    }
-
     
-    @SuppressWarnings({ })
-    @FXML
-    public void cancelAppointments() {
-        if (admin == null) {
-            mainContentTitle.setText("Error: Admin not found!");
-            System.out.println("Admin is not set.");
-            return;
-        }
-
-        /*
-        mainContentTitle.setText("Cancel Appointments");
-        System.out.println("Fetching appointments...");
     
-        // Retrieve appointments using the admin's email
-        List<Appointment> appointments = DatabaseConnection.ViewAppointments(admin.getEmail());
     
-        // Create a TableView for displaying appointments with checkboxes
-        TableView<Appointment> appointmentTable = new TableView<>();
-        appointmentTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // Enable multiple selection
-    
-        // Define TableColumn for checkboxes
-        TableColumn<Appointment, Boolean> selectColumn = new TableColumn<>("Select");
-        selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty()); // Bind to BooleanProperty
-    
-        selectColumn.setCellFactory(tc -> {
-            CheckBoxTableCell<Appointment, Boolean> cell = new CheckBoxTableCell<>();
-            
-            // Add key and mouse event listeners
-            cell.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ENTER) {
-                    // Toggle the checkbox value on Enter key press
-                    BooleanProperty cellSelected = cell.getTableRow().getItem().selectedProperty();
-                    if (cellSelected != null) {
-                        cellSelected.set(!cellSelected.get());
-                    }
-                }
-            });
-            
-            cell.setOnMousePressed(event -> {
-                if (event.isSecondaryButtonDown()) { // Right-click toggles the checkbox
-                    BooleanProperty cellSelected = cell.getTableRow().getItem().selectedProperty();
-                    if (cellSelected != null) {
-                        cellSelected.set(!cellSelected.get());
-                    }
-                }
-            });
-            
-            return cell;
-            
-        });
-        
-    
-        TableColumn<Appointment, Integer> idColumn = new TableColumn<>("Appointment ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
-    
-        TableColumn<Appointment, String> patientColumn = new TableColumn<>("Patient Name");
-        patientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-    
-        TableColumn<Appointment, String> doctorColumn = new TableColumn<>("Doctor Name");
-        doctorColumn.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
-    
-        TableColumn<Appointment, Timestamp> timeColumn = new TableColumn<>("Appointment Time");
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("timeOfAppointment"));
-    
-        // Add columns to the table
-        appointmentTable.getColumns().addAll(selectColumn, idColumn, patientColumn, doctorColumn, timeColumn);
-    
-        // Populate the TableView with the appointments
-        appointmentTable.getItems().addAll(appointments);
-    
-        // Add "Cancel" button and event handler
-        Button cancelButton = new Button("Cancel Selected");
-        cancelButton.setOnAction(event -> {
-            // Get selected appointments (only those with selected checkbox)
-            List<Appointment> selectedAppointments = appointments.stream()
-                    .filter(Appointment::isSelected)  // Get appointments with selected checkboxes
-                    .collect(Collectors.toList());
-    
-            if (selectedAppointments.isEmpty()) {
-                System.out.println("No appointments selected.");
-                return;
-            }
-    
-            // Show confirmation dialog
-            boolean confirmation = showConfirmationDialog("Are you sure you want to cancel the selected appointments?");
-            if (!confirmation) {
-                System.out.println("Cancellation aborted.");
-                return;
-            }
-    
-            // Cancel appointments in the database
-            for (Appointment appointment : selectedAppointments) {
-                String patientName = appointment.getPatientName();
-                boolean success = DatabaseConnection.cancelAppointment(admin.getID(), patientName);
-                if (!success) {
-                    System.out.println("Failed to cancel appointment ID: " + appointment.getAppointmentID());
-                }
-            }
-    
-            // Remove cancelled appointments from the list and TableView
-            appointments.removeAll(selectedAppointments);  // Remove from the internal list
-            appointmentTable.getItems().clear();  // Clear the table view
-            appointmentTable.getItems().addAll(appointments);  // Re-populate the table with remaining appointments
-    
-            // Optionally, refresh the schedule view
-            viewSchedule();
-        });
-    
-        // Add the TableView and button to the main content area
-        Pane mainContentPane = (Pane) mainContentTitle.getParent(); // Assuming mainContentTitle is in the main content area
-        mainContentPane.getChildren().clear(); // Clear existing content
-        mainContentPane.getChildren().addAll(mainContentTitle, appointmentTable, cancelButton);
-    
-        // Position the table and button within the pane
-        AnchorPane.setTopAnchor(appointmentTable, 50.0);
-        AnchorPane.setLeftAnchor(appointmentTable, 20.0);
-        AnchorPane.setRightAnchor(appointmentTable, 20.0);
-        AnchorPane.setBottomAnchor(appointmentTable, 60.0);
-        AnchorPane.setTopAnchor(cancelButton, 20.0);
-        AnchorPane.setRightAnchor(cancelButton, 20.0);
-    }
-    
-    private boolean showConfirmationDialog(String message) {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-    
-        ButtonType result = alert.showAndWait().orElse(ButtonType.CANCEL);
-        return result == ButtonType.OK;
-         */
-    }
     
     public void viewPersonalDetails() {
         // Update the main content title
@@ -783,10 +646,6 @@ public class AdminDashboardController {
         mainContentArea.getChildren().add(appointmentTable);
     }
 
-    @FXML
-    public void openCommunication() {
-        mainContentTitle.setText("Communication");
-    }
 
     @SuppressWarnings({ "unused", "unchecked" })
     @FXML
@@ -844,8 +703,90 @@ public class AdminDashboardController {
         mainContentTitle.setText("Settings");
     }
 
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
-    public void openHelp() {
-        mainContentTitle.setText("Help and Support");
+    private void viewComplaints() {
+        mainContentTitle.setText("View Complaints");
+    
+        // Fetch unresolved complaints from the database
+        ObservableList<Complaint> complaintList = DatabaseConnection.getUnresolvedComplaints();
+    
+        // Create a TableView for displaying complaints
+        TableView<Complaint> complaintTable = new TableView<>();
+        complaintTable.setItems(complaintList);
+    
+        // Define TableColumns
+        TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
+        complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
+    
+        TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
+        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
+    
+        TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
+        complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
+    
+        TableColumn<Complaint, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getStatus());
+        });
+    
+        // Define the "Resolve" action column
+        TableColumn<Complaint, Void> resolveColumn = new TableColumn<>("Resolve");
+        resolveColumn.setCellFactory(param -> new TableCell<Complaint, Void>() {
+            private final Button resolveButton = new Button("Resolve");
+    
+            {
+                resolveButton.setOnAction(event -> {
+                    Complaint selectedComplaint = getTableView().getItems().get(getIndex());
+                    boolean isResolved = DatabaseConnection.markComplaintAsResolved(selectedComplaint.getComplaintID());
+                    if (isResolved) {
+                        selectedComplaint.setStatus("Resolved");
+                        complaintTable.refresh();
+                        showAlert(Alert.AlertType.INFORMATION, "Complaint Resolved", "The complaint has been marked as resolved.");
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to resolve the complaint.");
+                    }
+                });
+            }
+    
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(resolveButton);
+                }
+            }
+        });
+    
+        // Add columns to the table
+        complaintTable.getColumns().addAll(complaintIdColumn, patientIdColumn, complaintTextColumn, statusColumn, resolveColumn);
+    
+        // Adjust TableView layout
+        complaintTable.setPrefWidth(mainContentArea.getPrefWidth());
+        complaintTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
+        complaintTable.setLayoutY(50);
+    
+        // Create a Back Button
+        Button backButton = new Button("Back");
+        backButton.setLayoutX(10);
+        backButton.setLayoutY(10);
+        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    
+        
+    
+        // Clear the previous content and add the new TableView
+        mainContentArea.getChildren().clear();
+        mainContentArea.getChildren().addAll(backButton, complaintTable);
     }
+    
+public void showAlert(Alert.AlertType alertType, String title, String message) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+}
+
 }
