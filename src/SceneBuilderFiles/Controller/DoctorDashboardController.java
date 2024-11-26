@@ -79,6 +79,7 @@ public class DoctorDashboardController {
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
     }
 
+    @SuppressWarnings("unused")
     @FXML
     public void viewProfile() {
     mainContentTitle.setText("My Profile");
@@ -862,6 +863,7 @@ public class DoctorDashboardController {
 
     
     
+    @SuppressWarnings("unused")
     private void openHealthRecordsForm(MedicalHistory patientRecord) {
     // Create a new pane for updating health records
     VBox updatePane = new VBox();

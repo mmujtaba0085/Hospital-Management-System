@@ -1,9 +1,7 @@
 package SceneBuilderFiles.Controller;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +10,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -89,6 +86,7 @@ public class PatientDashboardController {
         System.out.println("Displaying Home / Overview.");
     }
 
+    @SuppressWarnings("unused")
     public void viewProfile() {
     mainContentTitle.setText("My Profile");
     
@@ -1103,7 +1101,8 @@ private void makePayment(Bill bill) {
 
 
 
-   @FXML
+   @SuppressWarnings("unused")
+@FXML
 private void openHelp(ActionEvent event) {
     mainContentTitle.setText("Help and Support");
 

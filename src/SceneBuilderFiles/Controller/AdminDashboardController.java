@@ -703,6 +703,7 @@ public class AdminDashboardController {
         mainContentTitle.setText("Settings");
     }
 
+    @SuppressWarnings({ "unused", "unchecked" })
     @FXML
     private void viewComplaints() {
         mainContentTitle.setText("View Complaints");
