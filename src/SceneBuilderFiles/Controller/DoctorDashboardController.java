@@ -114,7 +114,7 @@ public class DoctorDashboardController {
     Button changePasswordButton = new Button("Change Password");
     
     // Style the buttons
-    String buttonStyle = "-fx-font-size: 14px; -fx-min-width: 150px;";
+    String buttonStyle = "-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 150px;";
     editProfileButton.setStyle(buttonStyle);
     changePasswordButton.setStyle(buttonStyle);
     
@@ -386,6 +386,7 @@ public class DoctorDashboardController {
     
         // Save Schedule Button
         Button confirmButton = new Button("Save Schedule");
+        confirmButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
         confirmButton.setOnAction(event -> {
             Integer startIndex = startTimeComboBox.getValue();
             Integer endIndex = endTimeComboBox.getValue();
@@ -530,6 +531,7 @@ public class DoctorDashboardController {
     
         // Add "Cancel" button and event handler
         Button cancelButton = new Button("Cancel Selected");
+        cancelButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
         cancelButton.setOnAction(event -> {
             // Get selected appointments (only those with selected checkbox)
             List<Appointment> selectedAppointments = appointments.stream()
@@ -817,7 +819,7 @@ public class DoctorDashboardController {
 
     // Add a "Back" button
     Button backButton = new Button("Back");
-    backButton.setStyle("-fx-font-size: 14px;");
+    backButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
     backButton.setOnAction(event -> {
         if (prevTab == 1) {
             viewMedicalHistory(); // Reload the previous TableView
@@ -891,7 +893,7 @@ public class DoctorDashboardController {
 
     // Save button
     Button saveButton = new Button("Save");
-    saveButton.setStyle("-fx-font-size: 14px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+    saveButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white;");
     saveButton.setOnAction(event -> {
         boolean success = DatabaseConnection.updateHealthRecords(
                 patientRecord.getPatientId(),
@@ -911,7 +913,7 @@ public class DoctorDashboardController {
 
     // Conclude Appointment button
     Button concludeButton = new Button("Conclude Appointment");
-    concludeButton.setStyle("-fx-font-size: 14px; -fx-background-color: #FF5722; -fx-text-fill: white;");
+    concludeButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white;");
     concludeButton.setOnAction(event -> {
         // First, save changes to health records
         boolean recordsUpdated = DatabaseConnection.updateHealthRecords(

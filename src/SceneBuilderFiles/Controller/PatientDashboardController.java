@@ -2,6 +2,7 @@ package SceneBuilderFiles.Controller;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,7 +119,7 @@ public class PatientDashboardController {
     Button changePasswordButton = new Button("Change Password");
     
     // Style the buttons
-    String buttonStyle = "-fx-font-size: 14px; -fx-min-width: 150px;";
+    String buttonStyle = "-fx-background-color: #e1722f; -fx-text-fill: white;";
     editProfileButton.setStyle(buttonStyle);
     changePasswordButton.setStyle(buttonStyle);
     
@@ -253,14 +254,6 @@ private void showChangePasswordDialog() {
             }
         }
     });
-}
-
-private void showAlert(AlertType alertType, String title, String content) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    alert.showAndWait();
 }
 
     // Method to set Doctor object
@@ -442,6 +435,7 @@ private void showAlert(AlertType alertType, String title, String content) {
     
         // Search Button
         Button searchButton = new Button("Search");
+        searchButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
         searchButton.setOnAction(event -> {
             String specialization = docSpecialization.getValue();
     
@@ -613,6 +607,7 @@ confirmButton.setOnAction(event -> {
 
     // Add a reschedule button
     Button rescheduleButton = new Button("Reschedule Selected");
+    rescheduleButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
     rescheduleButton.setOnAction(e -> {
         Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
         if (selectedAppointment == null) {
@@ -791,6 +786,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     
         // Add "Cancel" button and event handler
         Button cancelButton = new Button("Cancel Selected");
+        cancelButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
         cancelButton.setOnAction(e -> {
             // Get selected appointments (only those with selected checkbox)
             List<Appointment> selectedAppointments = appointments.stream()
