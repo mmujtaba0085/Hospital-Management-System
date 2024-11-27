@@ -21,9 +21,6 @@
                 <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
                 <Button onAction="#viewProfile" prefHeight="26.0" prefWidth="228.0" text="ViewProfile" />
 
-                <!-- Personal List -->
-                <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="26.0" prefWidth="252.0" text="Personal Details" />
-                
                 <!-- Appointments Management with Sub-options -->
                 <TitledPane alignment="TOP_CENTER" expanded="false" prefWidth="234.0" text="Appointments">
                     <content>
@@ -36,27 +33,20 @@
                     </content>
                 </TitledPane>
 
-                <!-- Medical History with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Medical History">
-                    <content>
-                        <VBox>
-                            <Button onAction="#viewHealthRecords" prefHeight="26.0" prefWidth="198.0" text="View Health Records" />
-                        </VBox>
-                    </content>
-                </TitledPane>
+
+                <!-- Health Record -->
+                <Button onAction="#viewHealthRecords" prefHeight="26.0" prefWidth="228.0" text="View Health Records" />
+                           
+
 
                 <!-- Prescriptions -->
                 <Button alignment="TOP_CENTER" onAction="#viewPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
 
                 <!-- Billing -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Billing and Payments">
-                    <content>
-                        <VBox>
-                            <Button onAction="#viewBillingDetails" prefHeight="26.0" prefWidth="198.0" text="View Billing Details" />
-                            <Button onAction="#makePayment" prefHeight="26.0" prefWidth="198.0" text="Make a Payment" />
-                        </VBox>
-                    </content>
-                </TitledPane>
+
+                <Button onAction="#viewBillingDetails" prefHeight="26.0" prefWidth="228.0" text="View Billing Details" />
+                       
+                       
 
                 <!-- Notifications -->
                 <Button alignment="TOP_CENTER" onAction="#viewNotifications" prefHeight="26.0" prefWidth="250.0" text="Notifications" />

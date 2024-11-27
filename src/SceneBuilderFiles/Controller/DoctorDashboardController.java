@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -1014,5 +1015,86 @@ public class DoctorDashboardController {
     @FXML
     public void openHelp() {
         mainContentTitle.setText("Help and Support");
+
+
+    // Title Label
+    Label helpTitle = new Label("How can we assist you?");
+    helpTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    helpTitle.setAlignment(Pos.CENTER);
+
+    // Complaint Form Section
+    Label complaintLabel = new Label("Submit a Complaint:");
+    complaintLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    TextArea complaintTextArea = new TextArea();
+    complaintTextArea.setPromptText("Describe your issue...");
+    complaintTextArea.setStyle("-fx-pref-height: 100px; -fx-pref-width: 400px; -fx-padding: 5px;");
+
+    Button submitComplaintButton = new Button("Submit");
+    submitComplaintButton.setStyle("""
+        -fx-background-color: #4CAF50;
+        -fx-text-fill: white;
+        -fx-font-size: 14px;
+        -fx-padding: 5px 10px;
+        -fx-border-radius: 5px;
+        -fx-background-radius: 5px;
+    """);
+
+    submitComplaintButton.setOnAction(e -> {
+        String complaintText = complaintTextArea.getText();
+        if (complaintText.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Please describe your issue before submitting.");
+        } else {
+            boolean isComplaintInserted = DatabaseConnection.insertComplaint(doctor.getID(), complaintText);
+            if (isComplaintInserted) {
+                showAlert(Alert.AlertType.INFORMATION, "Complaint Submitted", "Your complaint has been recorded. We will address it promptly.");
+                complaintTextArea.clear();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to submit your complaint. Please try again.");
+            }
+        }
+    });
+    
+
+    // Contact Information Section
+    Label contactLabel = new Label("Contact Hospital Administrators:");
+    contactLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    VBox contactDetails = new VBox(5,
+        new Label("Phone: +1 234 567 890"),
+        new Label("Email: admin@orenixhospital.com"),
+        new Label("Address: 123 Health Street, Cityville, Country")
+    );
+    contactDetails.setStyle("-fx-font-size: 12px;");
+
+    // FAQ Section
+    Label faqLabel = new Label("Frequently Asked Questions:");
+    faqLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+    VBox faqContent = new VBox(10,
+        new Label("Q: How do I book an appointment?\nA: Navigate to the 'Book Appointment' section and choose your doctor."),
+        new Label("Q: Can I cancel my appointment?\nA: Yes, go to your 'Appointments' section and select 'Cancel'."),
+        new Label("Q: How can I pay for services?\nA: You can pay online using the 'Billing Details' section.")
+    );
+    faqContent.setStyle("-fx-font-size: 12px;");
+
+    // Back Button
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(e -> viewProfile());
+
+    // Layout for Complaint Section
+    VBox complaintSection = new VBox(10, complaintLabel, complaintTextArea, submitComplaintButton);
+    complaintSection.setAlignment(Pos.CENTER_LEFT);
+
+    // Layout for Help and Support Page
+    VBox helpLayout = new VBox(20, helpTitle, complaintSection, contactLabel, contactDetails, faqLabel, faqContent, backButton);
+    helpLayout.setAlignment(Pos.TOP_CENTER);
+    helpLayout.setPadding(new Insets(20));
+    helpLayout.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-width: 1px;");
+
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(helpLayout);
     }
 }
