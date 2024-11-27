@@ -517,7 +517,7 @@ public class DatabaseConnection {
     }
 
     public static boolean addNewDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate, specialization) VALUES (?, ?, ?, ?, ?)";
     
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -525,6 +525,7 @@ public class DatabaseConnection {
             stmt.setString(2, doctor.getEmail());
             stmt.setString(3, doctor.getPhoneNumber());
             stmt.setDate(4, doctor.getHireDate());
+            stmt.setString(5, doctor.getSpecialization());
     
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
