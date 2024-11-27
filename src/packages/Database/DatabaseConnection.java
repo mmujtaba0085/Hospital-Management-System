@@ -1014,15 +1014,14 @@ public class DatabaseConnection {
         return specialization;
     }
 
-    public static boolean addPatient(String name, String email, String phone, String password, Date date) {
-        String sql = "INSERT INTO Patient (name, email, phoneNumber, checkupDate) VALUES (?, ?, ?, ?)";
+    public static boolean addPatient(String name, String email, String phone, String password) {
+        String sql = "INSERT INTO Patient (name, email, phoneNumber) VALUES (?, ?, ?)";
     
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
             stmt.setString(2, email);
             stmt.setString(3, phone);
-            stmt.setDate(4, date);
     
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
