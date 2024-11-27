@@ -17,8 +17,6 @@
             <children>
                 <Label prefHeight="48.0" prefWidth="228.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-color: #e1722f; -fx-text-fill: white;" text="Doctor's Dashboard" />
 
-                <!-- Home / Overview -->
-                <Button onAction="#showOverview" prefHeight="26.0" prefWidth="228.0" text="Home / Overview" />
                 <Button onAction="#viewProfile" prefHeight="26.0" prefWidth="228.0" text="ViewProfile" />
 
                 <!-- Appointments Management with Sub-options -->
@@ -42,9 +40,6 @@
                     </content>
                 </TitledPane>
 
-
-                <!-- Settings -->
-                <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
 
                 <!-- Help & Support -->
                 <Button alignment="TOP_CENTER" onAction="#openHelp" prefHeight="26.0" prefWidth="237.0" text="Help and Support" />

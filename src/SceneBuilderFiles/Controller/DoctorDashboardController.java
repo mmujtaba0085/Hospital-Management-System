@@ -1046,7 +1046,7 @@ public class DoctorDashboardController {
         if (complaintText.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "Please describe your issue before submitting.");
         } else {
-            boolean isComplaintInserted = DatabaseConnection.insertComplaint(doctor.getID(), complaintText);
+            boolean isComplaintInserted = DatabaseConnection.insertComplaint("Doctor", complaintText);
             if (isComplaintInserted) {
                 showAlert(Alert.AlertType.INFORMATION, "Complaint Submitted", "Your complaint has been recorded. We will address it promptly.");
                 complaintTextArea.clear();
