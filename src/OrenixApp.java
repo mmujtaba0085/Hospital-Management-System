@@ -128,7 +128,7 @@ public class OrenixApp extends Application {
             controller.setDoctor(doctor);
             
 
-            Scene doctorScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            Scene doctorScene = new Scene(root, 900, 700); // Adjust dimensions as needed
             //doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
 
             Stage doctorStage = new Stage();
@@ -157,7 +157,7 @@ public class OrenixApp extends Application {
             controller.setPatient(patient);
             
 
-            Scene patientScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            Scene patientScene = new Scene(root, 900, 700); // Adjust dimensions as needed
             //patientScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/PatientDashboard.css").toExternalForm());
 
             Stage patientStage = new Stage();
@@ -186,7 +186,7 @@ public class OrenixApp extends Application {
             controller.setAdmin(admin);
             
 
-            Scene adminScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            Scene adminScene = new Scene(root, 900, 700); // Adjust dimensions as needed
             //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/AdminDashboard.css").toExternalForm());
 
             Stage adminStage = new Stage();
@@ -215,7 +215,7 @@ public class OrenixApp extends Application {
             controller.setReceptionist(receptionist);
             
 
-            Scene receptionistScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            Scene receptionistScene = new Scene(root, 900, 700); // Adjust dimensions as needed   width, height
             //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/ReceptionistDashboard.css").toExternalForm());
 
             Stage receptionistStage = new Stage();
