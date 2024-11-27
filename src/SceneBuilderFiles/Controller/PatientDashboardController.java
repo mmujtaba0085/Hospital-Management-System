@@ -76,14 +76,23 @@ public class PatientDashboardController {
         System.out.println("Patient's Dashboard Initialized!");
         mainContentTitle.setText("Welcome to the Patient's Dashboard");
         subOptionPane.setVisible(false); // Hide sub-options by default
+        
     }
 
     //Displays the home/overview section.
     @FXML
     private void showOverview(ActionEvent event) {
         mainContentTitle.setText("Home / Overview");
-        // Add logic to populate main content area with overview details
+        
         System.out.println("Displaying Home / Overview.");
+        
+    }
+
+     // Method to set Doctor object
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+        mainContentTitle.setText("Welcome, " + this.patient.getName());
+        viewProfile();
     }
 
     @SuppressWarnings("unused")
@@ -255,11 +264,7 @@ private void showChangePasswordDialog() {
     });
 }
 
-    // Method to set Doctor object
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-        mainContentTitle.setText("Welcome, " + this.patient.getName());
-    }
+   
 
     public void viewPersonalDetails() {
         // Update the main content title
@@ -993,9 +998,10 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
         backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
         backButton.setOnAction(e -> viewPersonalDetails());
     
-        // Clear only the content of the mainContentArea (not the title)
-        mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().addAll(backButton, billTable);
+        
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+        mainContentPane.getChildren().addAll(backButton, billTable);
     }
     
 
