@@ -138,7 +138,7 @@ public class DatabaseConnection {
             return null;
         }
         
-        String query="select adminId,name,phoneNumber,hireDate from admin where email = ?";
+        String query="select adminId,name,phoneNumber,hireDate,address from admin where email = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
         PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, email);
@@ -149,9 +149,10 @@ public class DatabaseConnection {
                 String name = resultSet.getString("name");
                 String phoneNumber = resultSet.getString("phoneNumber");
                 Date hireDate = resultSet.getDate("hireDate");
+                String address= resultSet.getString("address");
     
                 // Create and populate the Admin object
-                admin=new Admin(adminId, name, email, phoneNumber, hireDate);
+                admin=new Admin(adminId, name, email, phoneNumber, hireDate,address);
             }
             return admin;
 
@@ -535,6 +536,24 @@ public class DatabaseConnection {
         }
     }
 
+    public static boolean addNewReceptionist(Receptionist receptionist) {
+        String sql = "INSERT INTO Receptionist (name, email, phoneNumber, hireDate) VALUES (?, ?, ?, ?)";
+    
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, receptionist.getName());
+            stmt.setString(2, receptionist.getEmail());
+            stmt.setString(3, receptionist.getPhoneNumber());
+            stmt.setDate(4, receptionist.getHireDate());
+    
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static List<MedicalHistory> searchMedicalHistory(String query) {
         List<MedicalHistory> results = new ArrayList<>();
         String sql = """
@@ -597,6 +616,31 @@ public class DatabaseConnection {
             e.printStackTrace();
         }
         return doctorList;
+    }
+
+    public static LinkedList<Receptionist> getAllReceptionist(){
+        LinkedList<Receptionist> receptionistList = new LinkedList<>();
+        String sql = """
+            SELECT receptionistID, name, email, phoneNumber,  hireDate
+            FROM Receptionist;
+        """;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Receptionist d = new Receptionist();
+                d.setID(rs.getInt("receptionistID"));
+                d.setName(rs.getString("name"));
+                d.setEmail(rs.getString("email"));
+                d.setPhoneNumber(rs.getString("phoneNumber"));
+                d.setHireDate(rs.getDate("hireDate"));
+                receptionistList.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return receptionistList;
     }
 
     public static LinkedList<Patient> getAllPatients(){
@@ -1198,6 +1242,26 @@ public class DatabaseConnection {
         }
     }
    
+    public static boolean updateAdminProfile(int adminID, String name, String phone, String address) {
+        String sql = "UPDATE Admin SET name = ?, phoneNumber = ?, address = ? WHERE adminID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setInt(4, adminID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating Admin profile: " + e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean updatePassword(String email, String currentPassword, String newPassword) {
         // First verify current password
         String verifySql = "SELECT password FROM login WHERE username = ?";

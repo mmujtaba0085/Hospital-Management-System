@@ -26,4 +26,18 @@ public class Receptionist extends Person {
     public Date getHireDate(){
         return hiredate;
     }
+
+
+    public void setID(int ID) {
+        this.ID=ID;
+    }
+    public void setName(String name) {
+        this.name=name;
+    }
+    public void setEmail(String email) {
+        this.email=email;
+    }
+    public void setHireDate(Date hiredate){
+        this.hiredate=hiredate;
+    }
 }

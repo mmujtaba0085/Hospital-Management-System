@@ -13,10 +13,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -26,6 +31,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -37,6 +43,7 @@ import packages.Others.Complaint;
 import packages.Person.Admin;
 import packages.Person.Doctor;
 import packages.Person.Patient;
+import packages.Person.Receptionist;
 
 public class AdminDashboardController {
     private Admin admin;
@@ -68,12 +75,13 @@ public class AdminDashboardController {
         System.out.println("Admin's Dashboard Initialized!");
         mainContentTitle.setText("Welcome to the Admin's Dashboard");
         subOptionPane.setVisible(false); // Hide sub-options by default
+        
     }
 
     // Method to set Admin object
     public void setAdmin(Admin admin) {
         this.admin = admin;
-        mainContentTitle.setText("Welcome, " + this.admin.getName());
+        viewPersonalDetails();
     }
 
     // Sidebar Handlers
@@ -87,80 +95,179 @@ public class AdminDashboardController {
     
     
     public void viewPersonalDetails() {
-        // Update the main content title
-        mainContentTitle.setText("Personal Details");
+    mainContentTitle.setText("My Profile");
     
-        // Create a new AnchorPane for this content
-        AnchorPane ap = new AnchorPane();
+    // Create main content pane
+    VBox profileBox = new VBox(15);
+    profileBox.setPadding(new Insets(20));
     
-        // Retrieve Admin's personal details using the admin's ID
-        admin = DatabaseConnection.getAdminPersonalDeatils(admin.getID());
-        System.out.println("------------------Admin ID "+admin.getID());
+    // Profile Information Section
+    VBox infoBox = new VBox(10);
+    infoBox.setStyle("-fx-padding: 20px; -fx-background-color: #f5f5f5; -fx-background-radius: 5px;");
     
-        if (admin != null) {
-            // Create a label for "Name" and another for the actual name value
-            Label nameValueLabel = new Label("Name:");
-            Label nameLabel = new Label(admin.getName());
+    // Create labels for doctor information
+    Label nameLabel = new Label("Name: " + admin.getName());
+    Label emailLabel = new Label("Email: " + admin.getEmail());
+    Label phoneLabel = new Label("Phone: " + admin.getPhoneNumber());
+    Label addressLabel = new Label("Address: " + admin.getAddress());
     
-            // Create labels for the email and phone number
-            Label emailValueLabel = new Label("Email:");
-            Label emailLabel = new Label(admin.getEmail());
+    // Style the labels
+    String labelStyle = "-fx-font-size: 14px;";
+    nameLabel.setStyle(labelStyle);
+    emailLabel.setStyle(labelStyle);
+    phoneLabel.setStyle(labelStyle);
+    addressLabel.setStyle(labelStyle);
     
-            Label phoneValueLabel = new Label("Phone:");
-            Label phoneLabel = new Label(admin.getPhoneNumber());
+    infoBox.getChildren().addAll(nameLabel, emailLabel, phoneLabel, addressLabel);
     
-            // Increase font size for all labels
-            nameValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            nameLabel.setStyle("-fx-font-size: 18px;");
-            
-            emailValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            emailLabel.setStyle("-fx-font-size: 18px;");
-            
-            phoneValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            phoneLabel.setStyle("-fx-font-size: 18px;");
+    // Create buttons
+    Button editProfileButton = new Button("Edit Profile");
+    Button changePasswordButton = new Button("Change Password");
     
-            // Set positions for the labels
-            nameLabel.setLayoutX(181);
-            nameLabel.setLayoutY(47);
-            
-            nameValueLabel.setLayoutX(33);  // Placing the value label next to "Name"
-            nameValueLabel.setLayoutY(47);
+    // Style the buttons
+    String buttonStyle = "-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 150px;";
+    editProfileButton.setStyle(buttonStyle);
+    changePasswordButton.setStyle(buttonStyle);
     
-            emailLabel.setLayoutX(181);
-            emailLabel.setLayoutY(89);
-            
-            emailValueLabel.setLayoutX(33);  // Placing the value label next to "Email"
-            emailValueLabel.setLayoutY(89);
+    // Button actions
+    editProfileButton.setOnAction(e -> showEditProfileDialog());
+    changePasswordButton.setOnAction(e -> showChangePasswordDialog());
     
-            phoneLabel.setLayoutX(181);
-            phoneLabel.setLayoutY(131);
-            
-            phoneValueLabel.setLayoutX(33);  // Placing the value label next to "Phone"
-            phoneValueLabel.setLayoutY(131);
+    // Add all components to the main profile box
+    profileBox.getChildren().addAll(infoBox, editProfileButton, changePasswordButton);
+    
+    // Add to main content area
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().addAll(profileBox);
+    
+    // Set anchors
+    AnchorPane.setTopAnchor(profileBox, 50.0);
+    AnchorPane.setLeftAnchor(profileBox, 20.0);
+    AnchorPane.setRightAnchor(profileBox, 20.0);
+}
 
-            // Create an ImageView and set an image (change the path as per your image)
-            ImageView profileImage = new ImageView();
-            Image image = new Image("file:images/person.jpg"); // Adjust the path to your image file
-            profileImage.setImage(image);
-            
-            // Set size for the image (adjust the size as necessary)
-            profileImage.setFitWidth(200);
-            profileImage.setFitHeight(150);
-            
-            // Position the image to the right of the labels
-            profileImage.setLayoutX(450);  // Positioning the image on the right side
-            profileImage.setLayoutY(47);   // Align the top of the image with the name label
+    private void showEditProfileDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Edit Profile");
+    dialog.setHeaderText("Update your profile information");
     
-            // Add all labels to the AnchorPane
-            ap.getChildren().addAll(nameLabel, nameValueLabel, emailLabel, emailValueLabel, phoneLabel, phoneValueLabel, profileImage);
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
     
-            // Clear any existing content and add the new AnchorPane to mainContentArea
-            mainContentArea.getChildren().clear();
-            mainContentArea.getChildren().add(ap);
-        } else {
-            // Display an error message if admin details are not found
-            mainContentTitle.setText("Error: Admin details not found.");
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    TextField nameField = new TextField(admin.getName());
+    TextField phoneField = new TextField(admin.getPhoneNumber());
+    TextField addressField = new TextField(admin.getAddress());
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Name:"), 0, 0);
+    grid.add(nameField, 1, 0);
+    grid.add(new Label("Phone:"), 0, 1);
+    grid.add(phoneField, 1, 1);
+    grid.add(new Label("Address:"), 0, 2);
+    grid.add(addressField, 1, 2);
+
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            // Update admin object
+            admin.setName(nameField.getText());
+            admin.setPhoneNumber(phoneField.getText());
+            admin.setAddress(addressField.getText());
+            
+            // Update in database
+            boolean success = DatabaseConnection.updateAdminProfile(
+                admin.getID(),
+                nameField.getText(),
+                phoneField.getText(),
+                addressField.getText()
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully!");
+                viewPersonalDetails();// Refresh the profile view
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to update profile. Please try again.");
+            }
         }
+    });
+}
+
+    private void showChangePasswordDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Change Password");
+    dialog.setHeaderText("Enter your current and new password");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    PasswordField currentPasswordField = new PasswordField();
+    PasswordField newPasswordField = new PasswordField();
+    PasswordField confirmPasswordField = new PasswordField();
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Current Password:"), 0, 0);
+    grid.add(currentPasswordField, 1, 0);
+    grid.add(new Label("New Password:"), 0, 1);
+    grid.add(newPasswordField, 1, 1);
+    grid.add(new Label("Confirm Password:"), 0, 2);
+    grid.add(confirmPasswordField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                showAlert(AlertType.ERROR, "Error", "New passwords do not match!");
+                return;
+            }
+            
+            // Update password in database
+            boolean success = DatabaseConnection.updatePassword(
+                admin.getEmail(),
+                currentPassword,
+                newPassword
+            );
+            
+            if (success) {
+                showAlert2(AlertType.INFORMATION, "Success", "Password changed successfully!");
+            } else {
+                showAlert2(AlertType.ERROR, "Error", "Failed to change password. Please check your current password and try again.");
+            }
+        }
+    });
+}
+
+    private void showAlert2(AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
     
 
@@ -253,9 +360,9 @@ public class AdminDashboardController {
             }
         });
     
-        // Add the search box, "Add New Patient" button, and TableView to the mainContentArea
-        mainContentArea.getChildren().clear(); // Clear any existing content
-        mainContentArea.getChildren().addAll(searchBox, addNewPatientButton, patientTable);
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+        mainContentPane.getChildren().addAll(searchBox, addNewPatientButton, patientTable);
     }
     
     
@@ -356,6 +463,7 @@ public class AdminDashboardController {
                 if (success) {
                     showInfo("Patient added successfully!");
                     addPatientStage.close();
+                    viewPatientList();
                 } else {
                     showError("Error adding patient. Please try again.");
                 }
@@ -481,9 +589,9 @@ public class AdminDashboardController {
             openAddNewDoctorForm();
         });
     
-        // Add the search box, table, and button to the main content area
-        mainContentArea.getChildren().clear(); // Clear existing content
-        mainContentArea.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+        mainContentPane.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
     }
     
     
@@ -559,11 +667,8 @@ public class AdminDashboardController {
 
     // Label and ComboBox for specialization selection
     Label specializationLabel = new Label("Specialization:");
-    ComboBox<String> specializationComboBox = new ComboBox<>();
-    specializationComboBox.getItems().addAll(
-        "Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Dermatology", "General Surgery" // Example specializations
-    );
-    specializationComboBox.setPromptText("Select Doctor's Specialization");
+    TextField specializationField = new TextField();
+    specializationField.setPromptText("Select Doctor's Specialization");
 
     // Create a button to submit the form
     Button submitButton = new Button("Submit");
@@ -575,7 +680,7 @@ public class AdminDashboardController {
         String email = emailField.getText();
         String phone = phoneField.getText();
         LocalDate hireDate = hireDatePicker.getValue();
-        String specialization = specializationComboBox.getValue();  // Get selected specialization
+        String specialization = specializationField.getText();
 
         // Validate input data
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || hireDate == null || specialization == null) {
@@ -594,6 +699,7 @@ public class AdminDashboardController {
             if (success) {
                 showInfo("Doctor added successfully!");
                 addDoctorStage.close();
+                viewDoctorList();
             } else {
                 showError("Error adding doctor. Please try again.");
             }
@@ -611,13 +717,223 @@ public class AdminDashboardController {
 
     // Add all elements to the VBox
     formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, 
-                                  checkupLabel, hireDatePicker, specializationLabel, specializationComboBox, buttonHBox);
+                                  checkupLabel, hireDatePicker, specializationLabel, specializationField, buttonHBox);
 
     // Set the scene and show the stage
     Scene scene = new Scene(formVBox, 400, 400); // Adjust the scene size to fit the new form elements
     addDoctorStage.setScene(scene);
     addDoctorStage.show();
 }
+
+
+
+@SuppressWarnings({ "unchecked", "unused" })
+@FXML
+public void viewReceptionistList() {
+    mainContentTitle.setText("Receptionist List");
+
+    // Retrieve all doctors from the database
+    LinkedList<Receptionist> doctorList = DatabaseConnection.getAllReceptionist();
+
+    // Convert the LinkedList to an ObservableList for the TableView
+    ObservableList<Receptionist> doctorObservableList = FXCollections.observableArrayList(doctorList);
+
+    // Create a FilteredList for search functionality
+    FilteredList<Receptionist> filteredList = new FilteredList<>(doctorObservableList, p -> true);
+
+    // Create a TextField for search input
+    TextField searchBox = new TextField();
+    searchBox.setPromptText("Search by Name...");
+    searchBox.setLayoutX(10); // Position the search box
+    searchBox.setLayoutY(10);
+    searchBox.setPrefWidth(300);
+
+    // Add a listener to filter the list based on search input
+    searchBox.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredList.setPredicate(doctor -> {
+            // If the search box is empty, show all doctors
+            if (newValue == null || newValue.isEmpty()) {
+                return true;
+            }
+
+            // Compare doctor name with the search input
+            String lowerCaseFilter = newValue.toLowerCase();
+            return doctor.getName().toLowerCase().contains(lowerCaseFilter);
+        });
+    });
+
+    // Create a TableView for displaying doctors
+    TableView<Receptionist> doctorTable = new TableView<>();
+    doctorTable.setItems(filteredList);
+
+    // Define TableColumn for Doctor ID
+    TableColumn<Receptionist, Integer> idColumn = new TableColumn<>("Receptionist ID");
+    idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
+    // Define TableColumn for Name
+    TableColumn<Receptionist, String> nameColumn = new TableColumn<>("Name");
+    nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+    // Define TableColumn for Contact Information
+    TableColumn<Receptionist, String> contactColumn = new TableColumn<>("Email Address");
+    contactColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+    // Add all columns to the TableView
+    doctorTable.getColumns().addAll(idColumn, nameColumn, contactColumn);
+
+    // Adjust TableView layout
+    doctorTable.setPrefWidth(mainContentArea.getPrefWidth());
+    doctorTable.setPrefHeight(mainContentArea.getPrefHeight() - 50); // Leave space for the search box
+    doctorTable.setLayoutY(50); // Position the TableView below the search box
+
+    // Add a double-click listener to display doctor details
+    doctorTable.setOnMouseClicked(event -> {
+        if (event.getClickCount() == 2 && !doctorTable.getSelectionModel().isEmpty()) {
+            Receptionist selectedDoctor = doctorTable.getSelectionModel().getSelectedItem();
+            displayReceptionistDetails(selectedDoctor);
+        }
+    });
+
+    // Create an "Add New Doctor" button
+    Button addDoctorButton = new Button("Add New Receptionist");
+    addDoctorButton.setLayoutX(530);  // Position the button next to the search box
+    addDoctorButton.setLayoutY(10);   // Align vertically with the search box
+    addDoctorButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+
+    // Set action for the "Add New Doctor" button
+    addDoctorButton.setOnAction(event -> {
+        openAddNewReceptionistForm();
+        
+    });
+
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
+}
+
+
+@SuppressWarnings("unused")
+private void displayReceptionistDetails(Receptionist doctor) {
+    // Create a new AnchorPane for displaying doctor details
+    AnchorPane detailsPane = new AnchorPane();
+
+    // Create labels for doctor's details
+    Label idLabel = new Label("Receptionist ID: " + doctor.getID());
+    idLabel.setLayoutX(20);
+    idLabel.setLayoutY(20);
+    idLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+    Label nameLabel = new Label("Name: " + doctor.getName());
+    nameLabel.setLayoutX(20);
+    nameLabel.setLayoutY(60);
+    nameLabel.setStyle("-fx-font-size: 16px;");
+
+
+    Label emailLabel = new Label("Email: " + doctor.getEmail());
+    emailLabel.setLayoutX(20);
+    emailLabel.setLayoutY(140);
+    emailLabel.setStyle("-fx-font-size: 16px;");
+
+    // Create a Back Button
+    Button backButton = new Button("Back");
+    backButton.setLayoutX(20);
+    backButton.setLayoutY(180);
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+    // Set the back button action to reload the doctor list
+    backButton.setOnAction(event -> viewReceptionistList());
+
+    // Add all components to the detailsPane
+    detailsPane.getChildren().addAll(idLabel, nameLabel, emailLabel, backButton);
+
+    // Clear the mainContentArea and display the detailsPane
+    mainContentArea.getChildren().clear();
+    mainContentArea.getChildren().add(detailsPane);
+}
+
+@SuppressWarnings("unused")
+private void openAddNewReceptionistForm() {
+// Create a new stage for the add doctor form
+Stage addDoctorStage = new Stage();
+addDoctorStage.setTitle("Add New Receptionist");
+
+// Create a VBox to hold the form elements
+VBox formVBox = new VBox(10); // Spacing between form elements
+formVBox.setPadding(new Insets(20));
+
+// Create labels and text fields for doctor details
+Label nameLabel = new Label("Name:");
+TextField nameField = new TextField();
+nameField.setPromptText("Enter Receptionist's name");
+
+Label emailLabel = new Label("Email:");
+TextField emailField = new TextField();
+emailField.setPromptText("Enter Receptionist's email");
+
+Label phoneLabel = new Label("Phone Number:");
+TextField phoneField = new TextField();
+phoneField.setPromptText("Enter Receptionist's phone number");
+
+Label checkupLabel = new Label("Hire Date:");
+DatePicker hireDatePicker = new DatePicker();
+hireDatePicker.setPromptText("Enter hire date");
+
+
+// Create a button to submit the form
+Button submitButton = new Button("Submit");
+submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+// Handle form submission
+submitButton.setOnAction(e -> {
+    String name = nameField.getText();
+    String email = emailField.getText();
+    String phone = phoneField.getText();
+    LocalDate hireDate = hireDatePicker.getValue();
+
+    // Validate input data
+    if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || hireDate == null) {
+        showError("All fields must be filled out, including specialization!");
+    } else {
+        // Create a new Doctor object with the provided data
+        Receptionist newRecep = new Receptionist();
+        newRecep.setName(name);
+        newRecep.setEmail(email);
+        newRecep.setPhoneNumber(phone);
+        newRecep.setHireDate(Date.valueOf(hireDate)); // Convert LocalDate to Date
+
+        // Add the new doctor to the database
+        boolean success = DatabaseConnection.addNewReceptionist(newRecep);
+        if (success) {
+            showInfo("Receptionist added successfully!");
+            addDoctorStage.close();
+            viewReceptionistList();
+        } else {
+            showError("Error adding Receptionist. Please try again.");
+        }
+    }
+});
+
+// Create a button to cancel and close the form
+Button cancelButton = new Button("Cancel");
+cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+cancelButton.setOnAction(e -> addDoctorStage.close());
+
+// Create a HBox for buttons (Submit & Cancel)
+HBox buttonHBox = new HBox(10, submitButton, cancelButton);
+buttonHBox.setAlignment(Pos.CENTER);
+
+// Add all elements to the VBox
+formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, 
+                              checkupLabel, hireDatePicker, buttonHBox);
+
+// Set the scene and show the stage
+Scene scene = new Scene(formVBox, 400, 400); // Adjust the scene size to fit the new form elements
+addDoctorStage.setScene(scene);
+addDoctorStage.show();
+
+
+}
+
 
 
     @SuppressWarnings("unchecked")
@@ -651,8 +967,9 @@ public class AdminDashboardController {
         // Adjust TableView layout and add it to the mainContentArea
         appointmentTable.setPrefWidth(mainContentArea.getPrefWidth());
         appointmentTable.setPrefHeight(mainContentArea.getPrefHeight());
-        mainContentArea.getChildren().clear(); // Clear any existing content
-        mainContentArea.getChildren().add(appointmentTable);
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+        mainContentPane.getChildren().add(appointmentTable);
     }
 
 
@@ -703,8 +1020,9 @@ public class AdminDashboardController {
         // Adjust TableView layout and add it to the mainContentArea
         billTable.setPrefWidth(mainContentArea.getPrefWidth());
         billTable.setPrefHeight(mainContentArea.getPrefHeight());
-        mainContentArea.getChildren().clear(); // Clear any existing content
-        mainContentArea.getChildren().add(billTable);
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+        mainContentPane.getChildren().add(billTable);
     }
 
     @FXML
@@ -821,8 +1139,9 @@ private void viewComplaints() {
     });
 
     // Clear the previous content and add both the TableView and details box
-    mainContentArea.getChildren().clear();
-    mainContentArea.getChildren().addAll(complaintTable, complaintDetailsBox);
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().addAll(complaintTable, complaintDetailsBox);
 }
 
 public void showAlert(Alert.AlertType alertType, String title, String message) {
