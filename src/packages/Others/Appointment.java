@@ -69,6 +69,9 @@ public class Appointment {
     public void setSelected(boolean selected) {
         this.selected.set(selected);
     }
+    public void setDate(Date date){
+        this.date=date;
+    }
     public int getAppointmentID() {
         return appointmentID;
     }

@@ -200,7 +200,7 @@ public class DatabaseConnection {
     public static List<Appointment> viewAppointments(String email) {
         
         String query = """
-            SELECT a.appointmentID, a.appointedDay, 
+            SELECT a.appointmentID, a.date, 
                    p.name AS patient_name, d.name AS doctor_name
             FROM Appointments a
             LEFT JOIN Patient p ON a.patientID = p.patientID
@@ -221,7 +221,7 @@ public class DatabaseConnection {
     
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
-                String appointedDay = resultSet.getString("appointedDay");
+                String appointedDay = resultSet.getString("date");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
     
@@ -517,7 +517,7 @@ public class DatabaseConnection {
     }
 
     public static boolean addNewDoctor(Doctor doctor) {
-        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Doctor (name, email, phoneNumber, hireDate, specialization) VALUES (?, ?, ?, ?, ?)";
     
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -525,6 +525,7 @@ public class DatabaseConnection {
             stmt.setString(2, doctor.getEmail());
             stmt.setString(3, doctor.getPhoneNumber());
             stmt.setDate(4, doctor.getHireDate());
+            stmt.setString(5, doctor.getSpecialization());
     
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -626,8 +627,11 @@ public class DatabaseConnection {
     public static LinkedList<Appointment> getAllAppointments(){
         LinkedList<Appointment> appointmentList = new LinkedList<>();
         String sql = """
-            SELECT * 
-            FROM appointments 
+            SELECT a.appointmentID, a.date, 
+                   p.name AS patient_name, d.name AS doctor_name
+            FROM Appointments a
+            LEFT JOIN Patient p ON a.patientID = p.patientID
+            LEFT JOIN Doctor d ON a.doctorID = d.doctorID
         """;
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -636,6 +640,9 @@ public class DatabaseConnection {
             while (rs.next()) {
                 Appointment a = new Appointment();
                 a.setID(rs.getInt("appointmentID"));
+                a.setDoctorName(rs.getString("doctor_name"));
+                a.setPatientName(rs.getString("patient_name"));
+                a.setDate(rs.getDate("date"));
                 appointmentList.add(a);
             }
         } catch (Exception e) {
@@ -781,7 +788,6 @@ public class DatabaseConnection {
             try (ResultSet rs = stmt.executeQuery()) {
                 // Process each row in the result set
                 while (rs.next()) {
-                    Bill b=new Bill();
                     b.setID(rs.getInt("billID"));
                     b.setPatientName(rs.getString("name"));
                     b.setAmount(rs.getDouble("amount"));
@@ -1009,15 +1015,14 @@ public class DatabaseConnection {
         return specialization;
     }
 
-    public static boolean addPatient(String name, String email, String phone, String password, Date date) {
-        String sql = "INSERT INTO Patient (name, email, phoneNumber, checkupDate) VALUES (?, ?, ?, ?)";
+    public static boolean addPatient(String name, String email, String phone, String password) {
+        String sql = "INSERT INTO Patient (name, email, phoneNumber) VALUES (?, ?, ?)";
     
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
             stmt.setString(2, email);
             stmt.setString(3, phone);
-            stmt.setDate(4, date);
     
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

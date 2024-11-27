@@ -90,7 +90,6 @@ public class ReceptionistDashboardController{
     
         // Retrieve Receptionist's personal details using the receptionist's ID
         receptionist = DatabaseConnection.getReceptionistPersonalDeatils(receptionist.getID());
-        System.out.println("------------------Admin ID "+receptionist.getID());
     
         if (receptionist != null) {
             // Create a label for "Name" and another for the actual name value

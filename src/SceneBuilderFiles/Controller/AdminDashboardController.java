@@ -14,11 +14,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -311,11 +313,11 @@ public class AdminDashboardController {
         // Create a new stage for the add patient form
         Stage addPatientStage = new Stage();
         addPatientStage.setTitle("Add New Patient");
-
+    
         // Create a VBox to hold the form elements
         VBox formVBox = new VBox(10); // Spacing between form elements
         formVBox.setPadding(new Insets(20));
-
+    
         // Create labels and text fields for patient details
         Label nameLabel = new Label("Name:");
         TextField nameField = new TextField();
@@ -324,28 +326,23 @@ public class AdminDashboardController {
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
         emailField.setPromptText("Enter Patient's email");
-
+    
         Label phoneLabel = new Label("Phone Number:");
         TextField phoneField = new TextField();
         phoneField.setPromptText("Enter Patient's phone number");
-
-        Label checkupLabel = new Label("Check-up Date:");
-        DatePicker checkupDatePicker = new DatePicker();
-        checkupDatePicker.setPromptText("Enter checkup date");
-
+    
         // Create a button to submit the form
         Button submitButton = new Button("Submit");
         submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-
+    
         // Handle form submission
         submitButton.setOnAction(e -> {
             String name = nameField.getText();
             String email = emailField.getText();
             String phone = phoneField.getText();
-            LocalDate checkupDate = checkupDatePicker.getValue();
-
+    
             // Validate input data
-            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || checkupDate == null) {
+            if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 showError("All fields must be filled out!");
             } else {
                 // Create a new Patient object with the provided data
@@ -353,8 +350,7 @@ public class AdminDashboardController {
                 newPatient.setName(name);
                 newPatient.setEmail(email);
                 newPatient.setPhoneNumber(phone);
-                newPatient.setCheckupDate(Date.valueOf(checkupDate)); // Convert LocalDate to Date
-
+    
                 // Add the new patient to the database (implement the logic for adding a patient to your database)
                 boolean success = DatabaseConnection.addNewPatient(newPatient);
                 if (success) {
@@ -365,24 +361,25 @@ public class AdminDashboardController {
                 }
             }
         });
-
+    
         // Create a button to cancel and close the form
         Button cancelButton = new Button("Cancel");
         cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
         cancelButton.setOnAction(e -> addPatientStage.close());
-
+    
         // Create a HBox for buttons (Submit & Cancel)
         HBox buttonHBox = new HBox(10, submitButton, cancelButton);
         buttonHBox.setAlignment(Pos.CENTER);
-
+    
         // Add all elements to the VBox
-        formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, checkupLabel, checkupDatePicker, buttonHBox);
-
+        formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, buttonHBox);
+    
         // Set the scene and show the stage
-        Scene scene = new Scene(formVBox, 400, 350);
+        Scene scene = new Scene(formVBox, 400, 300); // Adjusted height to fit the new form
         addPatientStage.setScene(scene);
         addPatientStage.show();
     }
+    
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -535,81 +532,93 @@ public class AdminDashboardController {
 
     @SuppressWarnings("unused")
     private void openAddNewDoctorForm() {
-        // Create a new stage for the add doctor form
-        Stage addDoctorStage = new Stage();
-        addDoctorStage.setTitle("Add New Doctor");
+    // Create a new stage for the add doctor form
+    Stage addDoctorStage = new Stage();
+    addDoctorStage.setTitle("Add New Doctor");
 
-        // Create a VBox to hold the form elements
-        VBox formVBox = new VBox(10); // Spacing between form elements
-        formVBox.setPadding(new Insets(20));
+    // Create a VBox to hold the form elements
+    VBox formVBox = new VBox(10); // Spacing between form elements
+    formVBox.setPadding(new Insets(20));
 
-        // Create labels and text fields for doctor details
-        Label nameLabel = new Label("Name:");
-        TextField nameField = new TextField();
-        nameField.setPromptText("Enter Doctor's name");
-        
-        Label emailLabel = new Label("Email:");
-        TextField emailField = new TextField();
-        emailField.setPromptText("Enter Doctor's email");
+    // Create labels and text fields for doctor details
+    Label nameLabel = new Label("Name:");
+    TextField nameField = new TextField();
+    nameField.setPromptText("Enter Doctor's name");
+    
+    Label emailLabel = new Label("Email:");
+    TextField emailField = new TextField();
+    emailField.setPromptText("Enter Doctor's email");
 
-        Label phoneLabel = new Label("Phone Number:");
-        TextField phoneField = new TextField();
-        phoneField.setPromptText("Enter Doctor's phone number");
+    Label phoneLabel = new Label("Phone Number:");
+    TextField phoneField = new TextField();
+    phoneField.setPromptText("Enter Doctor's phone number");
 
-        Label checkupLabel = new Label("Check-up Date:");
-        DatePicker hireDatePicker = new DatePicker();
-        hireDatePicker.setPromptText("Enter checkup date");
+    Label checkupLabel = new Label("Hire Date:");
+    DatePicker hireDatePicker = new DatePicker();
+    hireDatePicker.setPromptText("Enter hire date");
 
-        // Create a button to submit the form
-        Button submitButton = new Button("Submit");
-        submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    // Label and ComboBox for specialization selection
+    Label specializationLabel = new Label("Specialization:");
+    ComboBox<String> specializationComboBox = new ComboBox<>();
+    specializationComboBox.getItems().addAll(
+        "Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Dermatology", "General Surgery" // Example specializations
+    );
+    specializationComboBox.setPromptText("Select Doctor's Specialization");
 
-        // Handle form submission
-        submitButton.setOnAction(e -> {
-            String name = nameField.getText();
-            String email = emailField.getText();
-            String phone = phoneField.getText();
-            LocalDate hireDate = hireDatePicker.getValue();
+    // Create a button to submit the form
+    Button submitButton = new Button("Submit");
+    submitButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
 
-            // Validate input data
-            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || hireDate == null) {
-                showError("All fields must be filled out!");
+    // Handle form submission
+    submitButton.setOnAction(e -> {
+        String name = nameField.getText();
+        String email = emailField.getText();
+        String phone = phoneField.getText();
+        LocalDate hireDate = hireDatePicker.getValue();
+        String specialization = specializationComboBox.getValue();  // Get selected specialization
+
+        // Validate input data
+        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || hireDate == null || specialization == null) {
+            showError("All fields must be filled out, including specialization!");
+        } else {
+            // Create a new Doctor object with the provided data
+            Doctor newDoctor = new Doctor();
+            newDoctor.setName(name);
+            newDoctor.setEmail(email);
+            newDoctor.setPhoneNumber(phone);
+            newDoctor.setHireDate(Date.valueOf(hireDate)); // Convert LocalDate to Date
+            newDoctor.setSpecialization(specialization);  // Set specialization
+
+            // Add the new doctor to the database
+            boolean success = DatabaseConnection.addNewDoctor(newDoctor);
+            if (success) {
+                showInfo("Doctor added successfully!");
+                addDoctorStage.close();
             } else {
-                // Create a new Doctor object with the provided data
-                Doctor newDoctor = new Doctor();
-                newDoctor.setName(name);
-                newDoctor.setEmail(email);
-                newDoctor.setPhoneNumber(phone);
-                newDoctor.setHireDate(Date.valueOf(hireDate)); // Convert LocalDate to Date
-
-                // Add the new doctot to the database (implement the logic for adding a patient to your database)
-                boolean success = DatabaseConnection.addNewDoctor(newDoctor);
-                if (success) {
-                    showInfo("Doctor added successfully!");
-                    addDoctorStage.close();
-                } else {
-                    showError("Error adding doctor. Please try again.");
-                }
+                showError("Error adding doctor. Please try again.");
             }
-        });
+        }
+    });
 
-        // Create a button to cancel and close the form
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-        cancelButton.setOnAction(e -> addDoctorStage.close());
+    // Create a button to cancel and close the form
+    Button cancelButton = new Button("Cancel");
+    cancelButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    cancelButton.setOnAction(e -> addDoctorStage.close());
 
-        // Create a HBox for buttons (Submit & Cancel)
-        HBox buttonHBox = new HBox(10, submitButton, cancelButton);
-        buttonHBox.setAlignment(Pos.CENTER);
+    // Create a HBox for buttons (Submit & Cancel)
+    HBox buttonHBox = new HBox(10, submitButton, cancelButton);
+    buttonHBox.setAlignment(Pos.CENTER);
 
-        // Add all elements to the VBox
-        formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, checkupLabel, hireDatePicker, buttonHBox);
+    // Add all elements to the VBox
+    formVBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, phoneLabel, phoneField, 
+                                  checkupLabel, hireDatePicker, specializationLabel, specializationComboBox, buttonHBox);
 
-        // Set the scene and show the stage
-        Scene scene = new Scene(formVBox, 400, 350);
-        addDoctorStage.setScene(scene);
-        addDoctorStage.show();
-    }
+    // Set the scene and show the stage
+    Scene scene = new Scene(formVBox, 400, 400); // Adjust the scene size to fit the new form elements
+    addDoctorStage.setScene(scene);
+    addDoctorStage.show();
+}
+
 
     @SuppressWarnings("unchecked")
     @FXML
@@ -705,82 +714,117 @@ public class AdminDashboardController {
 
     @SuppressWarnings({ "unused", "unchecked" })
     @FXML
-    private void viewComplaints() {
-        mainContentTitle.setText("View Complaints");
-    
-        // Fetch unresolved complaints from the database
-        ObservableList<Complaint> complaintList = DatabaseConnection.getUnresolvedComplaints();
-    
-        // Create a TableView for displaying complaints
-        TableView<Complaint> complaintTable = new TableView<>();
-        complaintTable.setItems(complaintList);
-    
-        // Define TableColumns
-        TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
-        complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
-    
-        TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
-        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
-    
-        TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
-        complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
-    
-        TableColumn<Complaint, String> statusColumn = new TableColumn<>("Status");
-        statusColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getStatus());
-        });
-    
-        // Define the "Resolve" action column
-        TableColumn<Complaint, Void> resolveColumn = new TableColumn<>("Resolve");
-        resolveColumn.setCellFactory(param -> new TableCell<Complaint, Void>() {
-            private final Button resolveButton = new Button("Resolve");
-    
-            {
-                resolveButton.setOnAction(event -> {
-                    Complaint selectedComplaint = getTableView().getItems().get(getIndex());
-                    boolean isResolved = DatabaseConnection.markComplaintAsResolved(selectedComplaint.getComplaintID());
-                    if (isResolved) {
-                        selectedComplaint.setStatus("Resolved");
-                        complaintTable.refresh();
-                        showAlert(Alert.AlertType.INFORMATION, "Complaint Resolved", "The complaint has been marked as resolved.");
-                    } else {
-                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to resolve the complaint.");
-                    }
-                });
-            }
-    
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
+private void viewComplaints() {
+    mainContentTitle.setText("View Complaints");
+
+    // Fetch unresolved complaints from the database
+    ObservableList<Complaint> complaintList = DatabaseConnection.getUnresolvedComplaints();
+
+    // Create a TableView for displaying complaints
+    TableView<Complaint> complaintTable = new TableView<>();
+    complaintTable.setItems(complaintList);
+
+    // Define TableColumns
+    TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
+    complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
+
+    TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
+    patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
+
+    TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
+    complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
+
+    TableColumn<Complaint, String> statusColumn = new TableColumn<>("Status");
+    statusColumn.setCellValueFactory(cellData -> {
+        return new SimpleStringProperty(cellData.getValue().getStatus());
+    });
+
+    // Define the "Resolve" action column
+    TableColumn<Complaint, Void> resolveColumn = new TableColumn<>("Resolve");
+    resolveColumn.setCellFactory(param -> new TableCell<Complaint, Void>() {
+        private final Button resolveButton = new Button("Resolve");
+
+        {
+            resolveButton.setOnAction(event -> {
+                Complaint selectedComplaint = getTableView().getItems().get(getIndex());
+                boolean isResolved = DatabaseConnection.markComplaintAsResolved(selectedComplaint.getComplaintID());
+                if (isResolved) {
+                    selectedComplaint.setStatus("Resolved");
+                    complaintTable.refresh();
+                    viewComplaints();
+                    showAlert(Alert.AlertType.INFORMATION, "Complaint Resolved", "The complaint has been marked as resolved.");
                 } else {
-                    setGraphic(resolveButton);
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to resolve the complaint.");
                 }
+            });
+        }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(resolveButton);
             }
-        });
-    
-        // Add columns to the table
-        complaintTable.getColumns().addAll(complaintIdColumn, patientIdColumn, complaintTextColumn, statusColumn, resolveColumn);
-    
-        // Adjust TableView layout
-        complaintTable.setPrefWidth(mainContentArea.getPrefWidth());
-        complaintTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
-        complaintTable.setLayoutY(50);
-    
-        // Create a Back Button
-        Button backButton = new Button("Back");
-        backButton.setLayoutX(10);
-        backButton.setLayoutY(10);
-        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-    
-        
-    
-        // Clear the previous content and add the new TableView
-        mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().addAll(backButton, complaintTable);
-    }
-    
+        }
+    });
+
+    // Add columns to the table
+    complaintTable.getColumns().addAll(complaintIdColumn, patientIdColumn, complaintTextColumn, statusColumn, resolveColumn);
+
+    // Adjust TableView layout
+    complaintTable.setPrefWidth(mainContentArea.getPrefWidth());
+    complaintTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
+    complaintTable.setLayoutY(50);
+
+    // Create a details view (initially hidden)
+    VBox complaintDetailsBox = new VBox();
+    complaintDetailsBox.setVisible(false); // Initially hidden
+    complaintDetailsBox.setSpacing(10);
+    complaintDetailsBox.setLayoutY(50);
+    complaintDetailsBox.setPrefWidth(mainContentArea.getPrefWidth());
+
+    Label detailsLabel = new Label("Complaint Details:");
+    detailsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+    TextArea detailsArea = new TextArea();
+    detailsArea.setEditable(false);
+    detailsArea.setWrapText(true);
+    detailsArea.setPrefHeight(300);
+
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(event -> {
+        complaintDetailsBox.setVisible(false);
+        complaintTable.setVisible(true);
+    });
+
+    complaintDetailsBox.getChildren().addAll(detailsLabel, detailsArea, backButton);
+
+    // Add listener for row selection
+    complaintTable.setOnMouseClicked(event -> {
+        if (event.getClickCount() == 1) { // Single-click
+            Complaint selectedComplaint = complaintTable.getSelectionModel().getSelectedItem();
+            if (selectedComplaint != null) {
+                // Populate details
+                detailsArea.setText("Complaint ID: " + selectedComplaint.getComplaintID() + "\n" +
+                        "Patient ID: " + selectedComplaint.getPatientID() + "\n" +
+                        "Complaint: " + selectedComplaint.getComplaintText() + "\n" +
+                        "Status: " + selectedComplaint.getStatus());
+
+                // Hide table and show details
+                complaintTable.setVisible(false);
+                complaintDetailsBox.setVisible(true);
+            }
+        }
+    });
+
+    // Clear the previous content and add both the TableView and details box
+    mainContentArea.getChildren().clear();
+    mainContentArea.getChildren().addAll(complaintTable, complaintDetailsBox);
+}
+
 public void showAlert(Alert.AlertType alertType, String title, String message) {
     Alert alert = new Alert(alertType);
     alert.setTitle(title);
@@ -788,5 +832,6 @@ public void showAlert(Alert.AlertType alertType, String title, String message) {
     alert.setContentText(message);
     alert.showAndWait();
 }
+
 
 }

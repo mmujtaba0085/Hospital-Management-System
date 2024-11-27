@@ -23,10 +23,10 @@
                 <Button alignment="TOP_CENTER" onAction="#viewPersonalDetails" prefHeight="40.0" prefWidth="252.0" text="Personal Details" />
                 
                 <!-- Patient List -->
-                <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="40.0" prefWidth="252.0" text="Patient's List" />
+                <Button alignment="TOP_CENTER" onAction="#viewPatientList" prefHeight="40.0" prefWidth="252.0" text="Patients List" />
 
                 <!-- Doctor List -->
-                <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="40.0" prefWidth="252.0" text="Doctor's List" />
+                <Button alignment="TOP_CENTER" onAction="#viewDoctorList" prefHeight="40.0" prefWidth="252.0" text="Doctors List" />
 
                 <!-- Prescriptions -->
                 <Button alignment="TOP_CENTER" onAction="#viewAppointment" prefHeight="40.0" prefWidth="252.0" text="Appointments List" />
@@ -38,7 +38,7 @@
                 <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="40.0" prefWidth="233.0" text="Settings" />
 
                 <!-- Help & Support -->
-                <Button alignment="TOP_CENTER" onAction="#viewComplaints" prefHeight="40.0" prefWidth="237.0" text="viewComplaints" />
+                <Button alignment="TOP_CENTER" onAction="#viewComplaints" prefHeight="40.0" prefWidth="237.0" text="View Complaints" />
             </children>
         </VBox>
 

@@ -37,40 +37,11 @@
                     <content>
                         <VBox>
                             <Button onAction="#viewPatientDetails" prefHeight="26.0" prefWidth="199.0" text="View Patient Details" />
-                            <Button onAction="#updateHealthRecords" prefHeight="26.0" prefWidth="199.0" text="Update Patient Health Records" />
                             <Button onAction="#viewMedicalHistory" prefHeight="30.0" prefWidth="198.0" text="View Medical History" />
                         </VBox>
                     </content>
                 </TitledPane>
 
-                <!-- Consultation Notes with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Consultation Notes">
-                    <content>
-                        <VBox>
-                            <Button onAction="#createConsultationNotes" prefHeight="26.0" prefWidth="199.0" text="Create New Notes" />
-                            <Button onAction="#viewPreviousNotes" prefHeight="26.0" prefWidth="199.0" text="View Previous Notes" />
-                        </VBox>
-                    </content>
-                </TitledPane>
-
-                <!-- Prescriptions -->
-                <Button alignment="TOP_CENTER" onAction="#openPrescriptions" prefHeight="26.0" prefWidth="252.0" text="Prescriptions" />
-
-                <!-- Communication -->
-                <Button alignment="TOP_CENTER" onAction="#openCommunication" prefHeight="26.0" prefWidth="250.0" text="Communication" />
-
-                <!-- Billing and Payments -->
-                <Button alignment="TOP_CENTER" onAction="#openBilling" prefHeight="26.0" prefWidth="234.0" text="Billing and Payments" />
-
-                <!-- Analytics & Reports with Sub-options -->
-                <TitledPane alignment="TOP_CENTER" expanded="false" text="Analytics and Reports">
-                    <content>
-                        <VBox>
-                            <Button onAction="#generateReports" prefHeight="26.0" prefWidth="200.0" text="Generate Reports" />
-                            <Button onAction="#downloadReports" prefHeight="26.0" prefWidth="202.0" text="Download Reports" />
-                        </VBox>
-                    </content>
-                </TitledPane>
 
                 <!-- Settings -->
                 <Button alignment="TOP_CENTER" onAction="#openSettings" prefHeight="26.0" prefWidth="233.0" text="Settings" />
