@@ -59,10 +59,11 @@ public class RegisterController {
 
         // If registration is successful, navigate to login page
         if (success) {
+            DatabaseConnection.updatePassword(email, email, confirmPassword);
             showAlert(Alert.AlertType.INFORMATION, "Success", "User registered successfully.");
             navigateToLoginPage();
         } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Registration failed.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Registration failed. ");
         }
     }
 

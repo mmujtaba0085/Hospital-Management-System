@@ -48,9 +48,6 @@
                       <!-- Login Button -->
                 <Button styleClass="login-button" text="Login" />
 
-                      <!-- Forgot Password Link -->
-                <Hyperlink styleClass="forgot-link" text="Forgot Password?" />
-
                 <Hyperlink fx:id="signUpButton" styleClass="forgot-link" text="Sign Up" />
 
             </VBox>
