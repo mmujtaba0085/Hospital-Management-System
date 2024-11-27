@@ -200,7 +200,7 @@ public class DatabaseConnection {
     public static List<Appointment> viewAppointments(String email) {
         
         String query = """
-            SELECT a.appointmentID, a.appointedDay, 
+            SELECT a.appointmentID, a.date, 
                    p.name AS patient_name, d.name AS doctor_name
             FROM Appointments a
             LEFT JOIN Patient p ON a.patientID = p.patientID
@@ -221,7 +221,7 @@ public class DatabaseConnection {
     
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
-                String appointedDay = resultSet.getString("appointedDay");
+                String appointedDay = resultSet.getString("date");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
     
@@ -626,8 +626,11 @@ public class DatabaseConnection {
     public static LinkedList<Appointment> getAllAppointments(){
         LinkedList<Appointment> appointmentList = new LinkedList<>();
         String sql = """
-            SELECT * 
-            FROM appointments 
+            SELECT a.appointmentID, a.date, 
+                   p.name AS patient_name, d.name AS doctor_name
+            FROM Appointments a
+            LEFT JOIN Patient p ON a.patientID = p.patientID
+            LEFT JOIN Doctor d ON a.doctorID = d.doctorID
         """;
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -636,6 +639,9 @@ public class DatabaseConnection {
             while (rs.next()) {
                 Appointment a = new Appointment();
                 a.setID(rs.getInt("appointmentID"));
+                a.setDoctorName(rs.getString("doctor_name"));
+                a.setPatientName(rs.getString("patient_name"));
+                a.setDate(rs.getDate("date"));
                 appointmentList.add(a);
             }
         } catch (Exception e) {
