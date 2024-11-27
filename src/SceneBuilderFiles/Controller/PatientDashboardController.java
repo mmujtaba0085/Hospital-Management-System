@@ -1000,8 +1000,9 @@ private void viewBillingDetails(ActionEvent event) {
     backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
     backButton.setOnAction(e -> viewPersonalDetails());
 
-    mainContentArea.getChildren().clear();
-    mainContentArea.getChildren().addAll(backButton, billTable);
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().addAll(backButton, billTable);
 }
 
 
@@ -1107,8 +1108,6 @@ private void makePayment(Bill bill) {
 private void openHelp(ActionEvent event) {
     mainContentTitle.setText("Help and Support");
 
-    // Clear previous content
-    mainContentArea.getChildren().clear();
 
     // Title Label
     Label helpTitle = new Label("How can we assist you?");
@@ -1186,7 +1185,9 @@ private void openHelp(ActionEvent event) {
     helpLayout.setPadding(new Insets(20));
     helpLayout.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-width: 1px;");
 
-    mainContentArea.getChildren().add(helpLayout);
+    Pane mainContentPane = (Pane) mainContentTitle.getParent();
+    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+    mainContentPane.getChildren().add(helpLayout);
 }
 
 }

@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -704,82 +705,117 @@ public class AdminDashboardController {
     }
 
     @FXML
-    private void viewComplaints() {
-        mainContentTitle.setText("View Complaints");
-    
-        // Fetch unresolved complaints from the database
-        ObservableList<Complaint> complaintList = DatabaseConnection.getUnresolvedComplaints();
-    
-        // Create a TableView for displaying complaints
-        TableView<Complaint> complaintTable = new TableView<>();
-        complaintTable.setItems(complaintList);
-    
-        // Define TableColumns
-        TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
-        complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
-    
-        TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
-        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
-    
-        TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
-        complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
-    
-        TableColumn<Complaint, String> statusColumn = new TableColumn<>("Status");
-        statusColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getStatus());
-        });
-    
-        // Define the "Resolve" action column
-        TableColumn<Complaint, Void> resolveColumn = new TableColumn<>("Resolve");
-        resolveColumn.setCellFactory(param -> new TableCell<Complaint, Void>() {
-            private final Button resolveButton = new Button("Resolve");
-    
-            {
-                resolveButton.setOnAction(event -> {
-                    Complaint selectedComplaint = getTableView().getItems().get(getIndex());
-                    boolean isResolved = DatabaseConnection.markComplaintAsResolved(selectedComplaint.getComplaintID());
-                    if (isResolved) {
-                        selectedComplaint.setStatus("Resolved");
-                        complaintTable.refresh();
-                        showAlert(Alert.AlertType.INFORMATION, "Complaint Resolved", "The complaint has been marked as resolved.");
-                    } else {
-                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to resolve the complaint.");
-                    }
-                });
-            }
-    
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
+private void viewComplaints() {
+    mainContentTitle.setText("View Complaints");
+
+    // Fetch unresolved complaints from the database
+    ObservableList<Complaint> complaintList = DatabaseConnection.getUnresolvedComplaints();
+
+    // Create a TableView for displaying complaints
+    TableView<Complaint> complaintTable = new TableView<>();
+    complaintTable.setItems(complaintList);
+
+    // Define TableColumns
+    TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
+    complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
+
+    TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
+    patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
+
+    TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
+    complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
+
+    TableColumn<Complaint, String> statusColumn = new TableColumn<>("Status");
+    statusColumn.setCellValueFactory(cellData -> {
+        return new SimpleStringProperty(cellData.getValue().getStatus());
+    });
+
+    // Define the "Resolve" action column
+    TableColumn<Complaint, Void> resolveColumn = new TableColumn<>("Resolve");
+    resolveColumn.setCellFactory(param -> new TableCell<Complaint, Void>() {
+        private final Button resolveButton = new Button("Resolve");
+
+        {
+            resolveButton.setOnAction(event -> {
+                Complaint selectedComplaint = getTableView().getItems().get(getIndex());
+                boolean isResolved = DatabaseConnection.markComplaintAsResolved(selectedComplaint.getComplaintID());
+                if (isResolved) {
+                    selectedComplaint.setStatus("Resolved");
+                    complaintTable.refresh();
+                    viewComplaints();
+                    showAlert(Alert.AlertType.INFORMATION, "Complaint Resolved", "The complaint has been marked as resolved.");
                 } else {
-                    setGraphic(resolveButton);
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to resolve the complaint.");
                 }
+            });
+        }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(resolveButton);
             }
-        });
-    
-        // Add columns to the table
-        complaintTable.getColumns().addAll(complaintIdColumn, patientIdColumn, complaintTextColumn, statusColumn, resolveColumn);
-    
-        // Adjust TableView layout
-        complaintTable.setPrefWidth(mainContentArea.getPrefWidth());
-        complaintTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
-        complaintTable.setLayoutY(50);
-    
-        // Create a Back Button
-        Button backButton = new Button("Back");
-        backButton.setLayoutX(10);
-        backButton.setLayoutY(10);
-        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-    
-        
-    
-        // Clear the previous content and add the new TableView
-        mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().addAll(backButton, complaintTable);
-    }
-    
+        }
+    });
+
+    // Add columns to the table
+    complaintTable.getColumns().addAll(complaintIdColumn, patientIdColumn, complaintTextColumn, statusColumn, resolveColumn);
+
+    // Adjust TableView layout
+    complaintTable.setPrefWidth(mainContentArea.getPrefWidth());
+    complaintTable.setPrefHeight(mainContentArea.getPrefHeight() - 50);
+    complaintTable.setLayoutY(50);
+
+    // Create a details view (initially hidden)
+    VBox complaintDetailsBox = new VBox();
+    complaintDetailsBox.setVisible(false); // Initially hidden
+    complaintDetailsBox.setSpacing(10);
+    complaintDetailsBox.setLayoutY(50);
+    complaintDetailsBox.setPrefWidth(mainContentArea.getPrefWidth());
+
+    Label detailsLabel = new Label("Complaint Details:");
+    detailsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+    TextArea detailsArea = new TextArea();
+    detailsArea.setEditable(false);
+    detailsArea.setWrapText(true);
+    detailsArea.setPrefHeight(300);
+
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(event -> {
+        complaintDetailsBox.setVisible(false);
+        complaintTable.setVisible(true);
+    });
+
+    complaintDetailsBox.getChildren().addAll(detailsLabel, detailsArea, backButton);
+
+    // Add listener for row selection
+    complaintTable.setOnMouseClicked(event -> {
+        if (event.getClickCount() == 1) { // Single-click
+            Complaint selectedComplaint = complaintTable.getSelectionModel().getSelectedItem();
+            if (selectedComplaint != null) {
+                // Populate details
+                detailsArea.setText("Complaint ID: " + selectedComplaint.getComplaintID() + "\n" +
+                        "Patient ID: " + selectedComplaint.getPatientID() + "\n" +
+                        "Complaint: " + selectedComplaint.getComplaintText() + "\n" +
+                        "Status: " + selectedComplaint.getStatus());
+
+                // Hide table and show details
+                complaintTable.setVisible(false);
+                complaintDetailsBox.setVisible(true);
+            }
+        }
+    });
+
+    // Clear the previous content and add both the TableView and details box
+    mainContentArea.getChildren().clear();
+    mainContentArea.getChildren().addAll(complaintTable, complaintDetailsBox);
+}
+
 public void showAlert(Alert.AlertType alertType, String title, String message) {
     Alert alert = new Alert(alertType);
     alert.setTitle(title);
@@ -787,5 +823,6 @@ public void showAlert(Alert.AlertType alertType, String title, String message) {
     alert.setContentText(message);
     alert.showAndWait();
 }
+
 
 }

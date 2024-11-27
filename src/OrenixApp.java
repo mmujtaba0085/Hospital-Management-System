@@ -1,18 +1,24 @@
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
+
 
 import packages.Person.*;
 import SceneBuilderFiles.Controller.*;
 import packages.Database.*;;
 
 public class OrenixApp extends Application {
+
+    
 
     @SuppressWarnings("unused")
     @Override
@@ -24,9 +30,14 @@ public class OrenixApp extends Application {
         scene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/Login.css").toExternalForm());
 
         // Get references to UI elements
-        TextField emailField = (TextField) scene.lookup(".text-field");  // Get Email TextField
-        PasswordField passwordField = (PasswordField) scene.lookup(".password-field");  // Get Password Field
+        TextField emailField = (TextField) scene.lookup(".text-field");
+        PasswordField passwordField = (PasswordField) scene.lookup(".password-field");
         Button loginButton = (Button) scene.lookup(".login-button");
+        
+        // Access the controller
+        LoginController controller = loader.getController();
+        // Access the initialized signUpButton
+        controller.signUpButton.setOnAction(event -> navigateToRegisterPage(primaryStage));
 
         // Set up login button action
         loginButton.setOnAction(event -> {
@@ -38,49 +49,56 @@ public class OrenixApp extends Application {
             //String username="alice.smith@hospital.com";
             String username="admin.b@hospital.com";
             String password="default_password";
-            
-            
 
-            // Check credentials in the database
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
-                // Login successful based on role
                 switch (role) {
                     case 1:
-                        // Create a Admin object with appropriate data
                         Admin admin = DatabaseConnection.AdminDetail(username, password);
-
-                        openAdminDashboard(primaryStage, admin); // Open Admin Dashboard
+                        openAdminDashboard(primaryStage, admin);
                         break;
-                    case 2: // Doctor Role
-                        
-                        
-                        // Create a Doctor object with appropriate data
+                    case 2:
                         Doctor doctor = DatabaseConnection.DoctorDetail(username, password);
-
-                        openDoctorDashboard(primaryStage, doctor); // Open Doctor Dashboard
+                        openDoctorDashboard(primaryStage, doctor);
                         break;
                     case 3:
                         showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Receptionist!");
-                        // Open Receptionist Dashboard or perform receptionist-specific actions
                         break;
                     case 4:
-                        // Create a Doctor object with appropriate data
                         Patient patient = DatabaseConnection.PatientDetail(username, password);
-
-                        openPatientDashboard(primaryStage, patient); // Open Doctor Dashboard
+                        openPatientDashboard(primaryStage, patient);
                         break;
                 }
             } else {
-                // Login failed
                 showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
             }
         });
+
+       
 
         primaryStage.setTitle("Orenix Hospital Management System - Login");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+    // Method to navigate to the registration page
+    private void navigateToRegisterPage(Stage currentStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Register.fxml"));
+            Parent root = loader.load();
+
+            RegisterController registerController = loader.getController();
+
+            Scene registerScene = new Scene(root, 800, 600); // Adjust dimensions as needed
+            currentStage.setScene(registerScene);
+            currentStage.setTitle("Orenix Hospital Management System - Register");
+            currentStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load the registration page.");
+        }
+    }
+
 
     // Helper method to show alert messages
     private void showAlert(Alert.AlertType alertType, String title, String message) {

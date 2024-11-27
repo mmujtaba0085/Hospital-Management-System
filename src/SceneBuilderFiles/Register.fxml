@@ -74,8 +74,29 @@
                   <Font name="Franklin Gothic Book" size="15.0" />
                </font></Label>
                 <PasswordField layoutX="325.0" layoutY="166.0" prefHeight="25.0" prefWidth="178.0" promptText="Re-enter Password" />
+                <Button fx:id="registerButton" 
+                        layoutX="165.0" 
+                        layoutY="279.0" 
+                        mnemonicParsing="false" 
+                        onAction="#handleRegisterButtonAction" 
+                        prefHeight="48.0" 
+                        prefWidth="212.0" 
+                        style="-fx-background-color: #DC582A; -fx-background-radius: 10; -fx-cursor: hand;" 
+                        text="Register" 
+                        textFill="WHITE">
+                    <font>
+                        <Font name="Franklin Gothic Heavy" size="20.0" />
+                    </font>
+                    <tooltip>
+                        <Tooltip text="Click to register a new account" />
+                    </tooltip>
+                    <style>
+                        .button:hover {
+                            -fx-background-color: #b84a20; /* Darker shade of orange */
+                        }
+                    </style>
+                </Button>
 
-                <Button fx:id="register_button" layoutX="165.0" layoutY="279.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="212.0" style="-fx-background-color: #DC582A;" text="Register" textFill="WHITE">
                <font>
                   <Font name="Franklin Gothic Heavy" size="20.0" />
                </font></Button>
@@ -91,7 +112,6 @@
                </font>
             </Label>
             <TextField layoutX="325.0" layoutY="107.0" prefHeight="25.0" prefWidth="178.0" promptText="Enter phone number" />
-            <ComboBox fx:id="comboBox" layoutX="182.0" layoutY="232.0" prefHeight="25.0" prefWidth="178.0" promptText="Register as" style="-fx-background-color: white;" />
             <Label layoutX="325.0" layoutY="33.0" text="Last Name">
                <font>
                   <Font name="Franklin Gothic Book" size="15.0" />

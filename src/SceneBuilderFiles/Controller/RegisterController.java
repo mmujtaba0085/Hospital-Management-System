@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -29,53 +28,39 @@ public class RegisterController {
     private PasswordField passwordField;
     @FXML
     private PasswordField confirmPasswordField;
-    @FXML
-    private ComboBox<String> comboBox;
+
     @FXML
     private Button registerButton;
 
     public void initialize() {
-        // Adding items programmatically to the ComboBox
-        comboBox.getItems().addAll("Patient", "Doctor", "Admin");
-
+        // Any initialization logic can go here.
     }
 
-    // This method will be called when the Register button is clicked
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
-        // Example validation: Check if password and confirm password match
+        System.out.println("Register button clicked!"); // Debug statement
+    
         if (!passwordField.getText().equals(confirmPasswordField.getText())) {
             showAlert(AlertType.ERROR, "Error", "Passwords do not match.");
             return;
         }
-
-        // Get values from the form fields
+    
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String email = emailField.getText();
         String phone = phoneField.getText();
         String password = passwordField.getText();
         Date date = new Date(System.currentTimeMillis());
-        String role = comboBox.getValue();  // This will be either "Admin" or "User"
-
-        // Check if the ComboBox has a valid selection
-        if (role == null || role.isEmpty()) {
-            showAlert(AlertType.ERROR, "Error", "Please select a role.");
+    
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+            showAlert(AlertType.ERROR, "Error", "All fields are required.");
             return;
         }
-        boolean success=false;
-        // Insert the user data into the database
-        if(role=="Patient"){
-            // Insert patient data into the database
-            success = DatabaseConnection.addPatient(firstName+lastName, email, phone, password, date);
-        }
-        else if(role=="Doctor"){
-            success = DatabaseConnection.addDoctor(firstName+lastName, email, phone, password, date);
-        }
-        else{
-            //boolean success = addUserToDatabase(firstName, lastName, email, phone, password, role);
-        }
-        
+    
+        System.out.println("Inserting into the database...");
+        boolean success = DatabaseConnection.addPatient(firstName + " " + lastName, email, phone, password, date);
+        System.out.println("Insert success: " + success);
+    
         if (success) {
             showAlert(AlertType.INFORMATION, "Success", "User registered successfully.");
             navigateToLoginPage();
@@ -84,7 +69,6 @@ public class RegisterController {
         }
     }
 
-    // Show an alert for errors or other information
     private void showAlert(AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -93,19 +77,14 @@ public class RegisterController {
         alert.showAndWait();
     }
 
-    // Navigate to the login page
     private void navigateToLoginPage() {
         try {
-            // Load the login page FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("@Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SceneBuilderFiles/Login.fxml"));
             Stage stage = (Stage) registerButton.getScene().getWindow();
             Scene scene = new Scene(loader.load());
-
-            // Set the scene and show the login page
             stage.setScene(scene);
             stage.setTitle("Login Page");
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(AlertType.ERROR, "Error", "Failed to load the login page.");
