@@ -27,11 +27,11 @@ public class Complaint {
         this.complaintID = complaintID;
     }
 
-    public String getuserType() {
+    public String getUserType() {
         return userType;
     }
-
-    public void setuserType(String userType) {
+    
+    public void setUserType(String userType) {
         this.userType = userType;
     }
 

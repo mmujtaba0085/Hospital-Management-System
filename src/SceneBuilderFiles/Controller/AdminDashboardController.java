@@ -336,12 +336,39 @@ public class AdminDashboardController {
         TableColumn<Patient, String> numberColumn = new TableColumn<>("Phone Number");
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
     
-        // Define TableColumn for Check-up Date
-        TableColumn<Patient, Date> checkupColumn = new TableColumn<>("Check-up Date");
-        checkupColumn.setCellValueFactory(new PropertyValueFactory<>("checkupDate"));
+        
+        // Define TableColumn for Remove Action
+        TableColumn<Patient, Void> removeColumn = new TableColumn<>("Remove");
+        removeColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button removeButton = new Button("Remove");
+    
+            {
+                removeButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+                removeButton.setOnAction(event -> {
+                    Patient selectedPatient = getTableView().getItems().get(getIndex());
+                    boolean success = DatabaseConnection.removePatientByID(selectedPatient.getID());
+                    if (success) {
+                        showInfo("Patient removed successfully!");
+                        patientObservableList.remove(selectedPatient);
+                    } else {
+                        showError("Error removing patient. Please try again.");
+                    }
+                });
+            }
+    
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(removeButton);
+                }
+            }
+        });
     
         // Add all columns to the TableView
-        patientTable.getColumns().addAll(idColumn, nameColumn, emailColumn, numberColumn, checkupColumn);
+        patientTable.getColumns().addAll(idColumn, nameColumn, emailColumn, numberColumn, removeColumn);
     
         // Adjust TableView layout
         patientTable.setLayoutX(10);
@@ -360,6 +387,7 @@ public class AdminDashboardController {
             }
         });
     
+        // Add the search box, table, and button to the main content pane
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().forEach(child -> child.setVisible(false));
         mainContentPane.getChildren().addAll(searchBox, addNewPatientButton, patientTable);
@@ -562,21 +590,43 @@ public class AdminDashboardController {
         TableColumn<Doctor, String> contactColumn = new TableColumn<>("Email Address");
         contactColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
     
+        // Define TableColumn for Remove Action
+        TableColumn<Doctor, Void> removeColumn = new TableColumn<>("Remove");
+        removeColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button removeButton = new Button("Remove");
+    
+            {
+                removeButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+                removeButton.setOnAction(event -> {
+                    Doctor selectedDoctor = getTableView().getItems().get(getIndex());
+                    boolean success = DatabaseConnection.removeDoctorByID(selectedDoctor.getID());
+                    if (success) {
+                        showInfo("Doctor removed successfully!");
+                        doctorObservableList.remove(selectedDoctor);
+                    } else {
+                        showError("Error removing doctor. Please try again.");
+                    }
+                });
+            }
+    
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(removeButton);
+                }
+            }
+        });
+    
         // Add all columns to the TableView
-        doctorTable.getColumns().addAll(idColumn, nameColumn, specialtyColumn, contactColumn);
+        doctorTable.getColumns().addAll(idColumn, nameColumn, specialtyColumn, contactColumn, removeColumn);
     
         // Adjust TableView layout
         doctorTable.setPrefWidth(mainContentArea.getPrefWidth());
         doctorTable.setPrefHeight(mainContentArea.getPrefHeight() - 50); // Leave space for the search box
         doctorTable.setLayoutY(50); // Position the TableView below the search box
-    
-        // Add a double-click listener to display doctor details
-        doctorTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && !doctorTable.getSelectionModel().isEmpty()) {
-                Doctor selectedDoctor = doctorTable.getSelectionModel().getSelectedItem();
-                displayDoctorDetails(selectedDoctor);
-            }
-        });
     
         // Create an "Add New Doctor" button
         Button addDoctorButton = new Button("Add New Doctor");
@@ -589,10 +639,12 @@ public class AdminDashboardController {
             openAddNewDoctorForm();
         });
     
+        // Add the search box, table, and button to the main content pane
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
         mainContentPane.getChildren().forEach(child -> child.setVisible(false));
         mainContentPane.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
     }
+    
     
     
     @SuppressWarnings("unused")
@@ -732,14 +784,14 @@ public class AdminDashboardController {
 public void viewReceptionistList() {
     mainContentTitle.setText("Receptionist List");
 
-    // Retrieve all doctors from the database
-    LinkedList<Receptionist> doctorList = DatabaseConnection.getAllReceptionist();
+    // Retrieve all receptionists from the database
+    LinkedList<Receptionist> receptionistList = DatabaseConnection.getAllReceptionist();
 
     // Convert the LinkedList to an ObservableList for the TableView
-    ObservableList<Receptionist> doctorObservableList = FXCollections.observableArrayList(doctorList);
+    ObservableList<Receptionist> receptionistObservableList = FXCollections.observableArrayList(receptionistList);
 
     // Create a FilteredList for search functionality
-    FilteredList<Receptionist> filteredList = new FilteredList<>(doctorObservableList, p -> true);
+    FilteredList<Receptionist> filteredList = new FilteredList<>(receptionistObservableList, p -> true);
 
     // Create a TextField for search input
     TextField searchBox = new TextField();
@@ -750,23 +802,23 @@ public void viewReceptionistList() {
 
     // Add a listener to filter the list based on search input
     searchBox.textProperty().addListener((observable, oldValue, newValue) -> {
-        filteredList.setPredicate(doctor -> {
-            // If the search box is empty, show all doctors
+        filteredList.setPredicate(receptionist -> {
+            // If the search box is empty, show all receptionists
             if (newValue == null || newValue.isEmpty()) {
                 return true;
             }
 
-            // Compare doctor name with the search input
+            // Compare receptionist name with the search input
             String lowerCaseFilter = newValue.toLowerCase();
-            return doctor.getName().toLowerCase().contains(lowerCaseFilter);
+            return receptionist.getName().toLowerCase().contains(lowerCaseFilter);
         });
     });
 
-    // Create a TableView for displaying doctors
-    TableView<Receptionist> doctorTable = new TableView<>();
-    doctorTable.setItems(filteredList);
+    // Create a TableView for displaying receptionists
+    TableView<Receptionist> receptionistTable = new TableView<>();
+    receptionistTable.setItems(filteredList);
 
-    // Define TableColumn for Doctor ID
+    // Define TableColumn for Receptionist ID
     TableColumn<Receptionist, Integer> idColumn = new TableColumn<>("Receptionist ID");
     idColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
 
@@ -774,41 +826,63 @@ public void viewReceptionistList() {
     TableColumn<Receptionist, String> nameColumn = new TableColumn<>("Name");
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-    // Define TableColumn for Contact Information
+    // Define TableColumn for Email Address
     TableColumn<Receptionist, String> contactColumn = new TableColumn<>("Email Address");
     contactColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-    // Add all columns to the TableView
-    doctorTable.getColumns().addAll(idColumn, nameColumn, contactColumn);
+    // Define TableColumn for Remove Action
+    TableColumn<Receptionist, Void> removeColumn = new TableColumn<>("Remove");
+    removeColumn.setCellFactory(param -> new TableCell<>() {
+        private final Button removeButton = new Button("Remove");
 
-    // Adjust TableView layout
-    doctorTable.setPrefWidth(mainContentArea.getPrefWidth());
-    doctorTable.setPrefHeight(mainContentArea.getPrefHeight() - 50); // Leave space for the search box
-    doctorTable.setLayoutY(50); // Position the TableView below the search box
+        {
+            removeButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+            removeButton.setOnAction(event -> {
+                Receptionist selectedReceptionist = getTableView().getItems().get(getIndex());
+                boolean success = DatabaseConnection.removeReceptionist(selectedReceptionist.getID());
+                if (success) {
+                    showInfo("Receptionist removed successfully!");
+                    receptionistObservableList.remove(selectedReceptionist);
+                } else {
+                    showError("Error removing receptionist. Please try again.");
+                }
+            });
+        }
 
-    // Add a double-click listener to display doctor details
-    doctorTable.setOnMouseClicked(event -> {
-        if (event.getClickCount() == 2 && !doctorTable.getSelectionModel().isEmpty()) {
-            Receptionist selectedDoctor = doctorTable.getSelectionModel().getSelectedItem();
-            displayReceptionistDetails(selectedDoctor);
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(removeButton);
+            }
         }
     });
 
-    // Create an "Add New Doctor" button
-    Button addDoctorButton = new Button("Add New Receptionist");
-    addDoctorButton.setLayoutX(530);  // Position the button next to the search box
-    addDoctorButton.setLayoutY(10);   // Align vertically with the search box
-    addDoctorButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+    // Add all columns to the TableView
+    receptionistTable.getColumns().addAll(idColumn, nameColumn, contactColumn, removeColumn);
 
-    // Set action for the "Add New Doctor" button
-    addDoctorButton.setOnAction(event -> {
+    // Adjust TableView layout
+    receptionistTable.setPrefWidth(mainContentArea.getPrefWidth());
+    receptionistTable.setPrefHeight(mainContentArea.getPrefHeight() - 50); // Leave space for the search box
+    receptionistTable.setLayoutY(50); // Position the TableView below the search box
+
+    // Create an "Add New Receptionist" button
+    Button addReceptionistButton = new Button("Add New Receptionist");
+    addReceptionistButton.setLayoutX(530);  // Position the button next to the search box
+    addReceptionistButton.setLayoutY(10);   // Align vertically with the search box
+    addReceptionistButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+
+    // Set action for the "Add New Receptionist" button
+    addReceptionistButton.setOnAction(event -> {
         openAddNewReceptionistForm();
-        
     });
 
+    // Add the search box, table, and button to the main content pane
     Pane mainContentPane = (Pane) mainContentTitle.getParent();
     mainContentPane.getChildren().forEach(child -> child.setVisible(false));
-    mainContentPane.getChildren().addAll(searchBox, doctorTable, addDoctorButton);
+    mainContentPane.getChildren().addAll(searchBox, receptionistTable, addReceptionistButton);
 }
 
 
@@ -1046,8 +1120,8 @@ private void viewComplaints() {
     TableColumn<Complaint, Integer> complaintIdColumn = new TableColumn<>("Complaint ID");
     complaintIdColumn.setCellValueFactory(new PropertyValueFactory<>("complaintID"));
 
-    TableColumn<Complaint, Integer> patientIdColumn = new TableColumn<>("Patient ID");
-    patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientID"));
+    TableColumn<Complaint, String> patientIdColumn = new TableColumn<>("User");
+    patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("userType"));
 
     TableColumn<Complaint, String> complaintTextColumn = new TableColumn<>("Complaint");
     complaintTextColumn.setCellValueFactory(new PropertyValueFactory<>("complaintText"));
@@ -1127,7 +1201,7 @@ private void viewComplaints() {
             if (selectedComplaint != null) {
                 // Populate details
                 detailsArea.setText("Complaint ID: " + selectedComplaint.getComplaintID() + "\n" +
-                        "Patient ID: " + selectedComplaint.getPatientID() + "\n" +
+                        "User: " + selectedComplaint.getUserType() + "\n" +
                         "Complaint: " + selectedComplaint.getComplaintText() + "\n" +
                         "Status: " + selectedComplaint.getStatus());
 

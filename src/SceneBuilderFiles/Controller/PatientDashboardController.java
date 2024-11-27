@@ -423,10 +423,12 @@ private void showChangePasswordDialog() {
         // Columns
         TableColumn<Schedule, String> docnameColumn = new TableColumn<>("Doctor Name");
         docnameColumn.setCellValueFactory(new PropertyValueFactory<>("DoctorName"));
-    
+        docnameColumn.setPrefWidth(200);  // Set preferred width for Doctor Name column
+
         TableColumn<Schedule, String> daysAvailableColumn = new TableColumn<>("Days Available");
         daysAvailableColumn.setCellValueFactory(new PropertyValueFactory<>("availableDays"));
-    
+        daysAvailableColumn.setPrefWidth(250);  // Set preferred width for Doctor Name column
+
         scheduleTable.getColumns().addAll(docnameColumn, daysAvailableColumn);
     
         // ComboBoxes for specialization

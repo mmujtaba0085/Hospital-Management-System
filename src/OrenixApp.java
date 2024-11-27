@@ -38,8 +38,8 @@ public class OrenixApp extends Application {
             // String username = emailField.getText();
             // String password = passwordField.getText();
 
-            //String username="john.doe@gmail.com";
-             String username="alice.smith@hospital.com";
+            String username="john.doe@gmail.com";
+            // String username="alice.smith@hospital.com";
             //String username = "admin.b@hospital.com";
             // String username="rachel.green@hospital.com"; // receptionist
             String password = "default_password";

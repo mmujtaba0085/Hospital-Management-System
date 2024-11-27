@@ -1388,4 +1388,141 @@ public class DatabaseConnection {
             return false;
         }
     }
+    
+    public static boolean removeReceptionist(int receptionistID) {
+        DatabaseConnection.deleteUserByUsername(DatabaseConnection.getEmailByReceptionistID(receptionistID));
+        String query = "DELETE FROM Receptionist WHERE receptionistID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, receptionistID);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteUserByUsername(String username) {
+    
+        String query = "DELETE FROM login WHERE username = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the username parameter
+            preparedStatement.setString(1, username);
+            
+            // Execute the update and check if any row was affected
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String getEmailByReceptionistID(int receptionistID) {
+        String query = "SELECT email FROM Receptionist WHERE receptionistID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the receptionistID parameter
+            preparedStatement.setInt(1, receptionistID);
+            
+            // Execute the query
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Retrieve and return the email
+                    return resultSet.getString("email");
+                } else {
+                    // No record found for the given receptionistID
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static String getDoctorEmailByID(int doctorID) {
+        String query = "SELECT email FROM Doctor WHERE doctorID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the doctorID parameter
+            preparedStatement.setInt(1, doctorID);
+            
+            // Execute the query
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("email"); // Return the email
+                } else {
+                    return null; // No record found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static boolean removeDoctorByID(int doctorID) {
+        DatabaseConnection.deleteUserByUsername(DatabaseConnection.getDoctorEmailByID(doctorID));
+        String query = "DELETE FROM Doctor WHERE doctorID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the doctorID parameter
+            preparedStatement.setInt(1, doctorID);
+            
+            // Execute the update
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0; // Return true if a record was deleted
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static String getPatientEmailByID(int patientID) {
+        String query = "SELECT email FROM Patient WHERE patientID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the patientID parameter
+            preparedStatement.setInt(1, patientID);
+            
+            // Execute the query
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("email"); // Return the email
+                } else {
+                    return null; // No record found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static boolean removePatientByID(int patientID) {
+        DatabaseConnection.deleteUserByUsername(DatabaseConnection.getPatientEmailByID(patientID));
+        String query = "DELETE FROM Patient WHERE patientID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            // Set the patientID parameter
+            preparedStatement.setInt(1, patientID);
+            
+            // Execute the update
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0; // Return true if a record was deleted
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
 }
