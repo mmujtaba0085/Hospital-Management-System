@@ -1,16 +1,12 @@
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-
 
 import packages.Person.*;
 import SceneBuilderFiles.Controller.*;
@@ -47,8 +43,8 @@ public class OrenixApp extends Application {
 
             //String username="john.doe@gmail.com";
             //String username="alice.smith@hospital.com";
-            //String username="admin.b@hospital.com";
-            String username="rachel.green@hospital.com";    // receptionist
+            String username="admin.b@hospital.com";
+            //String username="rachel.green@hospital.com";    // receptionist
             String password="default_password";
 
             int role = DatabaseConnection.authenticateUser(username, password);
@@ -96,9 +92,10 @@ public class OrenixApp extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Register.fxml"));
             Parent root = loader.load();
 
+            @SuppressWarnings("unused")
             RegisterController registerController = loader.getController();
 
-            Scene registerScene = new Scene(root, 800, 600); // Adjust dimensions as needed
+            Scene registerScene = new Scene(root, 700, 500); // Adjust dimensions as needed
             currentStage.setScene(registerScene);
             currentStage.setTitle("Orenix Hospital Management System - Register");
             currentStage.show();
@@ -128,7 +125,7 @@ public class OrenixApp extends Application {
             controller.setDoctor(doctor);
             
 
-            Scene doctorScene = new Scene(root, 900, 700); // Adjust dimensions as needed
+            Scene doctorScene = new Scene(root, 1000, 700); // Adjust dimensions as needed
             //doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
 
             Stage doctorStage = new Stage();

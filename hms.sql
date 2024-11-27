@@ -34,8 +34,8 @@ CREATE TABLE Patient (
     name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phoneNumber VARCHAR(50) NOT NULL,
-    accountNumber VARCHAR(50) NOT NULL,
-    checkupDate DATE NOT NULL
+    accountNumber VARCHAR(50),
+    checkupDate DATE
 );
 
 SELECT patientID FROM Patient WHERE name IN ("John Doe","Jane Roe","Sam Green");

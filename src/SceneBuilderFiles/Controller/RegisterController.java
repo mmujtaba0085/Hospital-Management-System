@@ -9,7 +9,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.stage.Stage;
 import packages.Database.DatabaseConnection;
 
@@ -38,11 +37,12 @@ public class RegisterController {
         String firstName = firstNameField.getText().trim();
         String lastName = lastNameField.getText().trim();
         String email = emailField.getText().trim();
-        String phone=phoneNumberField.getText().trim();
+        String phone = phoneNumberField.getText().trim();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        // Validation checks
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "All fields are required!");
             return;
         }
@@ -51,32 +51,28 @@ public class RegisterController {
             showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match!");
             return;
         }
-    
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-            showAlert(AlertType.ERROR, "Error", "All fields are required.");
-            return;
-        }
-    
+
+        // Try inserting into the database
         System.out.println("Inserting into the database...");
         boolean success = DatabaseConnection.addPatient(firstName + " " + lastName, email, phone, password);
         System.out.println("Insert success: " + success);
-    
+
+        // If registration is successful, navigate to login page
         if (success) {
-            showAlert(AlertType.INFORMATION, "Success", "User registered successfully.");
+            showAlert(Alert.AlertType.INFORMATION, "Success", "User registered successfully.");
             navigateToLoginPage();
         } else {
-            showAlert(AlertType.ERROR, "Error", "Registration failed.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Registration failed.");
         }
-
-        // Proceed with registration logic (e.g., database interaction)
-        showAlert(Alert.AlertType.INFORMATION, "Success", "Account registered successfully!");
     }
 
     private void navigateToLoginPage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../SceneBuilderFiles/Login.fxml"));
+            // Ensure the path to Login.fxml is correct
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SceneBuilderFiles/Login.fxml"));
             Parent root = loader.load();
 
+            // Get the current stage
             Stage currentStage = (Stage) firstNameField.getScene().getWindow();
             Scene loginScene = new Scene(root, 800, 600); // Adjust dimensions as needed
             currentStage.setScene(loginScene);
@@ -95,6 +91,7 @@ public class RegisterController {
         alert.showAndWait();
     }
 }
+
 
 
 
