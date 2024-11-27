@@ -57,7 +57,7 @@
         </VBox>
 
         <!-- Main Content Area -->
-        <AnchorPane layoutX="222.0" layoutY="0.0" prefHeight="886.0" prefWidth="681.0" style="-fx-background-color: #ffffff;">
+        <AnchorPane layoutX="222.0" layoutY="0.0" prefHeight="700.0" prefWidth="680.0" style="-fx-background-color: #ffffff;">
             <children>
                 <Label fx:id="mainContentTitle" layoutX="20.0" layoutY="20.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Welcome to the Patient Dashboard" />
             <AnchorPane fx:id="mainContentArea" layoutX="20.0" layoutY="55.0" prefHeight="600.0" prefWidth="652.0">
