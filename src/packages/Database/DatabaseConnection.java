@@ -172,7 +172,7 @@ public class DatabaseConnection {
             return null;
         }
         
-        String query="select receptionistId,name,phoneNumber,hireDate from Receptionist where email = ?";
+        String query="select receptionistId,name,phoneNumber,hireDate,address from Receptionist where email = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
         PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, email);
@@ -183,9 +183,10 @@ public class DatabaseConnection {
                 String name = resultSet.getString("name");
                 String phoneNumber = resultSet.getString("phoneNumber");
                 Date hireDate = resultSet.getDate("hireDate");
+                String address = resultSet.getString("address");
     
                 // Create and populate the receptionist object
-                receptionist=new Receptionist(receptionistId, name, email, phoneNumber, hireDate);
+                receptionist=new Receptionist(receptionistId, name, email, phoneNumber, hireDate,address);
             }
             return receptionist;
 
@@ -201,7 +202,7 @@ public class DatabaseConnection {
     public static List<Appointment> viewAppointments(String email) {
         
         String query = """
-            SELECT a.appointmentID, a.date, 
+            SELECT a.appointmentID, a.appointedDay, 
                    p.name AS patient_name, d.name AS doctor_name
             FROM Appointments a
             LEFT JOIN Patient p ON a.patientID = p.patientID
@@ -222,7 +223,7 @@ public class DatabaseConnection {
     
             while (resultSet.next()) {
                 int appointmentID = resultSet.getInt("appointmentID");
-                String appointedDay = resultSet.getString("date");
+                String appointedDay = resultSet.getString("appointedDay");
                 String patientName = resultSet.getString("patient_name");
                 String doctorName = resultSet.getString("doctor_name");
     
@@ -389,7 +390,7 @@ public class DatabaseConnection {
 
     public static Admin getAdminPersonalDeatils(int adminId) {
         Admin admin = null;
-        String query = "SELECT email, name, phoneNumber, hireDate FROM Admin WHERE adminID = ?";
+        String query = "SELECT email, name, phoneNumber, hireDate,address FROM Admin WHERE adminID = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -402,9 +403,10 @@ public class DatabaseConnection {
                 String name = resultSet.getString("name");
                 String phoneNumber = resultSet.getString("phoneNumber");
                 Date hireDate = resultSet.getDate("hireDate");
+                String address=resultSet.getString("address");
     
                 // Create and populate the Admin object
-                admin=new Admin(adminId, name, email, phoneNumber, hireDate);
+                admin=new Admin(adminId, name, email, phoneNumber, hireDate,address);
             }
             return admin;
 
@@ -781,7 +783,6 @@ public class DatabaseConnection {
         return doctors;
     }
     
-
     public static ObservableList<Schedule> viewDoctorSchedule(Doctor doctor) {
         String query = "SELECT dayOfWeek, startTime, endTime FROM DoctorSchedule WHERE doctorID = ?";
         ObservableList<Schedule> scheduleList = FXCollections.observableArrayList();
@@ -1152,7 +1153,6 @@ public class DatabaseConnection {
         }
     }
     
-    
     public static boolean updateHealthRecords(int patientId, String allergies, String medications, String pastIllnesses,
                                           String surgeries, String familyHistory, String notes) {
     String query = "UPDATE MedicalHistory SET allergies = ?, medications = ?, pastIllnesses = ?, " +
@@ -1262,6 +1262,26 @@ public class DatabaseConnection {
         }
     }
 
+    public static boolean updateReceptionistProfile(int receptionistID, String name, String phone, String address) {
+        String sql = "UPDATE Receptionist SET name = ?, phoneNumber = ?, address = ? WHERE receptionistID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setString(3, address);
+            pstmt.setInt(4, receptionistID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating receptionistID profile: " + e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean updatePassword(String email, String currentPassword, String newPassword) {
         // First verify current password
         String verifySql = "SELECT password FROM login WHERE username = ?";
@@ -1300,12 +1320,12 @@ public class DatabaseConnection {
         }
     }
 
-    public static boolean insertComplaint(int patientID, String complaintText) {
-        String insertComplaintQuery = "INSERT INTO PatientComplaints (PatientID, ComplaintText) VALUES (?, ?)";
+    public static boolean insertComplaint(String UserType, String complaintText) {
+        String insertComplaintQuery = "INSERT INTO Complaints (UserType, ComplaintText) VALUES (?, ?)";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(insertComplaintQuery)) {
 
-            preparedStatement.setInt(1, patientID);
+            preparedStatement.setString(1, UserType);
             preparedStatement.setString(2, complaintText);
 
             int rowsAffected = preparedStatement.executeUpdate();
@@ -1318,7 +1338,7 @@ public class DatabaseConnection {
 
     public static ObservableList<Complaint> getUnresolvedComplaints() {
         ObservableList<Complaint> complaints = FXCollections.observableArrayList();
-        String query = "SELECT * FROM PatientComplaints WHERE Status = 'Pending'";
+        String query = "SELECT * FROM Complaints WHERE Status = 'Pending'";
         
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement();
@@ -1326,12 +1346,12 @@ public class DatabaseConnection {
 
             while (resultSet.next()) {
                 int complaintID = resultSet.getInt("ComplaintID");
-                int patientID = resultSet.getInt("PatientID");
+                String userType = resultSet.getString("UserType");
                 String complaintText = resultSet.getString("ComplaintText");
                 String status = resultSet.getString("Status");
                 Timestamp submissionDate = resultSet.getTimestamp("SubmissionDate");
                 
-                complaints.add(new Complaint(complaintID, patientID, complaintText, status, submissionDate));
+                complaints.add(new Complaint(complaintID, userType, complaintText, status, submissionDate));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1340,9 +1360,8 @@ public class DatabaseConnection {
         return complaints;
     }
 
-    
     public static boolean markComplaintAsResolved(int complaintID) {
-        String updateQuery = "UPDATE PatientComplaints SET Status = 'Resolved' WHERE ComplaintID = ?";
+        String updateQuery = "UPDATE Complaints SET Status = 'Resolved' WHERE ComplaintID = ?";
         
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {

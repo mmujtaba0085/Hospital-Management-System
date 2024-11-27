@@ -18,7 +18,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,6 +31,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import packages.Database.DatabaseConnection;
@@ -73,6 +77,7 @@ public class ReceptionistDashboardController{
     public void setReceptionist(Receptionist receptionist) {
         this.receptionist = receptionist;
         mainContentTitle.setText("Welcome, " + this.receptionist.getName());
+        viewPersonalDetails();
     }
 
     // Sidebar Handlers
@@ -82,81 +87,180 @@ public class ReceptionistDashboardController{
     }
 
     public void viewPersonalDetails() {
-        // Update the main content title
-        mainContentTitle.setText("Personal Details");
+    mainContentTitle.setText("My Profile");
     
-        // Create a new AnchorPane for this content
-        AnchorPane ap = new AnchorPane();
+    // Create main content pane
+    VBox profileBox = new VBox(15);
+    profileBox.setPadding(new Insets(20));
     
-        // Retrieve Receptionist's personal details using the receptionist's ID
-        receptionist = DatabaseConnection.getReceptionistPersonalDeatils(receptionist.getID());
+    // Profile Information Section
+    VBox infoBox = new VBox(10);
+    infoBox.setStyle("-fx-padding: 20px; -fx-background-color: #f5f5f5; -fx-background-radius: 5px;");
     
-        if (receptionist != null) {
-            // Create a label for "Name" and another for the actual name value
-            Label nameValueLabel = new Label("Name:");
-            Label nameLabel = new Label(receptionist.getName());
+    // Create labels for doctor information
+    Label nameLabel = new Label("Name: " + receptionist.getName());
+    Label emailLabel = new Label("Email: " + receptionist.getEmail());
+    Label phoneLabel = new Label("Phone: " + receptionist.getPhoneNumber());
+    Label addressLabel = new Label("Address: " + receptionist.getAddress());
     
-            // Create labels for the email and phone number
-            Label emailValueLabel = new Label("Email:");
-            Label emailLabel = new Label(receptionist.getEmail());
+    // Style the labels
+    String labelStyle = "-fx-font-size: 14px;";
+    nameLabel.setStyle(labelStyle);
+    emailLabel.setStyle(labelStyle);
+    phoneLabel.setStyle(labelStyle);
+    addressLabel.setStyle(labelStyle);
     
-            Label phoneValueLabel = new Label("Phone:");
-            Label phoneLabel = new Label(receptionist.getPhoneNumber());
+    infoBox.getChildren().addAll(nameLabel, emailLabel, phoneLabel, addressLabel);
     
-            // Increase font size for all labels
-            nameValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            nameLabel.setStyle("-fx-font-size: 18px;");
-            
-            emailValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            emailLabel.setStyle("-fx-font-size: 18px;");
-            
-            phoneValueLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            phoneLabel.setStyle("-fx-font-size: 18px;");
+    // Create buttons
+    Button editProfileButton = new Button("Edit Profile");
+    Button changePasswordButton = new Button("Change Password");
     
-            // Set positions for the labels
-            nameLabel.setLayoutX(181);
-            nameLabel.setLayoutY(47);
-            
-            nameValueLabel.setLayoutX(33);  // Placing the value label next to "Name"
-            nameValueLabel.setLayoutY(47);
+    // Style the buttons
+    String buttonStyle = "-fx-background-color: #e1722f; -fx-text-fill: white; -fx-font-size: 14px; -fx-min-width: 150px;";
+    editProfileButton.setStyle(buttonStyle);
+    changePasswordButton.setStyle(buttonStyle);
     
-            emailLabel.setLayoutX(181);
-            emailLabel.setLayoutY(89);
-            
-            emailValueLabel.setLayoutX(33);  // Placing the value label next to "Email"
-            emailValueLabel.setLayoutY(89);
+    // Button actions
+    editProfileButton.setOnAction(e -> showEditProfileDialog());
+    changePasswordButton.setOnAction(e -> showChangePasswordDialog());
     
-            phoneLabel.setLayoutX(181);
-            phoneLabel.setLayoutY(131);
-            
-            phoneValueLabel.setLayoutX(33);  // Placing the value label next to "Phone"
-            phoneValueLabel.setLayoutY(131);
+    // Add all components to the main profile box
+    profileBox.getChildren().addAll(infoBox, editProfileButton, changePasswordButton);
+    
+   
+    mainContentArea.getChildren().clear();
+    mainContentArea.getChildren().addAll(profileBox);
+    
+    // Set anchors
+    AnchorPane.setTopAnchor(profileBox, 50.0);
+    AnchorPane.setLeftAnchor(profileBox, 20.0);
+    AnchorPane.setRightAnchor(profileBox, 20.0);
+}
 
-            // Create an ImageView and set an image (change the path as per your image)
-            ImageView profileImage = new ImageView();
-            Image image = new Image("file:images/person.jpg"); // Adjust the path to your image file
-            profileImage.setImage(image);
-            
-            // Set size for the image (adjust the size as necessary)
-            profileImage.setFitWidth(200);
-            profileImage.setFitHeight(150);
-            
-            // Position the image to the right of the labels
-            profileImage.setLayoutX(450);  // Positioning the image on the right side
-            profileImage.setLayoutY(47);   // Align the top of the image with the name label
+    private void showEditProfileDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Edit Profile");
+    dialog.setHeaderText("Update your profile information");
     
-            // Add all labels to the AnchorPane
-            ap.getChildren().addAll(nameLabel, nameValueLabel, emailLabel, emailValueLabel, phoneLabel, phoneValueLabel, profileImage);
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
     
-            // Clear any existing content and add the new AnchorPane to mainContentArea
-            mainContentArea.getChildren().clear();
-            mainContentArea.getChildren().add(ap);
-        } else {
-            // Display an error message if receptionist details are not found
-            mainContentTitle.setText("Error: Receptionist details not found.");
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    TextField nameField = new TextField(receptionist.getName());
+    TextField phoneField = new TextField(receptionist.getPhoneNumber());
+    TextField addressField = new TextField(receptionist.getAddress());
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Name:"), 0, 0);
+    grid.add(nameField, 1, 0);
+    grid.add(new Label("Phone:"), 0, 1);
+    grid.add(phoneField, 1, 1);
+    grid.add(new Label("Address:"), 0, 2);
+    grid.add(addressField, 1, 2);
+
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            // Update admin object
+            receptionist.setName(nameField.getText());
+            receptionist.setPhoneNumber(phoneField.getText());
+            receptionist.setAddress(addressField.getText());
+            
+            // Update in database
+            boolean success = DatabaseConnection.updateReceptionistProfile(
+                receptionist.getID(),
+                nameField.getText(),
+                phoneField.getText(),
+                addressField.getText()
+            );
+            
+            if (success) {
+                showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully!");
+                viewPersonalDetails();// Refresh the profile view
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Failed to update profile. Please try again.");
+            }
         }
-    }
+    });
+}
 
+    private void showChangePasswordDialog() {
+    // Create a new dialog
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Change Password");
+    dialog.setHeaderText("Enter your current and new password");
+    
+    // Create the dialog pane and add buttons
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    // Create form fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+    
+    PasswordField currentPasswordField = new PasswordField();
+    PasswordField newPasswordField = new PasswordField();
+    PasswordField confirmPasswordField = new PasswordField();
+    
+    // Add labels and fields to grid
+    grid.add(new Label("Current Password:"), 0, 0);
+    grid.add(currentPasswordField, 1, 0);
+    grid.add(new Label("New Password:"), 0, 1);
+    grid.add(newPasswordField, 1, 1);
+    grid.add(new Label("Confirm Password:"), 0, 2);
+    grid.add(confirmPasswordField, 1, 2);
+    
+    dialogPane.setContent(grid);
+    
+    // Handle the result
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == ButtonType.OK) {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                showAlert(AlertType.ERROR, "Error", "New passwords do not match!");
+                return;
+            }
+            
+            // Update password in database
+            boolean success = DatabaseConnection.updatePassword(
+                receptionist.getEmail(),
+                currentPassword,
+                newPassword
+            );
+            
+            if (success) {
+                showAlert2(AlertType.INFORMATION, "Success", "Password changed successfully!");
+            } else {
+                showAlert2(AlertType.ERROR, "Error", "Failed to change password. Please check your current password and try again.");
+            }
+        }
+    });
+}
+
+    private void showAlert2(AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
     @SuppressWarnings({ "unused", "unchecked" })
     public void viewPatientList() {
         mainContentTitle.setText("Patient List");
@@ -443,62 +547,7 @@ public class ReceptionistDashboardController{
         mainContentArea.getChildren().add(appointmentTable);
     }
 
-    /*private void showDoctorDays(int doctorID) {
-        Pane mainContentPane = (Pane) mainContentTitle.getParent();
-        mainContentPane.getChildren().clear();
-    
-        VBox daySelectionBox = new VBox(10);
-        daySelectionBox.setPadding(new Insets(20));
-    
-        Label availableDaysLabel = new Label("Select a Day:");
-        ComboBox<String> availableDaysComboBox = new ComboBox<>();
-    
-        // Fetch available days for the selected doctor
-        List<String> availableDays = DatabaseConnection.getDoctorAvailableDays(doctorID);
-        if (availableDays.isEmpty()) {
-            showErrorDialog("No available days for this doctor.");
-            return;
-        }
-        availableDaysComboBox.getItems().addAll(availableDays);
-    
-        Button confirmButton = new Button("Confirm Appointment");
-        confirmButton.setOnAction(event -> {
-        String selectedDay = availableDaysComboBox.getValue();
-
-        if (selectedDay == null || selectedDay.isEmpty()) {
-            showErrorDialog("Please select a day for the appointment.");
-            return;
-        }
-
-        // Check if patient already has an appointment with this doctor (redundant double-check)
-        boolean hasAppointment = DatabaseConnection.hasExistingAppointment(patient.getID(), doctorID);
-
-        if (hasAppointment) {
-            showErrorDialog("You already have an appointment with this doctor.");
-            return;
-        }
-
-        // Proceed to book appointment
-        boolean success = DatabaseConnection.checkAndBookAppointment(doctorID, selectedDay, patient.getID(), new Timestamp(System.currentTimeMillis()),DatabaseConnection.getDoctorSpecializationById(doctorID));
-
-        if (success) {
-            showConfirmationDialog("Appointment booked successfully for " + selectedDay + "!");
-        } else {
-            showErrorDialog("Booking failed! No slots available for the selected day.");
-        }
-    });
-
-
-    
-        daySelectionBox.getChildren().addAll(availableDaysLabel, availableDaysComboBox, confirmButton);
-        mainContentPane.getChildren().addAll(mainContentTitle, daySelectionBox);
-        AnchorPane.setTopAnchor(daySelectionBox, 50.0);
-        AnchorPane.setLeftAnchor(daySelectionBox, 20.0);
-        AnchorPane.setRightAnchor(daySelectionBox, 20.0);
-        AnchorPane.setBottomAnchor(daySelectionBox, 20.0);
-    
-        System.out.println("Doctor's available days displayed.");
-    } */
+   
     
     private void showConfirmationDialog(String message) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -927,7 +976,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment, Patient patie
             if (complaintText.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Please describe your issue before submitting.");
             } else {
-                boolean isComplaintInserted = DatabaseConnection.insertComplaint(receptionist.getID(), complaintText);
+                boolean isComplaintInserted = DatabaseConnection.insertComplaint("Receptionist", complaintText);
                 if (isComplaintInserted) {
                     showAlert(Alert.AlertType.INFORMATION, "Complaint Submitted", "Your complaint has been recorded. We will address it promptly.");
                     complaintTextArea.clear();

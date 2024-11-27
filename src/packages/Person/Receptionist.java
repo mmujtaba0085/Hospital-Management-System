@@ -7,12 +7,13 @@ public class Receptionist extends Person {
     public Receptionist(){
         
     }
-    public Receptionist(int receptionistId, String name, String email, String phoneNumber, Date hireDate) {
+    public Receptionist(int receptionistId, String name, String email, String phoneNumber, Date hireDate,String address) {
         this.ID=receptionistId;
         this.name=name;
         this.email=email;
         this.phoneNumber=phoneNumber;
         this.hiredate=hireDate;
+        this.address=address;
     }
     public int getID() {
         return ID;

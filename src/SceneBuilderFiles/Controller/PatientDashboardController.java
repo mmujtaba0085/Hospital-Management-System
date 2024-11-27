@@ -1132,7 +1132,7 @@ private void openHelp(ActionEvent event) {
         if (complaintText.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "Please describe your issue before submitting.");
         } else {
-            boolean isComplaintInserted = DatabaseConnection.insertComplaint(patient.getID(), complaintText);
+            boolean isComplaintInserted = DatabaseConnection.insertComplaint("Patient", complaintText);
             if (isComplaintInserted) {
                 showAlert(Alert.AlertType.INFORMATION, "Complaint Submitted", "Your complaint has been recorded. We will address it promptly.");
                 complaintTextArea.clear();

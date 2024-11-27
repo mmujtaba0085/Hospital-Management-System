@@ -4,15 +4,15 @@ import java.sql.Timestamp;
 
 public class Complaint {
     private int complaintID;
-    private int patientID;
+    private String userType;
     private String complaintText;
     private String status;
     private Timestamp submissionDate;
 
     // Constructor
-    public Complaint(int complaintID, int patientID, String complaintText, String status, Timestamp submissionDate) {
+    public Complaint(int complaintID, String UserType, String complaintText, String status, Timestamp submissionDate) {
         this.complaintID = complaintID;
-        this.patientID = patientID;
+        this.userType = UserType;
         this.complaintText = complaintText;
         this.status = status;
         this.submissionDate = submissionDate;
@@ -27,12 +27,12 @@ public class Complaint {
         this.complaintID = complaintID;
     }
 
-    public int getPatientID() {
-        return patientID;
+    public String getuserType() {
+        return userType;
     }
 
-    public void setPatientID(int patientID) {
-        this.patientID = patientID;
+    public void setuserType(String userType) {
+        this.userType = userType;
     }
 
     public String getComplaintText() {

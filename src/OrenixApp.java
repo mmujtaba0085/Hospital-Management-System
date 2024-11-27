@@ -40,8 +40,8 @@ public class OrenixApp extends Application {
 
             // String username="john.doe@gmail.com";
             // String username="alice.smith@hospital.com";
-            String username = "admin.b@hospital.com";
-            // String username="rachel.green@hospital.com"; // receptionist
+            //String username = "admin.b@hospital.com";
+             String username="rachel.green@hospital.com"; // receptionist
             String password = "default_password";
 
             int role = DatabaseConnection.authenticateUser(username, password);
