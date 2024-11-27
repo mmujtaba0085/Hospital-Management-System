@@ -506,7 +506,8 @@ private void showChangePasswordDialog() {
         availableDaysComboBox.getItems().addAll(availableDays);
     
         Button confirmButton = new Button("Confirm Appointment");
-confirmButton.setOnAction(event -> {
+        confirmButton.setStyle("-fx-background-color: #e1722f; -fx-text-fill: white;");
+    confirmButton.setOnAction(event -> {
     String selectedDay = availableDaysComboBox.getValue();
 
     if (selectedDay == null || selectedDay.isEmpty()) {
@@ -938,67 +939,68 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     
     @SuppressWarnings({ "unchecked", "unused" })
     @FXML
-    private void viewBillingDetails(ActionEvent event) {
-        mainContentTitle.setText("Billing Details"); // Update the title to "Billing Details"
-    
-        ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
-    
-        TableView<Bill> billTable = new TableView<>();
-        billTable.setItems(billList);
-    
-        TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
-        billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
-    
-        TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
-        patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-    
-        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
-        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-    
-        TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remaining Amount");
-        remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
-    
-        TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
-        paymentStatusColumn.setCellValueFactory(cellData -> {
-            boolean isPaid = cellData.getValue().getPaid();
-            return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
-        });
-    
-        TableColumn<Bill, Void> makePaymentColumn = new TableColumn<>("Actions");
-        makePaymentColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button makePaymentButton = new Button("Make Payment");
-    
-            {
-                makePaymentButton.setStyle("""
-                    -fx-background-color: #4CAF50;
-                    -fx-text-fill: white;
-                    -fx-font-size: 12px;
-                    -fx-padding: 5px;
-                    -fx-border-radius: 3px;
-                    -fx-background-radius: 3px;
-                """);
-                makePaymentButton.setOnAction(event -> {
-                    Bill selectedBill = getTableView().getItems().get(getIndex());
-                    makePayment(selectedBill);
-                });
+private void viewBillingDetails(ActionEvent event) {
+    mainContentTitle.setText("Billing Details");
+
+    ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
+
+    TableView<Bill> billTable = new TableView<>();
+    billTable.setItems(billList);
+
+    TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
+    billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
+    TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
+    patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+
+    TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
+    amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+
+    TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remaining Amount");
+    remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
+
+    TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
+    paymentStatusColumn.setCellValueFactory(cellData -> {
+        boolean isPaid = cellData.getValue().getPaid();
+        return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
+    });
+
+    TableColumn<Bill, Void> makePaymentColumn = new TableColumn<>("Actions");
+    makePaymentColumn.setCellFactory(param -> new TableCell<>() {
+        private final Button makePaymentButton = new Button("Make Payment");
+
+        {
+            makePaymentButton.setStyle("""
+                -fx-background-color: #4CAF50;
+                -fx-text-fill: white;
+                -fx-font-size: 12px;
+                -fx-padding: 5px;
+                -fx-border-radius: 3px;
+                -fx-background-radius: 3px;
+            """);
+            makePaymentButton.setOnAction(event -> {
+                Bill selectedBill = getTableView().getItems().get(getIndex());
+                makePayment(selectedBill);
+            });
+        }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || getTableView().getItems().get(getIndex()).getPaid()) {
+                setGraphic(null); // Hide the button for paid bills
+            } else {
+                setGraphic(makePaymentButton);
             }
-    
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableView().getItems().get(getIndex()).getPaid()) {
-                    setGraphic(null); // Hide the button for paid bills
-                } else {
-                    setGraphic(makePaymentButton);
-                }
-            }
-        });
-    
-        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn, makePaymentColumn);
-    
-        Button backButton = new Button("Back");
-        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-        backButton.setOnAction(e -> viewPersonalDetails());
+        }
+    });
+
+    billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn, makePaymentColumn);
+
+    Button backButton = new Button("Back");
+    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+    backButton.setOnAction(e -> viewPersonalDetails());
+
     
         
         Pane mainContentPane = (Pane) mainContentTitle.getParent();
@@ -1012,7 +1014,8 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     @FXML
     private void makePayment(Bill bill) {
         mainContentTitle.setText("Make a Payment");
-        mainContentArea.getChildren().clear();
+        Pane mainContentPane = (Pane) mainContentTitle.getParent();
+        mainContentPane.getChildren().forEach(child -> child.setVisible(false));
 
         Label cardNumberLabel = new Label("Card Number:");
         TextField cardNumberField = new TextField();
@@ -1069,8 +1072,8 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
 
             VBox processingLayout = new VBox(10, new ProgressIndicator());
             processingLayout.setAlignment(Pos.CENTER);
-            mainContentArea.getChildren().clear();
-            mainContentArea.getChildren().add(processingLayout);
+            mainContentPane.getChildren().forEach(child -> child.setVisible(false));
+            mainContentPane.getChildren().add(processingLayout);
 
             new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
                 DatabaseConnection.updateBillStatus(bill.getID(), 0, true);
@@ -1083,7 +1086,7 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
 
         VBox formLayout = new VBox(10, cardNumberLabel, cardNumberField, expiryDateLabel, expiryDateField, cvcLabel, cvcField, amountLabel, amountField, submitButton);
         formLayout.setStyle("-fx-padding: 20px;");
-        mainContentArea.getChildren().add(formLayout);
+        mainContentPane.getChildren().add(formLayout);
     }
 
 

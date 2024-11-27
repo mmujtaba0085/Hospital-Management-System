@@ -13,44 +13,35 @@
 
 <BorderPane fx:controller="SceneBuilderFiles.Controller.LoginController" prefHeight="435.0" prefWidth="636.0" stylesheets="@CSS/Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
-    <!-- Left Side - White Background -->
-    <left>
-        <VBox styleClass="left-pane">
-            <VBox.margin>
-                <Insets bottom="0" left="0" right="0" top="0" />
-            </VBox.margin>
-        </VBox>
-    </left>
-    
-    <!-- Right Side - Gradient Background with Login Form -->
-    <right>
-        <VBox alignment="CENTER" prefHeight="435.0" prefWidth="378.0" spacing="20.0" styleClass="right-pane">
+    <!-- Fullscreen Login Form -->
+    <center>
+        <VBox alignment="CENTER" prefHeight="435.0" prefWidth="636.0" spacing="20.0" styleClass="right-pane">
             <VBox.margin>
                 <Insets bottom="50" left="50" right="50" top="50" />
             </VBox.margin>
 
-                  <!-- Orenix Logo -->
+            <!-- Orenix Logo -->
             <ImageView fitHeight="80.0" fitWidth="80.0">
                 <Image url="images/orenix1.png" /> <!-- Path to your logo -->
             </ImageView>
 
-                  <!-- Login Text -->
+            <!-- Login Text -->
             <Label styleClass="title-label" text="Login to Orenix" />
 
-                  <!-- Login Form -->
+            <!-- Login Form -->
             <VBox alignment="CENTER" spacing="10">
-                <!-- Email Field -->
-                <TextField promptText="Username" styleClass="text-field" />
+                <!-- Username Field -->
+                <TextField promptText="Username" styleClass="text-field" maxWidth="300.0" />
 
-                      <!-- Password Field -->
-                <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-field" />
+                <!-- Password Field -->
+                <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-field" maxWidth="300.0" />
 
-                      <!-- Login Button -->
-                <Button styleClass="login-button" text="Login" />
+                <!-- Login Button -->
+                <Button styleClass="login-button" text="Login" maxWidth="300.0" />
 
+                <!-- Sign Up Link -->
                 <Hyperlink fx:id="signUpButton" styleClass="forgot-link" text="Sign Up" />
-
             </VBox>
         </VBox>
-    </right>
+    </center>
 </BorderPane>

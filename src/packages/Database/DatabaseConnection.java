@@ -825,7 +825,7 @@ public class DatabaseConnection {
         // Database connection and data fetching
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            Bill b=new Bill();
+           
             // Set the patient ID parameter
             stmt.setInt(1, patient.getID());
             
@@ -833,6 +833,7 @@ public class DatabaseConnection {
             try (ResultSet rs = stmt.executeQuery()) {
                 // Process each row in the result set
                 while (rs.next()) {
+                    Bill b = new Bill();  // Create a new Bill object for each row
                     b.setID(rs.getInt("billID"));
                     b.setPatientName(rs.getString("name"));
                     b.setAmount(rs.getDouble("amount"));
