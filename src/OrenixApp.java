@@ -1,15 +1,16 @@
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+<<<<<<< HEAD
 import javafx.event.ActionEvent;
+=======
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
 import packages.Person.*;
 import SceneBuilderFiles.Controller.*;
@@ -41,11 +42,20 @@ public class OrenixApp extends Application {
             // String username = emailField.getText();
             // String password = passwordField.getText();
 
+<<<<<<< HEAD
             // String username="john.doe@gmail.com";
             String username = "alice.smith@hospital.com";
             // String username = "admin.b@hospital.com";
             // String username = "rachel.green@hospital.com"; // receptionist
             String password = "default_password";
+=======
+
+            //String username="john.doe@gmail.com";
+            //String username="alice.smith@hospital.com";
+            String username="admin.b@hospital.com";
+            //String username="rachel.green@hospital.com";    // receptionist
+            String password="default_password";
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
@@ -90,9 +100,10 @@ public class OrenixApp extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/Register.fxml"));
             Parent root = loader.load();
 
+            @SuppressWarnings("unused")
             RegisterController registerController = loader.getController();
 
-            Scene registerScene = new Scene(root, 800, 600); // Adjust dimensions as needed
+            Scene registerScene = new Scene(root, 700, 500); // Adjust dimensions as needed
             currentStage.setScene(registerScene);
             currentStage.setTitle("Orenix Hospital Management System - Register");
             currentStage.show();
@@ -120,8 +131,13 @@ public class OrenixApp extends Application {
             DoctorDashboardController controller = loader.getController();
             controller.setDoctor(doctor);
 
+<<<<<<< HEAD
             Scene doctorScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
             // doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
+=======
+            Scene doctorScene = new Scene(root, 1000, 700); // Adjust dimensions as needed
+            //doctorScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/DoctorDashboard.css").toExternalForm());
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
             Stage doctorStage = new Stage();
             doctorStage.setTitle("Orenix Hospital Management System - Doctor Dashboard");
@@ -148,8 +164,13 @@ public class OrenixApp extends Application {
             PatientDashboardController controller = loader.getController();
             controller.setPatient(patient);
 
+<<<<<<< HEAD
             Scene patientScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
             // patientScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/PatientDashboard.css").toExternalForm());
+=======
+            Scene patientScene = new Scene(root, 900, 700); // Adjust dimensions as needed
+            //patientScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/PatientDashboard.css").toExternalForm());
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
             Stage patientStage = new Stage();
             patientStage.setTitle("Orenix Hospital Management System - Patient Dashboard");
@@ -176,8 +197,13 @@ public class OrenixApp extends Application {
             AdminDashboardController controller = loader.getController();
             controller.setAdmin(admin);
 
+<<<<<<< HEAD
             Scene adminScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
             // adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/AdminDashboard.css").toExternalForm());
+=======
+            Scene adminScene = new Scene(root, 900, 700); // Adjust dimensions as needed
+            //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/AdminDashboard.css").toExternalForm());
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
             Stage adminStage = new Stage();
             adminStage.setTitle("Orenix Hospital Management System - Admin Dashboard");
@@ -204,8 +230,13 @@ public class OrenixApp extends Application {
             ReceptionistDashboardController controller = loader.getController();
             controller.setReceptionist(receptionist);
 
+<<<<<<< HEAD
             Scene receptionistScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
             // adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/ReceptionistDashboard.css").toExternalForm());
+=======
+            Scene receptionistScene = new Scene(root, 900, 700); // Adjust dimensions as needed   width, height
+            //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/ReceptionistDashboard.css").toExternalForm());
+>>>>>>> 97b02649b62f729a97e7833c1ba6ff0b2cefe89e
 
             Stage receptionistStage = new Stage();
             receptionistStage.setTitle("Orenix Hospital Management System - Receptionist Dashboard");

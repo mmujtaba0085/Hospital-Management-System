@@ -1012,6 +1012,7 @@ public class DoctorDashboardController {
         mainContentTitle.setText("Settings");
     }
 
+    @SuppressWarnings("unused")
     @FXML
     public void openHelp() {
         mainContentTitle.setText("Help and Support");

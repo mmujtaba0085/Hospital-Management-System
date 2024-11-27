@@ -2,7 +2,6 @@ package SceneBuilderFiles.Controller;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -932,151 +931,152 @@ private void selectNewDayForReschedule(Appointment oldAppointment) {
     
     @SuppressWarnings({ "unchecked", "unused" })
     @FXML
-private void viewBillingDetails(ActionEvent event) {
-    mainContentTitle.setText("Billing Details");
-
-    ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
-
-    TableView<Bill> billTable = new TableView<>();
-    billTable.setItems(billList);
-
-    TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
-    billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
-
-    TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
-    patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-
-    TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
-    amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-
-    TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remaining Amount");
-    remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
-
-    TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
-    paymentStatusColumn.setCellValueFactory(cellData -> {
-        boolean isPaid = cellData.getValue().getPaid();
-        return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
-    });
-
-    TableColumn<Bill, Void> makePaymentColumn = new TableColumn<>("Actions");
-    makePaymentColumn.setCellFactory(param -> new TableCell<>() {
-        private final Button makePaymentButton = new Button("Make Payment");
-
-        {
-            makePaymentButton.setStyle("""
-                -fx-background-color: #4CAF50;
-                -fx-text-fill: white;
-                -fx-font-size: 12px;
-                -fx-padding: 5px;
-                -fx-border-radius: 3px;
-                -fx-background-radius: 3px;
-            """);
-            makePaymentButton.setOnAction(event -> {
-                Bill selectedBill = getTableView().getItems().get(getIndex());
-                makePayment(selectedBill);
-            });
-        }
-
-        @Override
-        protected void updateItem(Void item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || getTableView().getItems().get(getIndex()).getPaid()) {
-                setGraphic(null); // Hide the button for paid bills
-            } else {
-                setGraphic(makePaymentButton);
+    private void viewBillingDetails(ActionEvent event) {
+        mainContentTitle.setText("Billing Details"); // Update the title to "Billing Details"
+    
+        ObservableList<Bill> billList = DatabaseConnection.getSpecificPatientBill(patient);
+    
+        TableView<Bill> billTable = new TableView<>();
+        billTable.setItems(billList);
+    
+        TableColumn<Bill, Integer> billIdColumn = new TableColumn<>("Bill ID");
+        billIdColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
+    
+        TableColumn<Bill, String> patientNameColumn = new TableColumn<>("Patient Name");
+        patientNameColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+    
+        TableColumn<Bill, Double> amountColumn = new TableColumn<>("Total Amount");
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    
+        TableColumn<Bill, Double> remainingAmountColumn = new TableColumn<>("Remaining Amount");
+        remainingAmountColumn.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
+    
+        TableColumn<Bill, String> paymentStatusColumn = new TableColumn<>("Payment Status");
+        paymentStatusColumn.setCellValueFactory(cellData -> {
+            boolean isPaid = cellData.getValue().getPaid();
+            return new SimpleStringProperty(isPaid ? "Paid" : "Unpaid");
+        });
+    
+        TableColumn<Bill, Void> makePaymentColumn = new TableColumn<>("Actions");
+        makePaymentColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button makePaymentButton = new Button("Make Payment");
+    
+            {
+                makePaymentButton.setStyle("""
+                    -fx-background-color: #4CAF50;
+                    -fx-text-fill: white;
+                    -fx-font-size: 12px;
+                    -fx-padding: 5px;
+                    -fx-border-radius: 3px;
+                    -fx-background-radius: 3px;
+                """);
+                makePaymentButton.setOnAction(event -> {
+                    Bill selectedBill = getTableView().getItems().get(getIndex());
+                    makePayment(selectedBill);
+                });
             }
-        }
-    });
-
-    billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn, makePaymentColumn);
-
-    Button backButton = new Button("Back");
-    backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-    backButton.setOnAction(e -> viewPersonalDetails());
-
-    Pane mainContentPane = (Pane) mainContentTitle.getParent();
-    mainContentPane.getChildren().forEach(child -> child.setVisible(false));
-    mainContentPane.getChildren().addAll(backButton, billTable);
-}
+    
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableView().getItems().get(getIndex()).getPaid()) {
+                    setGraphic(null); // Hide the button for paid bills
+                } else {
+                    setGraphic(makePaymentButton);
+                }
+            }
+        });
+    
+        billTable.getColumns().addAll(billIdColumn, patientNameColumn, amountColumn, remainingAmountColumn, paymentStatusColumn, makePaymentColumn);
+    
+        Button backButton = new Button("Back");
+        backButton.setStyle("-fx-font-size: 14px; -fx-background-color: #e1722f; -fx-text-fill: white; -fx-padding: 5px 15px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        backButton.setOnAction(e -> viewPersonalDetails());
+    
+        // Clear only the content of the mainContentArea (not the title)
+        mainContentArea.getChildren().clear();
+        mainContentArea.getChildren().addAll(backButton, billTable);
+    }
+    
 
 
     @SuppressWarnings("unused")
     @FXML
-private void makePayment(Bill bill) {
-    mainContentTitle.setText("Make a Payment");
-    mainContentArea.getChildren().clear();
-
-    Label cardNumberLabel = new Label("Card Number:");
-    TextField cardNumberField = new TextField();
-    cardNumberField.setPromptText("Enter card number (16 digits)");
-
-    Label expiryDateLabel = new Label("Expiry Date (MM/YY):");
-    TextField expiryDateField = new TextField();
-    expiryDateField.setPromptText("MM/YY");
-
-    Label cvcLabel = new Label("CVC:");
-    TextField cvcField = new TextField();
-    cvcField.setPromptText("Enter 3-digit CVC");
-
-    Label amountLabel = new Label("Amount:");
-    TextField amountField = new TextField(String.valueOf(bill.getRemainingAmount()));
-    amountField.setDisable(true);
-
-    Button submitButton = new Button("Submit Payment");
-    submitButton.setStyle("""
-        -fx-background-color: #4CAF50;
-        -fx-text-fill: white;
-        -fx-font-size: 14px;
-        -fx-padding: 10px 20px;
-        -fx-border-radius: 5px;
-        -fx-background-radius: 5px;
-    """);
-
-    submitButton.setOnAction(e -> {
-        String cardNumber = cardNumberField.getText();
-        String expiryDate = expiryDateField.getText();
-        String cvc = cvcField.getText();
-
-        if (cardNumber.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
-            return;
-        }
-
-        if (!cardNumber.matches("\\d{16}")) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Card", "Please enter a valid 16-digit card number.");
-            return;
-        }
-
-        if (!expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Expiry Date", "Please enter a valid expiry date (MM/YY).");
-            return;
-        }
-
-        if (!cvc.matches("\\d{3}")) {
-            showAlert(Alert.AlertType.ERROR, "Invalid CVC", "Please enter a valid 3-digit CVC.");
-            return;
-        }
-
-        String cardType = cardNumber.startsWith("4") ? "Visa" : cardNumber.startsWith("5") ? "MasterCard" : "Unknown Card Type";
-
-        VBox processingLayout = new VBox(10, new ProgressIndicator());
-        processingLayout.setAlignment(Pos.CENTER);
+    private void makePayment(Bill bill) {
+        mainContentTitle.setText("Make a Payment");
         mainContentArea.getChildren().clear();
-        mainContentArea.getChildren().add(processingLayout);
 
-        new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
-            DatabaseConnection.updateBillStatus(bill.getID(), 0, true);
-            Platform.runLater(() -> {
-                showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Payment processed for " + cardType + ".");
-                viewBillingDetails(new ActionEvent());
-            });
-        })).play();
-    });
+        Label cardNumberLabel = new Label("Card Number:");
+        TextField cardNumberField = new TextField();
+        cardNumberField.setPromptText("Enter card number (16 digits)");
 
-    VBox formLayout = new VBox(10, cardNumberLabel, cardNumberField, expiryDateLabel, expiryDateField, cvcLabel, cvcField, amountLabel, amountField, submitButton);
-    formLayout.setStyle("-fx-padding: 20px;");
-    mainContentArea.getChildren().add(formLayout);
-}
+        Label expiryDateLabel = new Label("Expiry Date (MM/YY):");
+        TextField expiryDateField = new TextField();
+        expiryDateField.setPromptText("MM/YY");
+
+        Label cvcLabel = new Label("CVC:");
+        TextField cvcField = new TextField();
+        cvcField.setPromptText("Enter 3-digit CVC");
+
+        Label amountLabel = new Label("Amount:");
+        TextField amountField = new TextField(String.valueOf(bill.getRemainingAmount()));
+        amountField.setDisable(true);
+
+        Button submitButton = new Button("Submit Payment");
+        submitButton.setStyle("""
+            -fx-background-color: #4CAF50;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-padding: 10px 20px;
+            -fx-border-radius: 5px;
+            -fx-background-radius: 5px;
+        """);
+
+        submitButton.setOnAction(e -> {
+            String cardNumber = cardNumberField.getText();
+            String expiryDate = expiryDateField.getText();
+            String cvc = cvcField.getText();
+
+            if (cardNumber.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
+                return;
+            }
+
+            if (!cardNumber.matches("\\d{16}")) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Card", "Please enter a valid 16-digit card number.");
+                return;
+            }
+
+            if (!expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Expiry Date", "Please enter a valid expiry date (MM/YY).");
+                return;
+            }
+
+            if (!cvc.matches("\\d{3}")) {
+                showAlert(Alert.AlertType.ERROR, "Invalid CVC", "Please enter a valid 3-digit CVC.");
+                return;
+            }
+
+            String cardType = cardNumber.startsWith("4") ? "Visa" : cardNumber.startsWith("5") ? "MasterCard" : "Unknown Card Type";
+
+            VBox processingLayout = new VBox(10, new ProgressIndicator());
+            processingLayout.setAlignment(Pos.CENTER);
+            mainContentArea.getChildren().clear();
+            mainContentArea.getChildren().add(processingLayout);
+
+            new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
+                DatabaseConnection.updateBillStatus(bill.getID(), 0, true);
+                Platform.runLater(() -> {
+                    showAlert(Alert.AlertType.INFORMATION, "Payment Successful", "Payment processed for " + cardType + ".");
+                    viewBillingDetails(new ActionEvent());
+                });
+            })).play();
+        });
+
+        VBox formLayout = new VBox(10, cardNumberLabel, cardNumberField, expiryDateLabel, expiryDateField, cvcLabel, cvcField, amountLabel, amountField, submitButton);
+        formLayout.setStyle("-fx-padding: 20px;");
+        mainContentArea.getChildren().add(formLayout);
+    }
 
 
 
