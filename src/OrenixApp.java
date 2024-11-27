@@ -47,7 +47,8 @@ public class OrenixApp extends Application {
 
             //String username="john.doe@gmail.com";
             //String username="alice.smith@hospital.com";
-            String username="admin.b@hospital.com";
+            //String username="admin.b@hospital.com";
+            String username="rachel.green@hospital.com";    // receptionist
             String password="default_password";
 
             int role = DatabaseConnection.authenticateUser(username, password);
@@ -62,11 +63,19 @@ public class OrenixApp extends Application {
                         openDoctorDashboard(primaryStage, doctor);
                         break;
                     case 3:
-                        showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Receptionist!");
+
+                        // Create a Receptionist object with appropriate data
+                        Receptionist receptionist = DatabaseConnection.ReceptionistDetail(username, password);
+                        System.out.println("Receptionist: " + receptionist.getEmail());
+
+                        openReceptionistDashboard(primaryStage, receptionist); // Open Receptionist Dashboard
                         break;
                     case 4:
+                        // Create a Patient object with appropriate data
                         Patient patient = DatabaseConnection.PatientDetail(username, password);
-                        openPatientDashboard(primaryStage, patient);
+
+                        openPatientDashboard(primaryStage, patient); // Open Patient Dashboard
+
                         break;
                 }
             } else {
@@ -192,6 +201,35 @@ public class OrenixApp extends Application {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Admin Dashboard.");
+        }
+    }
+
+    // Method to open Receptionist Dashboard with Receptionist object
+    private void openReceptionistDashboard(Stage loginStage, Receptionist receptionist) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SceneBuilderFiles/ReceptionistDashboard.fxml"));
+            Parent root = loader.load();
+
+            // Get the ReceptionistDashboard controller and pass the Receptionist object
+            ReceptionistDashboardController controller = loader.getController();
+            controller.setReceptionist(receptionist);
+            
+
+            Scene receptionistScene = new Scene(root, 1000, 800); // Adjust dimensions as needed
+            //adminScene.getStylesheets().add(getClass().getResource("SceneBuilderFiles/CSS/ReceptionistDashboard.css").toExternalForm());
+
+            Stage receptionistStage = new Stage();
+            receptionistStage.setTitle("Orenix Hospital Management System - Receptionist Dashboard");
+            receptionistStage.setScene(receptionistScene);
+
+            // Close the login stage
+            loginStage.close();
+
+            // Show the Receptionist Dashboard
+            receptionistStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load Receptionist Dashboard.");
         }
     }
 

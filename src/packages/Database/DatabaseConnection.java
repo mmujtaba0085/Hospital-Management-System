@@ -164,6 +164,39 @@ public class DatabaseConnection {
 
     }
 
+    // checking if receptionist is the user and registered in the system
+    public static Receptionist ReceptionistDetail(String email,String password){
+        Receptionist receptionist=null;
+        if(authenticateUser(email, password)!=3){
+            return null;
+        }
+        
+        String query="select receptionistId,name,phoneNumber,hireDate from Receptionist where email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1, email);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                int receptionistId = resultSet.getInt("receptionistId");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the receptionist object
+                receptionist=new Receptionist(receptionistId, name, email, phoneNumber, hireDate);
+            }
+            return receptionist;
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }   
+
+
+    }
+
     public static List<Appointment> viewAppointments(String email) {
         
         String query = """
@@ -377,6 +410,60 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             e.printStackTrace();
             return admin;
+        }
+    }
+
+    public static Receptionist getReceptionistPersonalDeatils(int receptionistId) {
+        Receptionist receptionist = null;
+        String query = "SELECT email, name, phoneNumber, hireDate FROM Receptionist WHERE receptionistID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Set the doctorId and patientName parameters
+            statement.setInt(1, receptionistId);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                String email = resultSet.getString("email");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("hireDate");
+    
+                // Create and populate the receptionist object
+                receptionist=new Receptionist(receptionistId, name, email, phoneNumber, hireDate);
+            }
+            return receptionist;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return receptionist;
+        }
+    }
+
+    public static Patient getPatientByEmail(String email) {
+        Patient patient = null;
+        String query = "SELECT patientID, email, name, phoneNumber, checkupDate FROM Patient WHERE email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Set the doctorId and patientName parameters
+            statement.setString(1, email);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()) {
+                int patientID = resultSet.getInt("patientID");
+                String name = resultSet.getString("name");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                Date hireDate = resultSet.getDate("checkupDate");
+    
+                // Create and populate the receptionist object
+                patient=new Patient(patientID, name, email, phoneNumber, hireDate);
+            }
+            return patient;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return patient;
         }
     }
 
@@ -686,7 +773,7 @@ public class DatabaseConnection {
         // Database connection and data fetching
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            
+            Bill b=new Bill();
             // Set the patient ID parameter
             stmt.setInt(1, patient.getID());
             
@@ -1192,6 +1279,20 @@ public class DatabaseConnection {
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
             preparedStatement.setInt(1, complaintID);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteAppointment(int appointmentID){
+        String deleteQuery = "DELETE FROM Appointments WHERE appointmentID = ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+
+            preparedStatement.setInt(1, appointmentID);
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
