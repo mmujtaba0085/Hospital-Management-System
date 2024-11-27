@@ -781,7 +781,6 @@ public class DatabaseConnection {
             try (ResultSet rs = stmt.executeQuery()) {
                 // Process each row in the result set
                 while (rs.next()) {
-                    Bill b=new Bill();
                     b.setID(rs.getInt("billID"));
                     b.setPatientName(rs.getString("name"));
                     b.setAmount(rs.getDouble("amount"));

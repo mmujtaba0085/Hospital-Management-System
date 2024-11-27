@@ -1185,4 +1185,12 @@ private void openHelp(ActionEvent event) {
     mainContentPane.getChildren().add(helpLayout);
 }
 
+ // Helper method to show alert messages
+ private void showAlert(Alert.AlertType alertType, String title, String message) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setContentText(message);
+    alert.showAndWait();
+}
+
 }
