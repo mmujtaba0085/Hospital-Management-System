@@ -78,6 +78,7 @@ public class DoctorDashboardController {
         this.doctor = doctor;
         mainContentTitle.setText("Welcome, " + this.doctor.getName());
         System.out.println("Doctor's specialization: " + doctor.getSpecialization());
+        viewProfile();
     }
 
     @SuppressWarnings("unused")

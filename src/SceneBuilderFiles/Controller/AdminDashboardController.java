@@ -95,6 +95,8 @@ public class AdminDashboardController {
     
     
     public void viewPersonalDetails() {
+
+
     mainContentTitle.setText("My Profile");
     
     // Create main content pane

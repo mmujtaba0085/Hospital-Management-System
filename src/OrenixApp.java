@@ -35,14 +35,14 @@ public class OrenixApp extends Application {
 
         // Set up login button action
         loginButton.setOnAction(event -> {
-            // String username = emailField.getText();
-            // String password = passwordField.getText();
+            String username = emailField.getText();
+            String password = passwordField.getText();
 
-            String username="john.doe@gmail.com";
+            //String username="john.doe@gmail.com";
             // String username="alice.smith@hospital.com";
             //String username = "admin.b@hospital.com";
-            // String username="rachel.green@hospital.com"; // receptionist
-            String password = "default_password";
+            //String username="rachel.green@hospital.com"; // receptionist
+            //String password = "default_password";
 
             int role = DatabaseConnection.authenticateUser(username, password);
             if (role != 0) {
