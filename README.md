@@ -1,18 +1,25 @@
-asdsad## Getting Started
+## Orenix Hospital Management System
+Orenix is a centralized hospital management software designed to streamline operations, enhance patient care, and improve administrative efficiency. This system integrates key functionalities like patient management, appointment scheduling, billing, and health record maintenance into a cohesive digital platform.
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Features
+## Patient Management:
+Register patients, view and update medical history, and manage appointments and billing.
+## Doctor Portal: 
+Manage schedules, access patient records, and update health records with diagnoses and prescriptions.
+## Receptionist Functions: 
+Handle appointment scheduling, billing, and payment processing.
+## Administrator Dashboard: 
+Oversee hospital operations, user registrations, and generate system-wide reports.
+## Secure Authentication: 
+Role-based access control with secure login for patients, doctors, receptionists, and admins.
+## Architecture
+## Frontend: 
+Designed with Material Design principles for a responsive and intuitive user experience. Designed using javaFx
+## Backend: 
+Developed in Java 17.
+## Database: 
+MySQL 8.0 for reliable and scalable data storage.
+## Server: 
+Supports Apache Tomcat or WildFly for efficient application deployment.
+## Operating Systems: Ubuntu 20.04 LTS, Windows Server 2019, or equivalent.
 
-## Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
